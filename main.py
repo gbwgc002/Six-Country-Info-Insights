@@ -124,14 +124,9 @@ async def main_async():
             total_items = sum(len(items) for items in categories.values())
             print(f"   After dedup: {total_items} items\n")
 
-            # Sources that bypass AI relevance filter (non-AI content the user wants)
-            skip_sources = {"Samsung Newsroom", "SamMobile"}
-
             # Translate items in each category (Processing categories sequentially, items parallel)
             for cat_name, items in categories.items():
-                valid_items, _ = await summarizer.process_and_filter_items(
-                    items, skip_relevance_sources=skip_sources
-                )
+                valid_items, _ = await summarizer.process_and_filter_items(items)
                 categories[cat_name] = valid_items
 
             # Generate highlights

@@ -437,11 +437,9 @@ Format:
         self,
         items: list[NewsItem],
         max_items: int = 30,
-        skip_relevance_sources: Optional[set] = None,
     ) -> tuple[list[NewsItem], int]:
         """
         Process items with translation and filter out irrelevant content.
-        Items from skip_relevance_sources won't be filtered by AI relevance.
         Returns (valid_items, translated_count).
         """
         print(f"🌐 Translating {len(items)} items...")
@@ -467,14 +465,15 @@ Format:
 
             title, summary, is_translated = result
 
-            # Filter irrelevant content (skip for user-requested sources like Samsung)
+            # Filter irrelevant content
             if summary and "IRRELEVANT" in summary:
-                if skip_relevance_sources and item.source in skip_relevance_sources:
-                    # 用户指定的来源，不过滤，但需要重新生成摘要
-                    summary = item.summary or ""
-                else:
-                    print(f"   🚫 Skipping irrelevant item: {item.title}")
-                    continue
+                print(f"   🚫 Skipping irrelevant item: {item.title}")
+                continue
+
+            # 过滤缺少标题或摘要的异常条目
+            if not title or not title.strip() or not summary or len(summary.strip()) < 5:
+                print(f"   🚫 Skipping item with missing title/summary: {item.title[:30]}")
+                continue
 
             item.title = title
             item.summary = summary
