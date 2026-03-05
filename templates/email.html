@@ -286,26 +286,65 @@
             margin: 0;
             padding: 0;
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .toc-item a {
-            display: inline-flex;
+        .toc-category {
+            margin-bottom: 8px;
+        }
+
+        .toc-category-title {
+            display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            background: #f3f4f6;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #374151;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background 0.15s;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px dashed #e5e7eb;
         }
 
-        .toc-item a:hover {
-            background: #e5e7eb;
+        .toc-category-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .toc-category-title a:hover {
+            color: #4f46e5;
+        }
+
+        .toc-items {
+            list-style: none;
+            margin: 0 0 0 12px;
+            padding: 0;
+            color: #4b5563;
+        }
+
+        .toc-item-link {
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 6px;
+            position: relative;
+            padding-left: 12px;
+        }
+
+        .toc-item-link::before {
+            content: "•";
+            color: #9ca3af;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .toc-item-link a {
+            color: #4b5563;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .toc-item-link a:hover {
             color: #4f46e5;
         }
 
@@ -381,16 +420,23 @@
         {% if categories %}
         <div class="toc">
             <h2>📑 今日目录 · {{ item_count }} 条资讯</h2>
-            <ul class="toc-list">
+            <div class="toc-list">
                 {% for category_id, items in categories.items() %}
-                <li class="toc-item">
-                    <a href="#cat-{{ category_id }}">
-                        {{ category_names.get(category_id, category_id) }}
+                <div class="toc-category">
+                    <div class="toc-category-title">
+                        <a href="#cat-{{ category_id }}">{{ category_names.get(category_id, category_id) }}</a>
                         <span class="toc-count">{{ items|length }}</span>
-                    </a>
-                </li>
+                    </div>
+                    <ul class="toc-items">
+                        {% for item in items %}
+                        <li class="toc-item-link">
+                            <a href="#item-{{ category_id }}-{{ loop.index }}">{{ item.title }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
                 {% endfor %}
-            </ul>
+            </div>
         </div>
         {% endif %}
 
@@ -403,7 +449,7 @@
             </h2>
 
             {% for item in items %}
-            <div class="news-item {% if category_id == 'papers' %}paper-item{% endif %}">
+            <div class="news-item {% if category_id == 'papers' %}paper-item{% endif %}" id="item-{{ category_id }}-{{ loop.index }}">
                 <div class="news-content-wrapper">
                     <div class="news-text">
                         <h3 class="news-title">

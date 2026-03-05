@@ -17,19 +17,15 @@ def is_english(text: str) -> bool:
 
     chinese_chars = sum(1 for c in text if '\u4e00' <= c <= '\u9fff')
 
-    # 没有中文字符，肯定是英文
-    if chinese_chars == 0:
-        return True
+    # 只要包含至少1个中文字符，就认为它不是纯英文（可能已经翻译过，或者是中英混合）
+    # 放宽标准，防止 "三星 AI" (仅2个中文字符) 这种被误判为英文而丢弃翻译结果
+    if chinese_chars >= 1:
+        # 如果中文字符占比极低（比如30个字符里只有1个中文），那可能是碰巧包含的
+        if len(text) > 30 and (chinese_chars / len(text)) < 0.05:
+            return True
+        return False
 
-    # 中文字符少于3个，很可能只是夹杂的个别汉字（如品牌名中偶尔出现）
-    if chinese_chars < 3:
-        return True
-
-    # 中文占比低于5%，视为英文（提高阈值以捕获更多未翻译的情况）
-    if len(text) > 0 and (chinese_chars / len(text)) < 0.05:
-        return True
-
-    return False
+    return True
 
 
 class GeminiSummarizer:
@@ -57,14 +53,15 @@ class GeminiSummarizer:
         if len(text) < 2:
             return text
 
-        prompt = f"""请将以下文本翻译成简体中文。
+        prompt = f"""Translate the following text into Simplified Chinese (简体中文).
 
-原文："{text}"
+Original Text:
+"{text}"
 
-要求：
-- 只输出翻译后的中文文本，不要引号、不要解释
-- 保留专有名词原文（如 OpenAI, GPT, LLM, Claude, Google）
-- 翻译必须包含中文字符
+Task Instructions:
+1. Translate the text into natural-sounding Simplified Chinese.
+2. Keep brand names and technical terms in English (e.g., OpenAI, GPT-5, LLM, Claude, Google).
+3. Do not include quotes, explanations, or original text. Return only the translated Chinese string.
 """
 
         try:
@@ -93,42 +90,37 @@ class GeminiSummarizer:
         if len(content_to_summarize) > 10000:
              content_to_summarize = content_to_summarize[:10000] + "..."
 
-        prompt = f"""Analyze the following news item and return a JSON object.
+        prompt = f"""You are a professional tech news editor. Analyze the following news item and extract the required information.
 
 Title: {item.title}
 Source: {item.source}
 Content: {content_to_summarize}
 
-Task:
-1. **Strict Filter**: Is this news primarily about **Artificial Intelligence (AI), LLMs, Machine Learning, or Generative AI**?
-   - **MUST be relevant to AI**.
-   - Set "is_relevant": false for:
-     - General Tech news (e.g. new phones, generic cloud services, IT earnings).
-     - Crypto / Blockchain / Web3.
-     - General Politics / Policy (unless specifically about AI regulation).
-     - Science / Space (unless AI is the core method).
-2. **Summarize**: Write a concise summary in **Simplified Chinese (简体中文)**.
+Task Instructions:
+1. Relevance Check: Determine if this news is primarily about Artificial Intelligence (AI), LLMs, Machine Learning, or Generative AI.
+   - Return false for: General Tech, Crypto, Blockchain, General Politics, pure Science.
+2. Translation: Translate the title into Simplified Chinese (简体中文).
+   - The translated title MUST contain Chinese characters.
+   - Keep brand names and technical terms in English (e.g., OpenAI, GPT-5, LLM).
+3. Summarization: Write a concise summary of the news in Simplified Chinese (简体中文).
    - Length: 50-100 words.
-   - Tone: Professional news brief.
-3. **Translate Title** (极其重要 - CRITICAL):
-   - 你**必须**将标题翻译成**简体中文**。
-   - 标题**必须包含中文字符**，不能是纯英文。
-   - 仅保留品牌名和技术术语原文（如 OpenAI, GPT-5, LLM, Claude）。
-   - 示例: "OpenAI Launches GPT-5" → "OpenAI 发布 GPT-5"
-   - 示例: "Google DeepMind Achieves Breakthrough" → "Google DeepMind 取得重大突破"
+   - Tone: Professional, objective news brief.
 
-Return ONLY a valid JSON object with this structure:
+You MUST return ONLY a valid JSON object matching this schema exactly:
 {{
-    "is_relevant": boolean,
-    "title": "必须是翻译后的中文标题",
-    "summary": "中文摘要"
+    "is_relevant": true or false,
+    "title": "Translated Chinese Title Here",
+    "summary": "Chinese summary here"
 }}
 """
 
         try:
             async with self.semaphore:
-                # Use generation_config to enforce JSON if supported, but prompt engineering usually works well
-                response = await self.model.generate_content_async(prompt)
+                # Use generation_config to enforce JSON
+                response = await self.model.generate_content_async(
+                    prompt,
+                    generation_config=genai.GenerationConfig(response_mime_type="application/json")
+                )
 
             text_response = response.text.strip()
 
@@ -223,30 +215,32 @@ Return ONLY a valid JSON object with this structure:
         if len(content_to_summarize) > 10000:
              content_to_summarize = content_to_summarize[:10000] + "..."
 
-        prompt = f"""Summarize the following news item and return a JSON object.
+        prompt = f"""You are a professional tech news editor. Summarize the following news item.
 
 Title: {item.title}
 Source: {item.source}
 Content: {content_to_summarize}
 
-Task:
-1. **Strict Filter**: Is this news primarily about **Artificial Intelligence (AI), LLMs, Machine Learning, or Generative AI**?
-   - Set "is_relevant": false for General Tech, Crypto, Politics, Science (unless AI-centric).
-2. **Summarize**:
-   - Language: **Simplified Chinese**.
+Task Instructions:
+1. Relevance Check: Determine if this news is primarily about Artificial Intelligence (AI).
+   - Return false for: General Tech, Crypto, Politics, Science.
+2. Summarization: Write a concise summary in Simplified Chinese (简体中文).
    - Length: 50-100 words.
-   - Style: News brief.
+   - Tone: Professional news brief.
 
-Return ONLY a valid JSON object:
+You MUST return ONLY a valid JSON object matching this schema exactly:
 {{
-    "is_relevant": boolean,
-    "summary": "Chinese Summary"
+    "is_relevant": true or false,
+    "summary": "Chinese summary here"
 }}
 """
 
         try:
             async with self.semaphore:
-                response = await self.model.generate_content_async(prompt)
+                response = await self.model.generate_content_async(
+                    prompt,
+                    generation_config=genai.GenerationConfig(response_mime_type="application/json")
+                )
 
             text_response = response.text.strip()
             # Clean up potential markdown code blocks
@@ -292,29 +286,31 @@ Return ONLY a valid JSON object:
 
         all_content = "\n".join(content_parts)
 
-        prompt = f"""作为AI行业分析师，请根据以下新闻列表，选出今日最重要的3条新闻要点。
+        prompt = f"""You are an AI industry analyst. Based on the following news list, select the top 3 most important news items for today.
 
 News List:
 {all_content}
 
-Task:
-1. Select exactly 3 most impactful AI news items (major releases, funding, breakthroughs).
-2. Write a concise summary for each in **Simplified Chinese**.
-3. **Important**: Return ONLY a valid JSON object. No other text.
+Task Instructions:
+1. Selection: Select exactly 3 most impactful AI news items (major releases, funding, breakthroughs).
+2. Summarization: Write a concise summary for each selected item in Simplified Chinese (简体中文).
 
-Format:
+You MUST return ONLY a valid JSON object matching this schema exactly:
 {{
     "highlights": [
-        "第一个要点（完整句子，中文）",
-        "第二个要点（完整句子，中文）",
-        "第三个要点（完整句子，中文）"
+        "First highlight in complete Chinese sentence.",
+        "Second highlight in complete Chinese sentence.",
+        "Third highlight in complete Chinese sentence."
     ]
 }}
 """
 
         try:
             async with self.semaphore:
-                response = await self.model.generate_content_async(prompt)
+                response = await self.model.generate_content_async(
+                    prompt,
+                    generation_config=genai.GenerationConfig(response_mime_type="application/json")
+                )
 
             text_response = response.text.strip()
             # Clean up potential markdown code blocks
@@ -508,24 +504,29 @@ Format:
             for i, (_, item) in enumerate(all_items)
         )
 
-        prompt = f"""以下是从不同新闻来源收集到的新闻标题列表。请找出报道**同一事件或主题**的新闻组。
+        prompt = f"""You are a professional tech news editor. Group the following news headlines into identical topics/events.
 
+News Headlines:
 {titles_text}
 
-要求：
-- 只有当两条或以上新闻明确在报道同一个具体事件时才归为一组
-- 仅主题相近但事件不同的不算重复（例如"OpenAI发布新模型"和"Google发布新模型"不算重复）
-- 如果没有重复，返回空数组
+Task Instructions:
+1. Grouping: Identify groups of news headlines that are reporting on the exact same specific event.
+2. Similarity Threshold: Only group headlines together if they are clearly about the exact same release, event, or specific announcement. If they are just generally similar topics (e.g. two different models released by different companies), do not group them.
+3. If no identical events exist, return an empty array.
 
-返回一个JSON对象，格式如下：
+You MUST return ONLY a valid JSON object matching this schema exactly:
 {{
     "groups": [[0, 3, 7], [2, 5]]
 }}
-每个子数组包含报道相同事件的新闻索引号。只列出有重复的组。"""
+Each sub-array should contain the index numbers of news items reporting on the same event.
+"""
 
         try:
             async with self.semaphore:
-                response = await self.model.generate_content_async(prompt)
+                response = await self.model.generate_content_async(
+                    prompt,
+                    generation_config=genai.GenerationConfig(response_mime_type="application/json")
+                )
 
             text_response = response.text.strip()
             if text_response.startswith("```json"):
