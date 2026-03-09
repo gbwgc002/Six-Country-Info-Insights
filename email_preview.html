@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Daily Digest - 2026年01月27日</title>
+    <title>AI Daily Digest - 2026年03月09日</title>
     <style>
         /* Reset and base styles */
         body {
@@ -265,6 +265,98 @@
             margin-right: 8px;
         }
 
+        /* Table of Contents */
+        .toc {
+            background: #ffffff;
+            padding: 20px 24px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .toc h2 {
+            color: #374151;
+            font-size: 16px;
+            margin: 0 0 14px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toc-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .toc-category {
+            margin-bottom: 8px;
+        }
+
+        .toc-category-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+
+        .toc-category-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .toc-category-title a:hover {
+            color: #4f46e5;
+        }
+
+        .toc-items {
+            list-style: none;
+            margin: 0 0 0 12px;
+            padding: 0;
+            color: #4b5563;
+        }
+
+        .toc-item-link {
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 6px;
+            position: relative;
+            padding-left: 12px;
+        }
+
+        .toc-item-link::before {
+            content: "•";
+            color: #9ca3af;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .toc-item-link a {
+            color: #4b5563;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .toc-item-link a:hover {
+            color: #4f46e5;
+        }
+
+        .toc-count {
+            background: #4f46e5;
+            color: white;
+            font-size: 11px;
+            padding: 1px 7px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
         /* Footer */
         .footer {
             background: #f9fafb;
@@ -277,6 +369,34 @@
         .footer a {
             color: #4f46e5;
             text-decoration: none;
+        }
+
+        /* Print / PDF styles */
+        @media print {
+            body {
+                background-color: #fff;
+            }
+            .container {
+                max-width: 100% !important;
+                box-shadow: none !important;
+            }
+            .toc {
+                page-break-inside: avoid;
+            }
+            .toc-category {
+                page-break-inside: avoid;
+            }
+            .toc-item-link a {
+                color: #4338ca !important;
+                text-decoration: underline !important;
+            }
+            .toc-category-title a {
+                color: #1f2937 !important;
+                text-decoration: underline !important;
+            }
+            .news-item {
+                page-break-inside: avoid;
+            }
         }
 
         /* Responsive */
@@ -311,7 +431,7 @@
         <!-- Header -->
         <div class="header">
             <h1>🤖 AI Daily Digest</h1>
-            <div class="date">2026年01月27日 · 49 条资讯</div>
+            <div class="date">2026年03月09日 · 30 条资讯</div>
         </div>
 
         <!-- Highlights -->
@@ -319,497 +439,763 @@
         <div class="highlights">
             <h2>⚡ 今日要点</h2>
             <div class="highlights-content">
-                1. TechCrunch 报道 Motional 将在2025年于拉斯维加斯推出无人驾驶 robotaxi 服务，重心转向 AI 驱动的技术架构
-2. Google 针对特定医疗查询移除了 AI Overviews 功能，此前被曝出提供误导性健康信息
-3. arXiv 最新论文聚焦图神经网络训练和大模型集成解码技术
-4. 36氪：智谱单日涨幅超31%，国内大模型概念股活跃
-5. 印度信实工业宣布776亿美元投资计划，将建设印度最大 AI 数据中心
+                <div class="highlight-item"><span class="highlight-number">1</span><span class="highlight-text">NoDesk AI转型为DeskClaw，并在两周内迅速完成，获得近亿元融资，显示了AI应用转型的巨大潜力。</span></div>
+<div class="highlight-item"><span class="highlight-number">2</span><span class="highlight-text">前vivo产品经理宋紫薇的AI创业项目「薇光点亮」获得超亿元融资，表明市场对AI在特定行业应用的高度关注。</span></div>
+<div class="highlight-item"><span class="highlight-number">3</span><span class="highlight-text">Luma AI发布Uni-1，一款图像理解与生成一体化模型，性能超越Nano Banana 2，代表了AI模型技术的重大进步。</span></div>
+            </div>
+        </div>
+        
+
+        <!-- Table of Contents -->
+        
+        <div class="toc">
+            <h2>📑 今日目录 · 30 条资讯</h2>
+            <div class="toc-list">
+                
+                
+                <div class="toc-category">
+                    <div class="toc-category-title">
+                        <a href="#cat-social">🐦 社交热议</a>
+                        <span class="toc-count">7</span>
+                    </div>
+                    <ul class="toc-items">
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-social-1">博客作者揭示Medium上AI生成内容的“气味”，警惕低质量内容</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-social-2">GGUF模型漏洞：无需重启服务器即可篡改LLM输出</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-social-3">AI替代加速：你的议价能力正在消失</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-social-4">自建AI知识库：掌控个人数据，摆脱厂商锁定</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-social-5">利用LLM辅助反编译：破解二进制代码的新方法</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-social-6">AI过度使用致“大脑过载”，高绩效员工尤甚</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-social-7">自托管金融分析系统：Plaid连账户，Claude助分析，月耗约5美元</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+                
+                
+                
+                <div class="toc-category">
+                    <div class="toc-category-title">
+                        <a href="#cat-china">🇨🇳 国内动态</a>
+                        <span class="toc-count">9</span>
+                    </div>
+                    <ul class="toc-items">
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-china-1">NoDesk AI转型：两周速成DeskClaw，豪取近亿元融资</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-china-2">前vivo产品经理宋紫薇AI创业，「薇光点亮」获超亿元融资</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-china-3">中科大99级生创业 ACONTEXT获红杉、明势投资</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-china-4">MetaNovas获融资，AI智能体加速新材料研发</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-china-5">深圳龙岗区补贴OpenClaw“养龙虾”，最高可达200万</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-china-6">清华毕业生去向：出国比例降，华为字节成AI人才赢家</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-china-7">00后大学生10天AI编程获3000万投资，陈天桥慧眼识才</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-china-8">AI冲击下，长视频平台陷困境，短剧崛起蚕食市场</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-china-9">AI算力需求激增，中国西电等电网设备商或成千亿龙头</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+                
+                
+                
+                <div class="toc-category">
+                    <div class="toc-category-title">
+                        <a href="#cat-industry">💰 行业投融资</a>
+                        <span class="toc-count">11</span>
+                    </div>
+                    <ul class="toc-items">
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-1">伊朗战事或阻碍海湾国家3000亿美元AI投资计划</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-2">美国中期选举：候选人利用AI和加密货币争取政治献金</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-3">哈佛研究：AI既能缓解倦怠，也可能导致“AI脑雾”</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-4">Luma AI发布Uni-1：图像理解与生成一体化模型，超越Nano Banana 2</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-5">Anthropic争议：五角大楼合作会吓退AI初创公司吗？</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-6">Circle、Stripe等构建稳定币支付，赋能AI Agent微交易</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-7">美以利用AI对伊朗发动战争，速度与精度空前</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-8">AI数据中心兴起“男性营地”模式，引发关注</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-9">ZyG获5800万美元种子轮融资，AI驱动DTC品牌营销</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-10">研究发现：Anthropic、Google等LLM或助长学术造假</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-11">“亲人类宣言”遇上五角大楼-Anthropic对峙</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+                
+                
+                
+                <div class="toc-category">
+                    <div class="toc-category-title">
+                        <a href="#cat-papers">📄 前沿论文</a>
+                        <span class="toc-count">3</span>
+                    </div>
+                    <ul class="toc-items">
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-papers-1">BEVLM：利用LLM语义知识提升自动驾驶鸟瞰图性能</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-papers-2">腾讯AI Lab：Penguin-VL突破VLM效率极限，LLM赋能视觉编码</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-papers-3">NEGATE：扩散模型中实现精确语义否定的新方法</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+                
+                
             </div>
         </div>
         
 
         <!-- Categories -->
         
-        <div class="category">
+        
+        <div class="category" id="cat-social">
             <h2 class="category-header">
-                💰 行业投融资
-                <span class="count">20</span>
+                🐦 社交热议
+                <span class="count">7</span>
             </h2>
 
             
-            <div class="news-item ">
+            <div class="news-item " id="item-social-1">
                 <div class="news-content-wrapper">
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="http://www.techmeme.com/260126/p46#a260126p46" target="_blank">California Gov. Gavin Newsom says he will launch a review into whether TikTok is violating state law by censoring content critical of President Donald Trump (Tyler Katzenberger/Politico)</a>
-                            
+                            <a href="https://rmoff.net/2025/11/25/ai-smells-on-medium/" target="_blank">博客作者揭示Medium上AI生成内容的“气味”，警惕低质量内容</a>
+                            <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
+                            <span class="news-source">Hacker News</span>
                             
-                            <span class="news-date">01-27 03:00</span>
+                            <span class="news-date">03-09 02:12</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">Tyler Katzenberger / Politico:
-California Gov. Gavin Newsom says he will launch a review into whether TikTok is violating state law by censoring content critical of President Donald Trump&nbsp; &mdash;&nbsp; TikTok in an X post Monday attributed recent bugs, including engagement issues, to a &ldquo;display error caused by server timeouts&rdquo; &hellip;</p>
+                        <p class="news-summary">博客作者rmoff分享了在Medium等平台筛选文章时发现的AI生成内容的一些明显特征，称之为“气味”。这些特征包括AI生成的平庸配图、缺乏上下文的细节描述、以及ASCII艺术图等。作者认为，大量低质量AI生成内容使得发现优质内容变得更加困难，并提醒读者注意这些“气味”，以避免浪费时间阅读劣质文章。文章还提到了Inoreader等RSS阅读工具的使用。</p>
                         
                         
                     </div>
                     
-                    <img class="news-image" src="http://www.techmeme.com/260126/i46.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
                 </div>
             </div>
             
-            <div class="news-item ">
+            <div class="news-item " id="item-social-2">
                 <div class="news-content-wrapper">
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="https://techcrunch.com/2026/01/26/qualcomm-backs-spotdraft-to-scale-on-device-contract-ai-with-valuation-doubling-toward-400m/" target="_blank">Qualcomm backs SpotDraft to scale on-device contract AI with valuation doubling toward $400M</a>
+                            <a href="https://github.com/piotrmaciejbednarski/llm-inference-tampering" target="_blank">GGUF模型漏洞：无需重启服务器即可篡改LLM输出</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
                             
+                            <span class="news-date">03-09 01:33</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">研究人员发现了一种针对GGUF量化模型的攻击方法，可以在LLM推理服务器运行时，通过修改模型文件中的权重来持久性地操纵LLM的输出。该攻击利用了llama.cpp默认的内存映射机制，允许恶意进程修改磁盘上的模型文件，从而影响服务器的推理结果，无需重启服务器或进行进程注入。攻击者通过修改output.weight张量中的特定token权重，可以控制模型的输出。缓解措施包括将模型文件设置为只读，或禁用内存映射功能(--no-mmap)。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-social-3">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://technohumanity.substack.com/p/when-ai-can-finally-give-everyone" target="_blank">AI替代加速：你的议价能力正在消失</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
+                            
+                            <span class="news-date">03-09 01:23</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">文章指出，AI技术的快速发展正导致劳动力市场议价能力的丧失。企业不再需要解雇员工，而是通过自动化和AI系统逐步替代人工，尤其针对高薪岗位。Amazon等公司已计划通过自动化大幅减少未来的人工需求。这种趋势将加剧收入不平等，并使拥有AI技术和基础设施的企业集团掌握更大的权力，最终导致劳动力价值降低，社会资源分配不均。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-social-4">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://github.com/kaspnilsson/digital-twin-playbook" target="_blank">自建AI知识库：掌控个人数据，摆脱厂商锁定</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
+                            
+                            <span class="news-date">03-09 01:14</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">开发者分享了一种自建AI知识库的方案，旨在解决用户数据被各大AI厂商（如OpenAI、Google）锁定的问题。该方案通过搭建基于Postgres的知识图谱，让用户可以跨模型、跨设备地使用自己的AI上下文和记忆。用户使用MCP协议连接各类AI模型，所有数据存储在用户自己的服务器上，从而避免了数据泄露和厂商锁定。此举旨在让用户真正掌控自己的AI数据，而非受制于订阅模式和厂商策略。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-social-5">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://reorchestrate.com/posts/your-binary-is-no-longer-safe-decompilation/" target="_blank">利用LLM辅助反编译：破解二进制代码的新方法</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
+                            
+                            <span class="news-date">03-09 01:05</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">研究人员正在探索使用大型语言模型(LLM)来自动化二进制程序的反向工程，重点是反编译过程。通过Ghidra等工具，结合Google Gemini模型的代码理解能力，LLM能够识别代码模式并自动重命名函数和变量，从而将难以理解的机器代码转化为更具可读性的伪代码。这项技术可应用于现代化旧代码或将COBOL等传统语言转换为现代语言，为软件逆向工程和代码维护带来新的可能性，同时也展示了LLM在标准基准之外的实际应用潜力。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-social-6">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://futurism.com/artificial-intelligence/ai-brain-fry" target="_blank">AI过度使用致“大脑过载”，高绩效员工尤甚</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
+                            
+                            <span class="news-date">03-08 23:54</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">一项针对美国近1500名全职员工的调查显示，过度使用AI工具以提高工作效率会导致“大脑过载”，尤其是在营销、软件开发、人力资源、金融和IT等领域。员工报告出现“嗡嗡”感、精神“迷雾”、头痛和决策迟缓等症状。研究表明，信息过载和频繁的任务切换是主要原因，持续监督AI工具更是加剧了精神疲劳。这种“大脑过载”不仅影响员工决策能力，还显著提高了离职意愿，对企业造成潜在经济损失。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-social-7">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://github.com/mkash25/Claude-powered-AI-native-financial-dashboard" target="_blank">自托管金融分析系统：Plaid连账户，Claude助分析，月耗约5美元</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
+                            
+                            <span class="news-date">03-08 23:54</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">一款自托管的个人金融分析系统在Hacker News上展示。该系统通过Plaid连接用户的真实券商账户，利用市场数据和技术指标丰富持仓信息，并使用Claude的AI能力进行买卖/持有分析，最终在Next.js仪表板上呈现。用户每月花费约5美元即可运行，主要成本来自Claude API的使用。该工具仅供个人参考，不构成财务建议，用户应咨询专业人士后再做投资决策。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div>
+        
+        
+        
+        <div class="category" id="cat-china">
+            <h2 class="category-header">
+                🇨🇳 国内动态
+                <span class="count">9</span>
+            </h2>
+
+            
+            <div class="news-item " id="item-china-1">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3714634245009800?f=rss" target="_blank">NoDesk AI转型：两周速成DeskClaw，豪取近亿元融资</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-09 02:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">AI公司NoDesk AI创始人宋健带领团队，在两周内基于OpenClaw快速开发出AI助手DeskClaw，并获得近亿元融资。DeskClaw是一款AI助手桌宠，能操作浏览器、读写文件，深度适配办公软件，旨在提升用户效率。宋健认为，OpenClaw代表Agent技术架构的重构，将改写软件商业化路径。NoDesk AI 正在探索AI原生组织形态，并寻求新一轮融资，其电商营销Agent产品也将通过DeskClaw企业版实现协作。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260309/v2_3da0dae1b1dc40afab76cf96881d84fc@2057308263_oswg84347oswg1080oswg608_img_000?x-oss-process=image/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-2">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3714480200085633?f=rss" target="_blank">前vivo产品经理宋紫薇AI创业，「薇光点亮」获超亿元融资</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-09 01:30</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">前vivo明星产品经理宋紫薇创立的AI智能硬件公司「薇光点亮」近期完成超亿元Pre-A轮融资，由红杉中国、蓝驰创投联合领投。该公司致力于打造以时尚AI Agent为核心的智能硬件产品矩阵，首款产品或为AI原生落地镜，深度融合穿搭等场景。融资将用于人才建设、硬件研发和模型训练。宋紫薇曾成功打造多款爆款手机产品，其在消费电子领域的经验积累，以及“AI+时尚”的独特方向，使该项目备受关注。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260309/v2_1ef5f927ec874c7d8cabbf84d27bda87@1199336245_oswg295495oswg1620oswg1080_img_jpg?x-oss-process=image/quality,q_100/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-3">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3711571451572360?f=rss" target="_blank">中科大99级生创业 ACONTEXT获红杉、明势投资</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-09 00:30</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">99级中科大学生叶坚白创立的ACONTEXT，近期完成数百万美元天使轮融资，由红杉中国种子基金和明势资本共同投资。ACONTEXT致力于为Agent提供一站式的自学习平台，解决Agent在复杂任务执行中的数据管理问题，提高任务成功率。该平台通过提供数据存储、决策路径观测和智能体自学习服务，帮助开发者降低Agent开发和管理门槛。叶坚白曾参与多个热门开源项目，团队成员来自字节跳动、百度、微软等公司。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260306/v2_67a3ea1c0c304f2bb33a113c5321779b@5783683_oswg150680oswg900oswg335_img_png?x-oss-process=image/quality,q_100/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-4">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3708504364462466?f=rss" target="_blank">MetaNovas获融资，AI智能体加速新材料研发</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-09 00:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">元星智药MetaNovas近期完成A+、A++两轮融资，由富华资本、高瓴资本等投资。MetaNovas利用Agentic AI构建系统级平台，加速新材料的开发流程，将传统3-5年的开发周期缩短至12个月。其自研分子语言生成大模型，覆盖广阔化学空间，并开发性能预测模型。通过AI智能体，MetaNovas提升研发效率，降低试错成本，并已在生物活性成分、医用材料等领域取得进展，推动新材料研发进入新时代。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260306/v2_26bbb2fcf6934f8899d08d1f026000e8@5452796_oswg213495oswg1920oswg1280_img_jpg?x-oss-process=image/quality,q_100/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-5">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3714938148941957?f=rss" target="_blank">深圳龙岗区补贴OpenClaw“养龙虾”，最高可达200万</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-08 23:53</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">深圳市龙岗区拟出台政策，鼓励市场化平台免费提供开源智能体OpenClaw部署服务，并对贡献代码、开发技能包、结合具身智能应用的项目，经认定后给予最高200万元补贴。腾讯创始人马化腾表示腾讯云免费安装OpenClaw服务超出预期。此外，周鸿祎也表示将发布一键安装版本。OpenClaw因图标酷似红色龙虾而走红，旨在抓住智能经济发展机遇，推动智能制造、智慧政务等领域的应用。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-6">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3713882515403142?f=rss" target="_blank">清华毕业生去向：出国比例降，华为字节成AI人才赢家</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-08 09:43</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">清华大学最新毕业生去向报告显示，出国深造比例下降，国内就业成主流。华为、字节跳动等科技巨头成为清华毕业生主要去向，尤其在AI领域需求旺盛。报告还指出，赴西部和东北地区就业人数持续增长，京外就业率过半，表明清华毕业生正积极投身国家重点行业和地区发展，技术岗位需求量大，AI人才备受青睐。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260308/v2_e3667cc5cf554e519426065134b666fc@5579416_oswg134199oswg1080oswg720_img_000?x-oss-process=image/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-7">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3713983582662788?f=rss" target="_blank">00后大学生10天AI编程获3000万投资，陈天桥慧眼识才</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-08 09:17</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">00后大学生BaiFu凭借AI开源项目MiroFish登上GitHub趋势榜首，并获得盛大集团陈天桥3000万投资，成为AI创业公司CEO。MiroFish是一个AI预测引擎，旨在构建模拟真实世界的数字沙盘，用于金融、政策等领域的预测。该项目仅用10天完成，体现了“Vibe Coding”和超级个体时代的潜力，以及AI工具对个人生产力的提升。硅谷“一人公司”模式正在兴起，中国也在快速跟进。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260308/v2_6784b696ab604fb7af831869eeba5973@5579416_oswg273512oswg1080oswg1131_img_000?x-oss-process=image/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-8">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3714020694061185?f=rss" target="_blank">AI冲击下，长视频平台陷困境，短剧崛起蚕食市场</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-08 08:43</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">长视频平台如爱奇艺、腾讯视频、芒果TV在2025年面临营收和利润下滑的困境，国产长剧集质量下降和话题性缺失是主要原因。与此同时，短剧行业，尤其是AI短剧迅速崛起，蚕食了长视频平台的用户时长。尽管Netflix和YouTube等海外平台表现良好，但国内长视频平台需警惕AI技术带来的变革，并积极探索PUGC模式，以应对短剧带来的挑战，抓住用户对高质量长内容的需求。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-9">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3714009108001160?f=rss" target="_blank">AI算力需求激增，中国西电等电网设备商或成千亿龙头</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-08 08:19</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">AI发展对电力需求暴增，推动中国电网设备行业迎来新一轮投资周期。中国AI模型凭借低廉的电力成本，实现“Token出海”，与美国模型竞争。思源电气、金盘科技等公司受益于国内智能算力扩容和海外电力设备短缺，订单加速交付。中国西电等特高压设备商，有望受益于国家电网在“十五五”期间的特高压工程投资，成为下一个千亿市值龙头企业。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260308/v2_f5885340cc4f414ea55932fc247ea8b2@5579416_oswg411165oswg630oswg696_img_000?x-oss-process=image/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+        </div>
+        
+        
+        
+        <div class="category" id="cat-industry">
+            <h2 class="category-header">
+                💰 行业投融资
+                <span class="count">11</span>
+            </h2>
+
+            
+            <div class="news-item " id="item-industry-1">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="http://www.techmeme.com/260308/p14#a260308p14" target="_blank">伊朗战事或阻碍海湾国家3000亿美元AI投资计划</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Techmeme</span>
+                            
+                            <span class="news-date">03-09 01:50</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">伊朗的战争局势日益复杂，这可能会严重影响海湾国家原本计划投入超过3000亿美元的AI相关投资，包括数据中心、芯片等领域。这项投资计划原本被视为科技公司重要的潜在资金来源。地缘政治风险的增加，使得海湾国家在AI领域的投资决策变得更加谨慎，这对于依赖这些资金的科技企业来说，无疑是一个潜在的打击，可能会影响其未来的发展和扩张。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="http://www.techmeme.com/260308/i14.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-industry-2">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="http://www.techmeme.com/260308/p13#a260308p13" target="_blank">美国中期选举：候选人利用AI和加密货币争取政治献金</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Techmeme</span>
+                            
+                            <span class="news-date">03-09 00:25</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">纽约时报报道，部分美国中期选举候选人正通过社交媒体和网站上的特定关键词，向加密货币和人工智能超级政治行动委员会（Super PACs）发出信号，以争取政治献金。AI和加密货币行业今年拥有近2.5亿美元的资金，旨在影响监管政策。候选人利用行业热点，例如AI，吸引资金支持，反映了科技行业对政治的影响力日益增强，以及政治竞选对新兴技术的依赖。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="http://www.techmeme.com/260308/i13.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-industry-3">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="http://www.techmeme.com/260308/p12#a260308p12" target="_blank">哈佛研究：AI既能缓解倦怠，也可能导致“AI脑雾”</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Techmeme</span>
+                            
+                            <span class="news-date">03-08 22:40</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">一项针对约1500名美国员工的哈佛商业评论研究发现，使用AI工具虽然可以减轻工作倦怠感，但也可能导致“AI脑雾”，即因使用超出认知能力的AI工具而产生的精神疲劳。研究表明，过度依赖AI可能对心理健康产生负面影响。该研究强调了在工作场所合理使用AI的重要性，避免过度依赖并关注员工的认知负荷，以充分发挥AI的积极作用并减少潜在的负面影响。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="http://www.techmeme.com/260308/i12.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-industry-4">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="http://www.techmeme.com/260308/p11#a260308p11" target="_blank">Luma AI发布Uni-1：图像理解与生成一体化模型，超越Nano Banana 2</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Techmeme</span>
+                            
+                            <span class="news-date">03-08 20:55</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">Luma AI发布了名为Uni-1的全新图像模型，该模型将图像理解和生成功能集成于单一架构中。据报道，Uni-1在基于逻辑的基准测试中表现出色，超越了Nano Banana 2。Uni-1与Google的Nano Banana Pro和GPT Image 1.5类似，均基于自回归Transformer构建。这一突破表明Luma AI在图像生成和理解领域取得了显著进展，有望推动相关技术的进一步发展。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="http://www.techmeme.com/260308/i11.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-industry-5">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://techcrunch.com/2026/03/08/will-the-pentagons-anthropic-controversy-scare-startups-away-from-defense-work/" target="_blank">Anthropic争议：五角大楼合作会吓退AI初创公司吗？</a>
+                            <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">TechCrunch AI</span>
                             
-                            <span class="news-date">01-27 01:30</span>
+                            <span class="news-date">03-08 20:14</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">SpotDraft now processes over 1 million contracts annually using its AI tool, with contract volumes up 173% year-over-year.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">Enterprise</span>
-                            
-                            <span class="tag">AI</span>
-                            
-                            <span class="tag">Qualcomm</span>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="http://www.techmeme.com/260126/p45#a260126p45" target="_blank">The US Army signs a $5.6B, 10-year contract with Salesforce to speed up outdated practices; as part of the deal, military recruiters will get access to Slack (Wall Street Journal)</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
-                            
-                            <span class="news-date">01-27 01:05</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Wall Street Journal:
-The US Army signs a $5.6B, 10-year contract with Salesforce to speed up outdated practices; as part of the deal, military recruiters will get access to Slack&nbsp; &mdash;&nbsp; Recruiters will get access to Slack as part of a contract that reflects the Pentagon's drive to adopt commercial software tools</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260126/i45.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="http://www.techmeme.com/260126/p44#a260126p44" target="_blank">YC updated its website to remove Canada from its list of approved jurisdictions for incorporation, leaving the US, Cayman Islands, and Singapore as options (Murad Hemmadi/The Logic)</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
-                            
-                            <span class="news-date">01-27 01:00</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Murad Hemmadi / The Logic:
-YC updated its website to remove Canada from its list of approved jurisdictions for incorporation, leaving the US, Cayman Islands, and Singapore as options&nbsp; &mdash;&nbsp; Silicon Valley's most famous accelerator now requires Canadian firms to incorporate in the U.S., Cayman Islands or Singapore in order for it to invest</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260126/i44.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="http://www.techmeme.com/260126/p43#a260126p43" target="_blank">Khosla Ventures' Vinod Khosla and Ethan Choi disavow Keith Rabois' comments on an ICE shooting; Rabois said the man killed by agents was committing a "felony" (Julie Bort/TechCrunch)</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
-                            
-                            <span class="news-date">01-27 00:20</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Julie Bort / TechCrunch:
-Khosla Ventures' Vinod Khosla and Ethan Choi disavow Keith Rabois' comments on an ICE shooting; Rabois said the man killed by agents was committing a &ldquo;felony&rdquo;&nbsp; &mdash;&nbsp; To understand the stance of an unwavering Trump loyalist after United States Custom and Enforcement shocked the nation &hellip;</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260126/i43.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="http://www.techmeme.com/260126/p42#a260126p42" target="_blank">A test of ChatGPT Health and Claude for Healthcare with data from Apple Health finds the chatbots provided questionable and inconsistent responses (Geoffrey A. Fowler/Washington Post)</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
-                            
-                            <span class="news-date">01-27 00:05</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Geoffrey A. Fowler / Washington Post:
-A test of ChatGPT Health and Claude for Healthcare with data from Apple Health finds the chatbots provided questionable and inconsistent responses&nbsp; &mdash;&nbsp; ChatGPT now says it can answer personal questions about your health using data from your fitness tracker and medical records.</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260126/i42.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="http://www.techmeme.com/260126/p41#a260126p41" target="_blank">Meta says it will test new paid subscriptions that give people access to exclusive features on its apps and plans to scale Manus as part of those offerings (Aisha Malik/TechCrunch)</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
-                            
-                            <span class="news-date">01-26 23:30</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Aisha Malik / TechCrunch:
-Meta says it will test new paid subscriptions that give people access to exclusive features on its apps and plans to scale Manus as part of those offerings&nbsp; &mdash;&nbsp; Meta plans to test new subscriptions that give people access to exclusive features on it apps, the company told TechCrunch on Monday.</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260126/i41.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="http://www.techmeme.com/260126/p40#a260126p40" target="_blank">StepFun, a Chinese AI startup that develops LLMs and has partnered with automaker Geely and smartphone brands like Oppo and Honor, raised a ~$717M Series B+ (Eudora Wang/DealStreetAsia)</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
-                            
-                            <span class="news-date">01-26 22:55</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Eudora Wang / DealStreetAsia:
-StepFun, a Chinese AI startup that develops LLMs and has partnered with automaker Geely and smartphone brands like Oppo and Honor, raised a ~$717M Series B+&nbsp; &mdash;&nbsp; StepFun, a Chinese AI startup specialising in the development of large language models (LLMs), has raised over 5 billion yuan &hellip;</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260126/i40.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="http://www.techmeme.com/260126/p39#a260126p39" target="_blank">Tim Cook attending a private White House screening of the documentary Melania hours after US agents killed a man suggests horrible judgment, or worse, cowardice (M.G. Siegler/Spyglass)</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
-                            
-                            <span class="news-date">01-26 22:40</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">M.G. Siegler / Spyglass:
-Tim Cook attending a private White House screening of the documentary Melania hours after US agents killed a man suggests horrible judgment, or worse, cowardice&nbsp; &mdash;&nbsp; Tim Cook is captured.&nbsp; There is simply no other explanation for his actions over the past year or so.</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260126/i39.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="http://www.techmeme.com/260126/p38#a260126p38" target="_blank">Billionaire Tom Steyer, who is running for California governor, says he'll vote for the one-time 5% tax on billionaire wealth if it reaches the November ballot (Eliyahu Kamisher/Bloomberg)</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
-                            
-                            <span class="news-date">01-26 22:15</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Eliyahu Kamisher / Bloomberg:
-Billionaire Tom Steyer, who is running for California governor, says he'll vote for the one-time 5% tax on billionaire wealth if it reaches the November ballot&nbsp; &mdash;&nbsp; Billionaire Tom Steyer came out in favor of a proposed tax on California's wealthiest residents, adding a prominent voice &hellip;</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260126/i38.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="http://www.techmeme.com/260126/p37#a260126p37" target="_blank">A group of YouTubers with a combined 6.2M subscribers adds Snap to a class action lawsuit, alleging the company trained its AI systems on their video content (Sarah Perez/TechCrunch)</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
-                            
-                            <span class="news-date">01-26 22:10</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Sarah Perez / TechCrunch:
-A group of YouTubers with a combined 6.2M subscribers adds Snap to a class action lawsuit, alleging the company trained its AI systems on their video content&nbsp; &mdash;&nbsp; A group of YouTubers suing tech giants for scraping their videos without permission to train AI models has now added Snap to their list of defendants.</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260126/i37.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://techcrunch.com/2026/01/26/youtubers-sue-snap-for-alleged-copyright-infringement-in-training-its-ai-models/" target="_blank">YouTubers sue Snap for alleged copyright infringement in training its AI models</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">TechCrunch AI</span>
-                            
-                            <span class="news-date">01-26 21:43</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">The YouTubers claim Snap, like others, used AI datasets meant for research and academic use to train its AI models.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">AI</span>
-                            
-                            <span class="tag">Media & Entertainment</span>
-                            
-                            <span class="tag">lawsuit</span>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://techcrunch.com/2026/01/26/ai-startup-cvector-raises-5m-for-its-industrial-nervous-system/" target="_blank">AI startup CVector raises $5M for its industrial ‘nervous system’</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">TechCrunch AI</span>
-                            
-                            <span class="news-date">01-26 19:10</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Now, founders Richard Zhang and Tyler Ruggles are tasked with a bigger challenge: showing customers and investors how this AI-powered software layer translates to real savings on an industrial scale.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">AI</span>
-                            
-                            <span class="tag">Startups</span>
-                            
-                            <span class="tag">cvector</span>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://techcrunch.com/2026/01/26/anthropic-launches-interactive-claude-apps-including-slack-and-other-workplace-tools/" target="_blank">Anthropic launches interactive Claude apps, including Slack and other workplace tools</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">TechCrunch AI</span>
-                            
-                            <span class="news-date">01-26 18:00</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Claude users will now be able to call up interactive apps inside the chatbot interface, with Cowork integration coming soon.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">AI</span>
-                            
-                            <span class="tag">agentic ai</span>
-                            
-                            <span class="tag">Apps</span>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://techcrunch.com/2026/01/26/obvious-ventures-lands-fund-five-with-a-360-degree-view-of-planetary-human-economic-health/" target="_blank">Obvious Ventures lands fund five with a 360-degree view of planetary, human, economic health</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">TechCrunch AI</span>
-                            
-                            <span class="news-date">01-26 18:00</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">The 12-year-old firm raised $360,360,360 for its fifth fund. And there's a reason for that number.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">AI</span>
-                            
-                            <span class="tag">Biotech & Health</span>
-                            
-                            <span class="tag">Climate</span>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://techcrunch.com/2026/01/26/tech-workers-call-for-ceos-to-speak-up-against-ice-after-the-killing-of-alex-pretti/" target="_blank">Tech workers call for CEOs to speak up against ICE after the killing of Alex Pretti</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">TechCrunch AI</span>
-                            
-                            <span class="news-date">01-26 16:26</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">More than 450 tech workers from companies like Google, Meta, OpenAI, Amazon, and Salesforce have signed a letter urging their CEOs to call the White House and demand ICE leave our cities.</p>
+                        <p class="news-summary">TechCrunch的Equity播客讨论了五角大楼与Anthropic合作引发的争议，以及该事件可能对其他寻求与美国联邦政府合作的AI初创企业产生的影响。分析认为，此次争议可能会让一些初创公司对涉足国防领域持谨慎态度，担心类似的审查和政治压力。该事件凸显了AI公司在追求政府合同时需要考虑的潜在风险，以及如何在商业利益与社会责任之间取得平衡。未来，AI初创企业或将更加审慎地评估与政府部门的合作机会。</p>
                         
                         
                         <div class="tags">
@@ -818,7 +1204,7 @@ A group of YouTubers with a combined 6.2M subscribers adds Snap to a class actio
                             
                             <span class="tag">Government & Policy</span>
                             
-                            <span class="tag">ICE</span>
+                            <span class="tag">Anthropic</span>
                             
                         </div>
                         
@@ -827,33 +1213,85 @@ A group of YouTubers with a combined 6.2M subscribers adds Snap to a class actio
                 </div>
             </div>
             
-            <div class="news-item ">
+            <div class="news-item " id="item-industry-6">
                 <div class="news-content-wrapper">
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="https://techcrunch.com/2026/01/26/microsoft-announces-powerful-new-chip-for-ai-inference/" target="_blank">Microsoft announces powerful new chip for AI inference</a>
-                            
+                            <a href="http://www.techmeme.com/260308/p10#a260308p10" target="_blank">Circle、Stripe等构建稳定币支付，赋能AI Agent微交易</a>
+                            <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
-                            <span class="news-source">TechCrunch AI</span>
+                            <span class="news-source">Techmeme</span>
                             
-                            <span class="news-date">01-26 16:00</span>
+                            <span class="news-date">03-08 19:15</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">Maia comes equipped with over 100 billion transistors, delivering over 10 petaflops in 4-bit precision and approximately 5 petaflops of 8-bit performance — a substantial increase over its predecessor.</p>
+                        <p class="news-summary">Circle、Stripe和Coinbase等公司正在积极构建基于稳定币的支付基础设施，旨在实现AI Agent之间的经济高效的微交易。这些公司押注未来AI Agent将需要频繁进行小额支付，例如访问数据或使用API。通过利用稳定币的低成本和高效率，他们希望为AI经济奠定基础，并抢占未来市场先机。这一举措有望降低AI Agent交互的成本，并促进AI技术的更广泛应用。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="http://www.techmeme.com/260308/i10.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-industry-7">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="http://www.techmeme.com/260308/p9#a260308p9" target="_blank">美以利用AI对伊朗发动战争，速度与精度空前</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Techmeme</span>
+                            
+                            <span class="news-date">03-08 17:50</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">《华尔街日报》报道，美国和以色列正在利用人工智能（AI）技术，以前所未有的速度和精度对伊朗发动攻击。AI加速了情报收集、目标定位和损害评估等环节，其军事应用版本正在重塑商业和日常生活。尽管AI提升了军事行动的效率，但错误决策的代价依然很高，需要警惕AI在战争中可能带来的风险和伦理问题。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="http://www.techmeme.com/260308/i9.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-industry-8">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://techcrunch.com/2026/03/08/owner-of-ice-detention-facility-sees-big-opportunity-in-ai-man-camps/" target="_blank">AI数据中心兴起“男性营地”模式，引发关注</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">TechCrunch AI</span>
+                            
+                            <span class="news-date">03-08 16:30</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">随着AI数据中心需求的激增，一种被称为“男性营地”的住宿模式正变得越来越普遍。这种模式最初用于偏远油田的工人居住，现在被数据中心开发者采用，以容纳大量技术人员。由于数据中心通常位于偏远地区，这种集中住宿方式可以有效解决员工的居住问题。然而，这种模式也引发了关于工作环境和社会影响的讨论，尤其是在AI行业快速发展，对数据中心依赖日益增加的背景下。</p>
                         
                         
                         <div class="tags">
                             
                             <span class="tag">AI</span>
                             
-                            <span class="tag">AI chips</span>
-                            
-                            <span class="tag">artificial intelligence</span>
+                            <span class="tag">target hospitality</span>
                             
                         </div>
                         
@@ -862,103 +1300,87 @@ A group of YouTubers with a combined 6.2M subscribers adds Snap to a class actio
                 </div>
             </div>
             
-            <div class="news-item ">
+            <div class="news-item " id="item-industry-9">
                 <div class="news-content-wrapper">
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="https://techcrunch.com/2026/01/26/nvidia-invests-2b-to-help-debt-ridden-coreweave-add-5gw-of-ai-compute/" target="_blank">Nvidia invests $2B to help debt-ridden CoreWeave add 5GW of AI compute</a>
-                            
+                            <a href="http://www.techmeme.com/260308/p7#a260308p7" target="_blank">ZyG获5800万美元种子轮融资，AI驱动DTC品牌营销</a>
+                            <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
-                            <span class="news-source">TechCrunch AI</span>
+                            <span class="news-source">Techmeme</span>
                             
-                            <span class="news-date">01-26 15:52</span>
+                            <span class="news-date">03-08 15:20</span>
                             
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">CoreWeave will also integrate Nvidia's products across its platform, including the new Rubin chip architecture.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">AI</span>
-                            
-                            <span class="tag">circular deals</span>
-                            
-                            <span class="tag">CoreWeave</span>
                             
                         </div>
+                        
+                        
+                        <p class="news-summary">ZyG公司近日宣布获得由Bessemer、Viola Ventures和Lightspeed共同领投的5800万美元种子轮融资。ZyG致力于开发AI驱动的软件，帮助DTC品牌协调SEO、营销等多个环节的AI智能代理，从而提升运营效率和市场竞争力。此轮融资将用于进一步研发和扩展其AI解决方案，助力DTC品牌在全球市场中更好地与大型品牌竞争，利用AI技术缩小规模差距。</p>
+                        
                         
                     </div>
+                    
+                    <img class="news-image" src="http://www.techmeme.com/260308/i7.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
                     
                 </div>
             </div>
             
-            <div class="news-item ">
+            <div class="news-item " id="item-industry-10">
                 <div class="news-content-wrapper">
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="https://techcrunch.com/2026/01/26/only-5-days-left-over-half-of-the-first-500-techcrunch-disrupt-2026-plus-one-passes-at-50-off-are-already-gone/" target="_blank">Only 5 days left: Over half of the first 500 TechCrunch Disrupt 2026 plus-one passes at 50% off are already gone</a>
-                            
+                            <a href="http://www.techmeme.com/260308/p5#a260308p5" target="_blank">研究发现：Anthropic、Google等LLM或助长学术造假</a>
+                            <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
-                            <span class="news-source">TechCrunch AI</span>
+                            <span class="news-source">Techmeme</span>
                             
-                            <span class="news-date">01-26 15:00</span>
+                            <span class="news-date">03-08 12:00</span>
                             
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Register now to save up to $680 on your TechCrunch Disrupt 2026 pass and get a +1 ticket at 50% off. Offer ends this Friday, January 30.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">AI</span>
-                            
-                            <span class="tag">Apps</span>
-                            
-                            <span class="tag">Biotech & Health</span>
                             
                         </div>
+                        
+                        
+                        <p class="news-summary">一项研究表明，Anthropic、Google、OpenAI和xAI等公司的LLM可能被用于学术欺诈，使得非研究人员能够向arXiv提交捏造的论文。该研究强调了大型语言模型在学术诚信方面带来的潜在风险，并引发了对现有审核机制有效性的担忧。这意味着学术界需要重新评估论文提交和审核流程，以应对LLM技术带来的新挑战，防止虚假研究成果的传播。</p>
+                        
                         
                     </div>
+                    
+                    <img class="news-image" src="http://www.techmeme.com/260308/i5.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
                     
                 </div>
             </div>
             
-            <div class="news-item ">
+            <div class="news-item " id="item-industry-11">
                 <div class="news-content-wrapper">
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="https://techcrunch.com/2026/01/26/nvidias-new-ai-weather-models-probably-saw-this-storm-coming-weeks-ago/" target="_blank">Nvidia’s new AI weather models probably saw this storm coming weeks ago</a>
-                            
+                            <a href="https://techcrunch.com/2026/03/07/a-roadmap-for-ai-if-anyone-will-listen/" target="_blank">“亲人类宣言”遇上五角大楼-Anthropic对峙</a>
+                            <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">TechCrunch AI</span>
                             
-                            <span class="news-date">01-26 14:00</span>
+                            <span class="news-date">03-08 06:05</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">Nvidia announced three new AI weather tools today. Together, they promise to improve the accuracy of weather forecasts while also making them accessible to more users.</p>
+                        <p class="news-summary">在五角大楼与Anthropic公司因AI安全问题产生对峙之际，“亲人类宣言”最终定稿。虽然两件事在时间上有所重叠，但其内在关联性引起了业界的广泛关注。该宣言旨在呼吁对人工智能发展进行负责任的引导，确保AI技术符合人类价值观。此次事件凸显了在AI快速发展的同时，伦理和社会责任的重要性，以及政府监管与企业自律之间的平衡。</p>
                         
                         
                         <div class="tags">
                             
                             <span class="tag">AI</span>
                             
-                            <span class="tag">Climate</span>
+                            <span class="tag">Anthropic</span>
                             
-                            <span class="tag">nvidia</span>
+                            <span class="tag">Max Tegmark</span>
                             
                         </div>
                         
@@ -969,972 +1391,46 @@ A group of YouTubers with a combined 6.2M subscribers adds Snap to a class actio
             
         </div>
         
-        <div class="category">
-            <h2 class="category-header">
-                🐦 社交热议
-                <span class="count">5</span>
-            </h2>
-
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://triptych.writeas.com/what-i-learned-making-34-novels-with-claude-sonnet" target="_blank">What I Learned Making 34 Novels with Claude Sonnet</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Hacker News</span>
-                            
-                            <span class="news-date">01-27 02:56</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Points: 1, Comments: 0
-
-Article Content:
-What started out as a kind of self-care and an exploration of what Claude Sonnet could do, I have worked out a simple and direct way to create science fiction and fantasy novels using Claude Sonnet and other tools like Nano Banana, Cline, and Claude Code.
-
-For many years I have had a backlog of story ideas – half baked thoughts about some set of characters, or a unique situation I wanted to see played out in a short novel. The past year has been a rough one for many people, including myself, and I wanted to see if I could combine two aspects of my interests: AI ( coding ) and Writing.
-
-I have been creating web projects way before the phrase “Vibe Coding” was a thing and I have picked up a few techniques that have helped me with creating web projects. I wondered if I could coax Claude Sonnet to write a full length novel based on my story ideas, so I set out and approached it like I would a website coding project.
-
-I could go into all the false starts and problems I ran into while trying to build a novel via AI, but I thought it would be best to share my current process and touch upon a few findings.
-
-Decide on a genre – I usually picked Cozy Fantasy, or Funny Fantasy.
-
-Ask the AI to search for the primary aspects of that genre and save into research.md
-
-Brainstorm ideas for a high level plot – collaborate with AI to create a list. Pick something fun and compelling
-
-Ask the AI to create supporting documents based on the research.md and plot.md —> emotional-arc.md, sensory-details.md, magic-system.md, character-profiles, world-history.md, and writing-style.md. Review these to make sure they fit your vision of your novel.
-
-Based on all the documents created above, ask the AI to create a comprehensive chapter-by-chapter.md which has checkboxes when each chapter is complete, includes the word count and story beats, and is at least 30 chapters long. ( This last aspect is important because the AI will try to create as short a story as possible and acts “lazy” if you let it )
-
-Create a loop.md workflow. This workflow tells the AI to read all the documents above, determine the next chapter to write in the chapter-by-chapter.md , write that chapter, then update the chapter-by-chapter.md – taking also into consideration the previous chapter if it exists. ( This is also a critical aspect – if you just have the AI write the next chapter it will often place characters in random locations, or a character that died in the previous chapter miraculously comes back to life )
-
-Run this workflow over and over in a “clean context” window for every chapter. Do not try to create many chapters at once. The AI gets more and more dense the longer it goes in one session and the novel will suffer for it. The loop.md gives enough context and reading the previous chapter helps it understand just what to do. I tried having it write the whole novel in one session and it was not great.
-
-When you have gotten to the last chapter the real work begins. I would recommend at this point backing up the files you have created to say github. You will be making some changes to the files that may be destructive and you don’t want to lose the work you already started. Create a prompt that tells the AI it is a talented and relentless novel editor, and you want it to read over the whole novel and call out any inconsistencies, plot holes, timeline issues, etc. And store that in an evaluation.md file.
-
-In a new context, ask the AI to review the evaluation.md file and come up with a plan to fix all the issues. I used to skip this part early on and the novel ended up with odd things like characters who’s names would change, or strange plot holes that just went nowhere. This is an essential step to make your novel take a half-step out of the uncanny valley. Tell it to carry out the fix it plan with as minimal changes to the story as possible. You don’t want it to rewrite the whole thing just for one small issue.
-
-What happens now? You have a bunch of markdown files and some background documents. Not yet much of a book is it? This is the point where you can rely on the AI to help you get the book in shape, as well as create a nice website for your book so you can distribute it.
-
-As soon as I finish the content of the novel I want to see the characters and book cover for this work. It really helps make the book come alive and gives something for folks to understand more about your novel. I prompt the AI to read the character backgrounds and the plot documents and create comprehensive image prompts for all the main characters. I then feed those prompts into a site like fal.ai which has a ton of models you can choose from to generate amazing imagery. I will have it create the book cover and the main characters. The point of this will be to enhance the book website you will want to create.
-
-Once you have the cover, you will want to create the artifacts to distribute your novel. As a prerequisite for this step, you should set up Pandoc on your local machine. Pandoc i</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://github.com/streamlineddesigns/Sparse-Mixture-of-Experts" target="_blank">Sparse Mixture of Experts for Game AI: An Accidental Architecture</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Hacker News</span>
-                            
-                            <span class="news-date">01-27 01:24</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Points: 2, Comments: 1
-
-Article Content:
-How I accidentally built a Sparse MoE before I knew what it was
-
-How I accidentally built a Sparse MoE before I knew what it was
-
-It all started with boids. Early in my game development career, I kept encountering the term "spatial partitioning." While researching game design patterns, I discovered Robert Nystrom's Game Programming Patterns. A concise, web based book with a section on performance optimizations. That section covered spatial partitioning alongside topics like data locality and object pooling. I'll return to those later, but for now, my focus remains on spatial partitioning.
-
-I must have googled the term a dozen times, reading everything I could find. Yet I lacked the confidence to attempt an implementation myself. Ironically, I could probably have explained spatial hashes and quadtrees in detail, but I viewed myself as a novice and assumed implementation was beyond my reach. Having never seen working code didn't help. It was difficult to translate theory into practice.
-
-That changed when I started exploring boids: a flocking simulation algorithm created by Craig Reynolds. The concept is elegant. To create realistic looking flocks, each bird compares itself to others in its flock. Birds initially fly in random directions, but three simple rules ensure emergent flocking behavior: separation (avoid crowding neighbors), alignment (steer toward the average heading of neighbors), and cohesion (move toward the average position of neighbors). While individual birds influence their own direction, the algorithm ensures each decision is shaped by both nearby birds and the flock as a whole.
-
-In terms of performance, however, this algorithm is expensive. No offense to Reynolds, inventing the algorithm was achievement enough. In Big O notation, naive boids runs at O(n²) complexity per update. As flock size grows, so does the computational burden. Ten birds require 100 pairwise comparisons; 100 birds require 10,000; and 10,000 birds would require 100 million calculations per frame.
-
-While learning about boids, spatial partitioning resurfaced. No matter how much I searched, I struggled to find concrete implementations. I spent significant time coming up empty until one day I found a partially completed spatial hash written in Java on some obscure forum. The key lookup table implementation was remarkably simple, though it used math I didn't immediately understand. I decided to work through a concrete example to figure out how it might work.
-
-First, I drew a grid on paper in the positive integer quadrant, labeling coordinates and cell IDs. Cell ID 1 occupied the upper left corner; the first row contained cells 1–3, the second row 4–6, and the third row 7–9. Then I listed random 2D vectors that could fall within this grid. To map vectors to cell IDs, I needed to determine which row and column each point belonged to. The x coordinate determined the column; the y coordinate determined the row. Translating this to IDs was straightforward once I factored in cell size for scaling. The exact formula escapes me now, but it was simple. Different from the example I'd found, yet it worked in practice.
-
-I already had a boids simulation running, so I modified the nearest neighbors portion to use insertions and lookups against the spatial hash. I also stopped updating every frame, instead updating every n frames. Suddenly, 1,000 boids became instantly possible.
-
-Before continuing, I should mention something I once heard: a golden rule of programming is that any O(n²) operation can often be reduced to O(n) by using a hash map instead of nested array iterations. This made no sense to me at the time. But while implementing the spatial hash, it clicked. The dictionary's O(1) key value lookups meant retrieving nearby neighbors could become effectively O(1) if I used approximate nearest neighbors rather than exhaustive K nearest neighbors. In practice, most agree the full implementation becomes O(n log n): n insertions per frame, with a reduced search space for neighbor queries.
-
-While my original key ID formula worked, I eventually rewrote it. I'd designed it for positive integer space only, and adapting it for negative coordinates proved frustrating. My solution was to turn the key ID into a vector. Since x and y coordinates already determined the lookup, why not simply "snap" coordinates to a grid cell?
-
-The approach: divide each coordinate by cell size, then truncate to integers. With a cell size of 10, the point (50, −30) maps to cell (5, −3). The point (55.5, −33.3) also maps to (5, −3) after division and truncation. This became my go to method for spatial hashing.
-
-Around this time, I was contracting for Color Switch. Coincidentally, I was tackling a major problem: lag on low end mobile devices. I'd made several attempts, each yielding incremental improvements, but never eliminating lag entirely.
-
-One late night, while profiling performance, I noticed something I'd overlooked: collision detection was spiking CPU usage at s</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://aimotioncontrol.net" target="_blank">AI Motion Control</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Hacker News</span>
-                            
-                            <span class="news-date">01-27 00:57</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Points: 2, Comments: 1
-
-Article Content:
-Premier platform for professional AI Motion Control. We empower creators to synchronize complex movements and facial expressions from reference videos to static images with surgical precision.
-
-Upload a character image and a reference motion video. Our AI extracts movements and expressions to animate your image with stunning precision.
-
-When Character Orientation matches the video, complex motions perform better; when it matches the image, camera movements are better supported.
-
-Click any example below to preview the motion transfer results
-
-At aimotioncontrol.net, we don't just generate video; we engineer motion. Our AI Motion Control technology solves the fundamental chaotic nature of diffusion models, anchoring every frame to your exact creative intent.
-
-Transfer movement from any source video to your target character with industry-leading AI Motion Control precision. Unlike standard image-to-video tools that guess movement, our system locks onto the skeletal structure of your reference footage. This ensures that every nuance of the original performance captures the energy and intent of the actor, regardless of the target character's design.
-
-Our AI Motion Control algorithms ensure that every limb, joint, and subtle shift in weight is perfectly transferred. Whether it's a complex dance routine featuring rapid spins or a specific stunt requiring perfect timing, the output matches the input with 99% anatomical accuracy, preserving the physics of the original motion.
-
-Maintain character identity across all frames without distortion. Traditional AI struggles with keeping a character's face and clothes consistent during rapid movement, often resulting in morphing textures. AI Motion Control utilizes temporal attention layers to preserve details from the first frame to the last, ensuring your character looks the same at frame 100 as they did at frame 1.
-
-Apply the motion of a human actor to a stylized character (anime, 3D render, claymation) instantly. AI Motion Control handles the stylistic translation while keeping the physics of the movement grounded in reality. You can drive a cartoon character with a human performance or map a human's walk cycle onto a robotic creature.
-
-The system intelligently adjusts the motion to fit the proportions of your target character. If you map a tall actor's motion to a short goblin character, AI Motion Control automatically recalculates the stride length and center of gravity to ensure the movement looks natural and physically plausible.
-
-Clone nuanced facial expressions for emotional storytelling with our dedicated facial AI Motion Control engine. Eyes, mouth shapes, and micro-expressions are mapped faithfully, allowing you to convey complex emotions that standard AI models fail to capture.
-
-Superior accuracy in mapping complex facial expressions. A smile isn't just a curve of the lips; it's the crinkle of the eyes and the lifting of cheeks. AI Motion Control captures it all, distinguishing between a smirk, a grin, and a laugh with pixel-perfect precision.
-
-Perfect lip synchronization for talking heads and dialogue. Input your audio track, and our AI Motion Control system aligns the mouth movements frame by frame for believable speech, making it an ideal tool for virtual news anchors or storytelling.
-
-Ensure your character is looking exactly where they should be. AI Motion Control allows for precise direction of eye movement, essential for dramatic scenes and connection with the audience. You can control the focal point of your character's attention throughout the video.
-
-Capture the fleeting moments of emotion that bring a character to life. A slight furrow of the brow or a quick widening of the eyes—these subconscious signals are preserved by AI Motion Control, adding a layer of psychological depth to your animations.
-
-Access a curated collection of movements for instant animation. Don't have a reference video? Use our library powered by AI Motion Control pre-sets to immediately bring your static images to life with professional-grade motion.
-
-Browse and apply professional motions from our extensive library. From walking and running to complex martial arts, our AI Motion Control database is ready to animate your static images. We categorize motions by intensity, style, and genre for easy discovery.
-
-Upload your own reference videos for unique motion control. The system analyzes your footage and creates a custom motion LoRA that can be applied to any character. You can build your own private library of proprietary movements for your studio.
-
-Combine different motions or blend them together. AI Motion Control allows for smooth transitions between different action states, creating long, continuous takes. You can have a character walk, stop, look around, and then run, all seamlessly blended.
-
-Ensuring smooth, flicker-free motion in long-form videos is the hallmark of professional AI Motion Control. We eliminate the 'boiling' effect common in generative video, delivering broad</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://arstechnica.com/ai/2026/01/openai-spills-technical-details-about-how-its-ai-coding-agent-works/" target="_blank">OpenAI spills technical details about how its AI coding agent works</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Hacker News</span>
-                            
-                            <span class="news-date">01-27 00:11</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Points: 2, Comments: 0
-
-Article Content:
-On Friday, OpenAI engineer Michael Bolin published a detailed technical breakdown of how the company’s Codex CLI coding agent works internally, offering developers insight into AI coding tools that can write code, run tests, and fix bugs with human supervision. It complements our article in December on how AI agents work by filling in technical details on how OpenAI implements its “agentic loop.”
-
-AI coding agents are having something of a “ChatGPT moment,” where Claude Code with Opus 4.5 and Codex with GPT-5.2 have reached a new level of usefulness for rapidly coding up prototypes, interfaces, and churning out boilerplate code. The timing of OpenAI’s post details the design philosophy behind Codex just as AI agents are becoming more practical tools for everyday work.
-
-These tools aren’t perfect and remain controversial for some software developers. While OpenAI has previously told Ars Technica that it uses Codex as a coding tool to help develop the Codex product itself, we also discovered, through hands-on experience, that these tools can be astonishingly fast at simple tasks but remain brittle beyond their training data and require human oversight for production work. The rough framework of a project tends to come fast and feels magical, but filling in the details involves tedious debugging and workarounds for limitations the agent cannot overcome on its own.
-
-Bolin’s post doesn’t shy away from these engineering challenges. He discusses the inefficiency of quadratic prompt growth, performance issues caused by cache misses, and bugs the team discovered (like MCP tools being enumerated inconsistently) that they had to fix.
-
-The level of technical detail is somewhat unusual for OpenAI, which has not published similar breakdowns of how other products like ChatGPT work internally, for example (there’s a lot going on under that hood we’d like to know). But we’ve already seen how OpenAI treats Codex differently during our interview with them in December, noting that programming tasks seem ideally suited for large language models.
-
-It’s worth noting that both OpenAI and Anthropic open-source their coding CLI clients on GitHub, allowing developers to examine the implementation directly, whereas they don’t do the same for ChatGPT or the Claude web interface.
-
-Bolin’s post focuses on what he calls “the agent loop,” which is the core logic that orchestrates interactions between the user, the AI model, and the software tools the model invokes to perform coding work.
-
-As we wrote in December, at the center of every AI agent is a repeating cycle. The agent takes input from the user and prepares a textual prompt for the model. The model then generates a response, which either produces a final answer for the user or requests a tool call (such as running a shell command or reading a file). If the model requests a tool call, the agent executes it, appends the output to the original prompt, and queries the model again. This process repeats until the model stops requesting tools and instead produces an assistant message for the user.
-
-That looping process has to start somewhere, and Bolin’s post reveals how Codex constructs the initial prompt sent to OpenAI’s Responses API, which handles model inference. The prompt is built from several components, each with an assigned role that determines its priority: system, developer, user, or assistant.
-
-The instructions field comes from either a user-specified configuration file or base instructions bundled with the CLI. The tools field defines what functions the model can call, including shell commands, planning tools, web search capabilities, and any custom tools provided through Model Context Protocol (MCP) servers. The input field contains a series of items that describe the sandbox permissions, optional developer instructions, environment context like the current working directory, and finally the user’s actual message.
-
-As conversations continue, each new turn includes the complete history of previous messages and tool calls. This means the prompt grows with every interaction, which has performance implications. According to the post, because Codex does not use an optional “previous_response_id” parameter that would allow the API to reference stored conversation state, every request is fully stateless (that is, it sends the entire conversation history with each API call rather than the server retrieving it from memory). Bolin says this design choice simplifies things for API providers and makes it easier to support customers who opt into “Zero Data Retention,” where OpenAI does not store user data.
-
-The quadratic growth of prompts over a conversation is inefficient, but Bolin explains that prompt caching mitigates this issue somewhat. Cache hits only work for exact prefix matches within a prompt, which means Codex must carefully avoid operations that could cause cache misses. Changing the available tools, switching models, or modifying the sandbox configuration mid-conversation c</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://obie.medium.com/building-a-personal-cto-operating-system-with-claude-code-b3fb9c4933c7" target="_blank">Building a Personal CTO Operating System with Claude Code</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Hacker News</span>
-                            
-                            <span class="news-date">01-27 00:09</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Points: 2, Comments: 0
-
-Article Content:
-Three weeks ago, I started my new role as full-time CTO at ZAR. The first thing I did was to create a new folder on my laptop, fire up Claude Code , and give it a fairly simple prompt:
-
-I didn’t design a folder structure, ahead of time. I didn’t search for prompts or templates for this sort of thing. I just trusted the very capable Opus 4.5 model to figure it out. This post documents what I’ve learned so far, for anyone who wants to build something similar.
-
-First let me communicate why you might want to try this:
-
-I’ve had executive assistants in the past. Good ones. This system is better. It never forgets anything, never needs to be brought up to speed, and operates at the speed of conversation. Did I mention it’s always available?
-
-I keep at least one Claude Code session open in this directory at all times. During parallel workstreams (preparing for multiple meetings, researching candidates, writing documents) I’ll open additional tabs with concurrent sessions. I just checked and at the moment I have 9 concurrent Claude Code sessions open in separate tabs within one terminal window dedicated to just my assistant.
-
-Even though I am a very fast touch typer, I am trying as much as possible to force myself to use voice input (Wispr Flow) for anything longer than a sentence. Stream of consciousness works great.
-
-Short prompts don’t even need to be full thoughts. “Morning sync”, “Next 1:1”, “Post summary of this to Slack”. Claude is pretty good at figuring out what I mean from context.
-
-One of the first benefits was to begin my work day by saying “good morning,” to which Claude responds with the following steps:
-
-Takes about 30 seconds to figure exactly what my day looks like.
-
-Eventually, I wondered what Claude would come up with if I standardized my morning routine as a skill.
-
-This is the prompt it wrote, triggerable with a slash command as /morning:
-
-At work we use Gemini to transcribe almost all meetings. At first I was copying the transcripts into the console. Eventually, I got MCP integration to my Google Suite working (see below how) and I was able to automate the process.
-
-Multiple times a day I invoke a custom skill called /meetsync and Claude automatically:
-
-I don’t think about where transcripts go. It handles the filing and organization itself. Of course, I didn’t write the custom skill either, it was written by Claude itself:
-
-Here’s my /prepcommand for generating one-on-one meeting notes. Again, this was written by Claude, not myself. I’m only reproducing these skills here for illustrative purposes, not so that you can copy them.
-
-Using this command, I begin every one-on-one meeting with full context on our previous conversations and any outstanding items.
-
-When I make a decision, I say “log decision about X” or invoke /decide. Claude discusses context and options with me, creates a structured decision record, and links to relevant context.
-
-Three months later when someone asks “why did we switch from X to Y?”, I will have the full rationale documented. Not just the decision, but the alternatives considered and why we rejected them.
-
-I need to update the engineering channel about a significant PR or decision. I say “post this to #engineering on Slack” and provide the message. It posts it. Done.
-
-I’ve had it communicate with all my direct reports via Slack, asking them to set up recurring 1:1s with my scheduling link. Same with Twitter. Same with calendar invites. Same with any service I’ve connected via the Rube MCP integration.
-
-As mentioned above, the Rube MCP integration is awesome for this kind of stuff, without bloating your context.
-
-Here’s what Claude created, just to show you that it’s comprehensive. I never go in here and purposely did not try to design it myself.
-
-I genuinely don’t think about this structure, ever. Claude knows where things go. I just talk to it. The day the contents start getting too big or seem to be bogging down, I’ll ask Claude to optimize it. Until then we’re good.
-
-The Rube MCP integration is essential. It gives Claude access to:
-
-This means I can say “what’s on my calendar tomorrow?” or “post this to Slack” without context switching. The integration is what turns this from a note-taking system into an actual executive assistant.
-
-Everything is in a private Git repo. Hooks handle syncing automatically. This gives me:
-
-Everyone at ZAR is in the process of setting up and using this system. I’ve advised the non-technical folks to run this in a personal Google Drive instead of trying to learn Github and repos.
-
-Hiring: I paste a candidate’s resume or LinkedIn profile. Claude updates the recruiting pipeline, suggests interview questions based on gaps in our team, and preps me for the screening call.
-
-Performance tracking: If I need to review an engineer’s history, I can say “walk me through the history with [name]”. Claude pulls up 1:1 notes, shows patterns across conversations, references any documented concerns or wins.
-
-Planning: “What are the top three things block</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-        </div>
         
-        <div class="category">
-            <h2 class="category-header">
-                🇨🇳 国内动态
-                <span class="count">13</span>
-            </h2>
-
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://36kr.com/p/3647401456078465?f=rss" target="_blank">年收入飙涨10倍，一家医疗公司接住了AGI</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">36氪 AI</span>
-                            
-                            <span class="news-date">01-27 00:33</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">文 | 海若镜
-2022年，创业第七年，薛翀开始跑步，用汗水来对抗郁闷和失意。
-资本寒冬、市场骤冷，谈好的5000万融资无法到账，他创立的医疗SaaS公司全诊医学只好收缩战线，退守浙江。彼时，医疗行业普遍面临大裁员的苦楚，薛翀也是。濒死挣扎后，他决定还是挤出资源，保留一支10人小队，探索并不清晰的AI创新业务。
-没想到，正是这个反常识的决策，让全诊医学翻了盘，接住了大模型时代的“馈赠”：
-2025年连获创新医疗（002173.SZ）等投资的3轮融资；医疗SaaS外的AI新业务，签约ARR（年度经常性收入）增长12倍，达到六七千万元，2026年签约合同额有望达1.5亿元。
-一位医疗AI从业者讲道，以前他并不知道这家公司，直到2025年全诊拿下了广安门医院、常州市第一人民医院的标。广安门医院很重视数字化；且这两个医院大模型的标，单价不低，说明他家基础不错，有现成的东西。
-在薛翀看来，“有现成产品可以演示，而不是存在于PPT里”，是全诊的竞争力之一。访谈时，他顺手打开手机里“全诊通”APP，说了一段患者自述，软件即时识别语音后，形成了结构化病历。
-美国做AI智能病历的公司Abridge，2025年5月实际ARR突破1亿美元，估值拉升到53亿美元。除了在2B业务上对标Abridge，在薛翀的蓝图里，他还想做出医生离不开的“AI智能助理”，对标另一家独角兽OpenEvidence。
-尽管中美医疗环境迥异，但协和博士、约翰·霍普金斯博后出身的薛翀认为，找到医院和医生真正的痛点，用AI减少令医生“焦头烂额”的瞬间，商业模式就可以闭环。
-创业十年，医生、商人、科技信仰者等身份交织，薛翀一直想让机器成为“医生助理”，也一直在解决“卖给谁”的难题。他不满足于做劳动密集型生意，也不信任“��毛出在猪身上”（医生用户、药企买单）的商业模式。
-在薛翀的认知里：产品创新，是商业世界里最大的杠杆。“检验创新的标准，就是直接服务的用户愿不愿意付费”。他坚持认为，中国医生是很好的消费群体，如果医生不买单，说明产品解决的问题还不够痛。
-这种通识的认知，放在利益被高度代理、支付方式十分复杂的医疗场景里，也有些反常识。AGI时代的爆发式增长，让全诊医学成为一个值得研究的样本。
-如何接住医疗智能体的时代红利？哪些才是能令用户付费的真需求？如何抵御医疗AI行业内卷？
-以下是36氪和薛翀的对话（经编辑）：
-&n</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://36kr.com/p/3656915993337986?f=rss" target="_blank">8点1氪丨958g坚果礼盒仅33g坚果，百草味客服回应；49条中日航线取消全部航班；肯德基外卖涨价，堂食价格维持不变</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">36氪 AI</span>
-                            
-                            <span class="news-date">01-27 00:10</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">今日热点导览
-理想汽车内部会曝光：重启人形机器人
-腾讯元宝春节派10亿现金，马化腾希望重现当年微信红包盛况
-邵氏兄弟拟45亿收购正午阳光
-保时捷中国首席执行官回应“东安事件”新进展
-当当网旗下公司因27名员工超长加班被罚
-TOP 3 大新闻
-百草味客服回应958克坚果礼盒，实际坚果仅占33克
-近日，有网友爆料称在网购平台购买的百草味“坚果大礼盒”存在宣传误导问题——礼盒标称重量958克，实际真正的坚果仅33克，其余多为饮料和饼干类零食，1月25日，记者在百草味官方旗舰店查询发现，涉事系列礼盒以“坚果大礼盒”为商品名，主图展示腰果、夏威夷果、核桃等坚果，未提及含饮料及非坚果类成分。仅点开详情小图，才能看到礼盒具体内容。不少网友质疑，礼盒中非坚果成分占比极高，却以“坚果大礼盒”命名，明显误导消费者。针对此事，百草味官方旗舰店客服回应称，该系列坚果大礼盒均含有品牌特色饮品，已记录网友质疑并将向上反馈，暂无进一步解决方案。（现代快报）
-49条中日航线取消全部航班，免费退改签延长到10月24日&nbsp;
-航班管家数据显示，截至1月26日，2026年2月已有49条航线取消全部航班，比一月进一步增加。2026年1月，中国大陆赴日本航班取消率达47.2%，较2025年12月增长7.8个百分点。1月26日下午，国航、东航、南航陆续发布通知称，1月26日前出票，航班起飞日期在2026年3月29日（含）至2026年10月24日（含）的日本进出港或经停航班，可免费退改签。在此之前，免费退改签政策执行到3月28日。（第一财经）
-肯德基回应外送产品涨价，堂食价格保持不变
-1月26日起，肯德基对旗下外送产品价格进行小幅调整，平均调整金额为0.8元，堂食价格维持不变，“疯狂星期四”“周末疯狂拼”“OK餐三件套”等热门优惠套餐也保持原价稳定，此举引发市场对快餐行业外送定价策略的关注。
-肯德基方面回应称，调价是为应对运营成本变化、保障经营稳定健康，经过充分评估后做出的决定，符合正常市场规律，也是行业良性运转的必要举措。从具体单品来看，多款核心产品外送价较堂食高出3-4元，叠加6元外送费及0.8至1.1元不等的打包费，一份外送单品实际支出较堂食多约10元，不少消费者反馈，叠加多重费用后，外送订单实际涨幅远超官方公布的平均金额。（澎湃新闻）
-大公司/大事件
-理想汽车内部会曝光：重启人形机器人
-据多位内部</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.jiqizhixin.com/articles/2026-01-26-12" target="_blank">GPT-5大战DeepSeek？国内首个科创板AI Agent实盘竞技场来了！</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">机器之心</span>
-                            
-                            <span class="news-date">01-26 09:45</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.jiqizhixin.com/articles/2026-01-26-11" target="_blank">腾讯元宝内测“元宝派”，探索社交AI新形态</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">机器之心</span>
-                            
-                            <span class="news-date">01-26 08:56</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.jiqizhixin.com/articles/2026-01-26-10" target="_blank">钛动科技牵手硅谷科技先锋DeepLumen开抢智能商业万亿市场</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">机器之心</span>
-                            
-                            <span class="news-date">01-26 07:47</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.jiqizhixin.com/articles/2026-01-26-9" target="_blank">复旦中山医院联合阿里达摩院用AI检测淋巴结转移，助力喉癌、下咽癌精准诊疗</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">机器之心</span>
-                            
-                            <span class="news-date">01-26 07:23</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://36kr.com/p/3652006209020288?f=rss" target="_blank">轻舟智航CEO于骞：智驾市场会留存4-5家企业｜36氪专访</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">36氪 AI</span>
-                            
-                            <span class="news-date">01-26 05:52</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">轻舟智航联合创始人、董事长兼CEO 于骞
-文｜肖漫
-编辑｜李勤
-智驾行业正处于一个微妙的周期交替点。
-一方面，智驾平权正在真正走向量产落地，进入更低的车型价格带；另一方面，更大的算力、更复杂的模型、更激进的技术叙事也同时在发生，目标直指 L3 甚至 L4。这是机会，也是清场的时刻。
-在此前一轮又一轮的淘汰赛中，轻舟智航成为上一轮大逃杀里面的幸存者之一。它并非起点最高、融资最猛的智驾公司，却始终能够审时度势，在关键时间节点上做出相对克制、但方向正确的选择。
-在行业仍高度迷信 L4 叙事的阶段，轻舟率先从 L4 赛场转向 L2 量产软件交付，是最早一批主动卸下自动驾驶公司“技术包袱”的厂商；而当汽车行业全面拥抱英伟达芯片、算力竞赛愈演愈烈时，轻舟却选择与地平线建立深度合作关系，围绕征程芯片打磨软件方案，提前进入对成本和效率更敏感的技术区间。
-作为一家算法方案厂商，轻舟和车企、芯片厂商始终保持紧密又各自独立的相处方式。轻舟智航联合创始人、董事长兼CEO于骞博士告诉36氪汽车，早期与理想的深度绑定，为轻舟带来了两个极为关键的能力：量产交付方法和产品定义。
-这恰恰是多数早期智驾创业公司最稀缺、也最容易在技术叙事中被忽视的能力来源。已经退场的许多厂商，并非没有跑通算法，而是无法长期、稳定地完成量产交付，最终被淘汰出局。
-但绑定从来不是没有代价的。一旦主机厂强化自研，供应商就可能迅速被边缘化，这几乎是所有智驾创业公司都无法回避的命题。
-在轻舟看来，这并非危机，反而是一种正向信号。“自研不是坏事。我觉得主机厂应该具备自研能力，培养自己对技术的判断力，知道什么是好，什么是不好的。”于骞表示，甚至在必要时，轻舟也愿意协助主机厂推进自研能力的建设。
-这种在“依赖与独立之间寻找动态平衡”的思路，不仅体现在轻舟与主机厂的合作关系中，也体现在其与地平线的相处方式上。
-尽管轻舟是地平线生态中的早期成员之一，但并未选择与其深度绑定，而是在同步推进英伟达和高通方案的适配，在不同芯片平台之间保持迁移能力。
-“我们是地平线重要的生态伙伴，同时也保持独立。我们不依赖地平线的算法，只采用其芯片及通用工具链，底层算法、仿真器、库文件等均为自研，双方角色并不冲突。”于骞说道。
-一系列关键决策，让轻舟得以持续留在牌桌之上。轻舟方面透露，其乘用车辅助驾驶系统累计搭载量已突破百万台，预计到 2026 年，量产合作车型</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260123/v2_183bbf3edbf34ee1821f4f2e389f1bef@6310690_oswg952652oswg1265oswg843_img_png?x-oss-process=image/quality,q_90/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.jiqizhixin.com/articles/2026-01-26-8" target="_blank">将AI作为航空的助推，欧洲FLPP计划中制作火箭的智能助手与NASA利用AI实行对外探索</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">机器之心</span>
-                            
-                            <span class="news-date">01-26 05:45</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.jiqizhixin.com/articles/2026-01-26-7" target="_blank">走出 MMLU 的高分幻觉：AI Agent 的“斯坦利时刻”与职场生存法则</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">机器之心</span>
-                            
-                            <span class="news-date">01-26 05:33</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.jiqizhixin.com/articles/2026-01-26-6" target="_blank">5000万用户、5000万美金ARR，全球第一AI创作消费平台要做AI时代Roblox</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">机器之心</span>
-                            
-                            <span class="news-date">01-26 05:15</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.jiqizhixin.com/articles/2026-01-26-5" target="_blank">DeepSeek-R1推理智能从哪儿来？谷歌新研究：模型内心多个角色吵翻了</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">机器之心</span>
-                            
-                            <span class="news-date">01-26 05:08</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.jiqizhixin.com/articles/2026-01-26-4" target="_blank">关于多模态大模型Token压缩技术进展，看这一篇就够了</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">机器之心</span>
-                            
-                            <span class="news-date">01-26 05:04</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.jiqizhixin.com/articles/2026-01-26-3" target="_blank">这届网友太狠了：Clawdbot爆火，狂囤40台Mac mini来跑</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">机器之心</span>
-                            
-                            <span class="news-date">01-26 03:35</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-        </div>
         
-        <div class="category">
+        <div class="category" id="cat-papers">
             <h2 class="category-header">
-                🏢 大厂动态
+                📄 前沿论文
                 <span class="count">3</span>
             </h2>
 
             
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/dear-upstairs-neighbors/" target="_blank">How animators and AI researchers made ‘Dear Upstairs Neighbors’</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Google AI Blog</span>
-                            
-                            <span class="news-date">01-26 18:00</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Today, our animated short film, “Dear Upstairs Neighbors,” previews at the Sundance Film Festival.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">Google DeepMind</span>
-                            
-                            <span class="tag">AI</span>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                    <img class="news-image" src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/DUN_poster_16x9_v02.max-600x600.format-webp.webp" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.apple.com/newsroom/2026/01/apple-introduces-new-airtag-with-expanded-range-and-improved-findability/" target="_blank">Apple introduces new AirTag with expanded range and improved findability</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Apple Newsroom</span>
-                            
-                            <span class="news-date">01-26 14:00</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Apple today unveiled the new AirTag, now with an expanded finding range and a louder speaker.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">UPDATE</span>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                    <img class="news-image" src="https://www.apple.com/newsroom/images/2026/01/apple-introduces-new-airtag-with-expanded-range-and-improved-findability/tile/Apple-AirTag-FineWoven-Key-Ring-lp.jpg.og.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.apple.com/newsroom/2026/01/apple-unveils-the-new-black-unity-apple-watch-band/" target="_blank">Apple unveils the new Black Unity Apple Watch band</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Apple Newsroom</span>
-                            
-                            <span class="news-date">01-26 13:59</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Apple today revealed the new Apple Watch Unity Connection Braided Solo Loop, honoring Black History Month and celebrating the power of connection.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">UPDATE</span>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                    <img class="news-image" src="https://www.apple.com/newsroom/images/2026/01/apple-unveils-the-new-black-unity-apple-watch-band/tile/Apple-Watch-Black-Unity-Connection-hero-lp.jpg.og.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-        </div>
-        
-        <div class="category">
-            <h2 class="category-header">
-                🎙️ 播客更新
-                <span class="count">1</span>
-            </h2>
-
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://a16z.simplecast.com/episodes/the-real-economics-behind-the-al-boom-7LNh86AD" target="_blank">The Hidden Economics Powering AI</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">a16z Podcast</span>
-                            
-                            <span class="news-date">01-26 17:33</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">In this episode, Jen Kha, Head of Investor Relations, and David George, General Partner, discuss how late-stage private markets are evolving as AI reshapes scale, capital intensity, and growth timelines. They explain why AI-driven companies are staying private longer, how infrastructure spending is changing return profiles, and what this moment means for durability, value creation, and long-term outcomes in private markets.
-Timecodes:
-0:00 — Introduction
-04:21 — The Market Opportunity for AI
-26:48 — Pricing, Monetization, and Cash Burn
-43:15 — Companies Staying Private Longer
-51:30 — Portfolio Composition and Construction
-57:18 — Team Culture and Collaboration
-Resources:
-Follow Jen Kha on X: https://x.com/jkhamehl
-Follow David George on X: https://x.com/DavidGeorge83
-Stay Updated:
-If you enjoyed this episode, be sure to like, subscribe, and share with your friends!
-Find a16z on X: https://x.com/a16z
-Find a16z on LinkedIn: https://www.linkedin.com/company/a16z
-Listen to the a16z Podcast</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">vibe coding</span>
-                            
-                            <span class="tag">scale</span>
-                            
-                            <span class="tag">growth</span>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-        </div>
-        
-        <div class="category">
-            <h2 class="category-header">
-                📬 Newsletter精选
-                <span class="count">1</span>
-            </h2>
-
-            
-            <div class="news-item ">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://www.a16z.news/p/technology-in-1776" target="_blank">Technology in 1776</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">a16z AI</span>
-                            
-                            <span class="news-date">01-26 15:29</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Welcome Christian Keil, our newest Investing Partner at a16z, who joins the American Dynamism team starting today.
-Christian joins us after 7 years at Astranis, where he helped grow the team from 50 to 500+ people and launch its first 5 satellites. You can read his announcement post here, and checkout his &#8220;State of the Union&#8221;-style work More Perfect for a great read.
-His piece &#8220;Technology in 1776&#8221;, below, ran today in Arena Magazine. We&#8217;re grateful to republish it here.
-If you had just five minutes to tell a Founding Father about the last 250 years in America, what would you say?
-It&#8217;s 2026, the 250th anniversary of the signing of the Declaration of Independence, so it&#8217;s a natural time to reflect. What is the state of our union? Are we living up to the expectations our founders set out for us?
-If you only listened to the loudest voices in the legacy media, you&#8217;d think America was on the verge of collapse. Rolling Stone asked if we are &#82</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="https://substack-post-media.s3.amazonaws.com/public/images/741baf2d-ea7d-485e-9e7b-53a662e2b703_2844x1600.png" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-        </div>
-        
-        <div class="category">
-            <h2 class="category-header">
-                📄 前沿论文
-                <span class="count">6</span>
-            </h2>
-
-            
-            <div class="news-item paper-item">
+            <div class="news-item paper-item" id="item-papers-1">
                 <div class="news-content-wrapper">
                     <div class="news-text">
                         <h3 class="news-title">
                             
                             <span class="paper-org-tag">Cohere</span>
                             
-                            <a href="https://arxiv.org/abs/2601.17958v1" target="_blank">TensorLens: End-to-End Transformer Analysis via High-Order Attention Tensors</a>
-                            
+                            <a href="https://arxiv.org/abs/2603.06576v1" target="_blank">BEVLM：利用LLM语义知识提升自动驾驶鸟瞰图性能</a>
+                            <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">arXiv</span>
                             
-                            <span class="news-date">01-25 19:21</span>
+                            <span class="news-date">03-06 18:59</span>
                             
                             
                         </div>
                         
-                        <div class="paper-authors">Ido Andrew Atad, Itamar Zimerman, Shahar Katz et al. (4 authors)</div>
+                        <div class="paper-authors">Thomas Monninger, Shaoyuan Xie, Qi Alfred Chen et al. (4 authors)</div>
                         
                         
-                        <p class="news-summary">Attention matrices are fundamental to transformer research, supporting a broad range of applications including interpretability, visualization, manipulation, and distillation. Yet, most existing analyses focus on individual attention heads or layers, failing to account for the model's global behavior. While prior efforts have extended attention formulations across multiple heads via averaging and matrix multiplications or incorporated components such as normalization and FFNs, a unified and complete representation that encapsulates all transformer blocks is still lacking. We address this gap by introducing TensorLens, a novel formulation that captures the entire transformer as a single, input-dependent linear operator expressed through a high-order attention-interaction tensor. This tensor jointly encodes attention, FFNs, activations, normalizations, and residual connections, offering a theoretically coherent and expressive linear representation of the model's computation. TensorLens is theoretically grounded and our empirical validation shows that it yields richer representations than previous attention-aggregation methods. Our experiments demonstrate that the attention tensor can serve as a powerful foundation for developing tools aimed at interpretability and model understanding. Our code is attached as a supplementary.</p>
+                        <p class="news-summary">新型框架BEVLM将大型语言模型(LLM)的语义理解能力融入自动驾驶的鸟瞰图(BEV)表示中，显著提升了自动驾驶系统的性能。该框架通过统一的BEV特征作为LLM的输入，使LLM能够更有效地进行跨视角推理，精度提升高达46%。同时，BEVLM将LLM的语义知识提炼到BEV表示中，在安全关键场景下的端到端驾驶性能提升了29%。这项研究弥合了空间结构和语义丰富度之间的差距，为自动驾驶领域带来了新的突破。</p>
                         
                         
                         <div class="tags">
                             
-                            <span class="tag">cs.LG</span>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item paper-item">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <span class="paper-org-tag">Meta FAIR</span>
-                            
-                            <a href="https://arxiv.org/abs/2601.17944v1" target="_blank">Credit Fairness: Online Fairness In Shared Resource Pools</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">arXiv</span>
-                            
-                            <span class="news-date">01-25 18:44</span>
-                            
-                            
-                        </div>
-                        
-                        <div class="paper-authors">Seyed Majid Zahedi, Rupert Freeman</div>
-                        
-                        
-                        <p class="news-summary">We consider a setting in which a group of agents share resources that must be allocated among them in each discrete time period. Agents have time-varying demands and derive constant marginal utility from each unit of resource received up to their demand, with zero utility for any additional resources. In this setting, it is known that independently maximizing the minimum utility in each round satisfies sharing incentives (agents weakly prefer participating in the mechanism to not participating), strategyproofness (agents have no incentive to misreport their demands), and Pareto efficiency (Freeman et al. 2018). However, recent work (Vuppalapati et al. 2023) has shown that this max-min mechanism can lead to large disparities in the total resources received by agents, even when they have the same average demand. In this paper, we introduce credit fairness, a strengthening of sharing incentives that ensures agents who lend resources in early rounds are able to recoup them in later rounds. Credit fairness can be achieved in conjunction with either Pareto efficiency or strategyproofness, but not both. We propose a mechanism that is credit fair and Pareto efficient, and we evaluate its performance in a computational resource-sharing setting.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">cs.GT</span>
+                            <span class="tag">cs.CV</span>
                             
                             <span class="tag">cs.AI</span>
                             
-                            <span class="tag">cs.OS</span>
+                            <span class="tag">cs.LG</span>
                             
                         </div>
                         
@@ -1943,33 +1439,31 @@ If you only listened to the loudest voices in the legacy media, you&#8217;d thin
                 </div>
             </div>
             
-            <div class="news-item paper-item">
+            <div class="news-item paper-item" id="item-papers-2">
                 <div class="news-content-wrapper">
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <span class="paper-org-tag">Stability AI</span>
+                            <span class="paper-org-tag">Tencent</span>
                             
-                            <a href="https://arxiv.org/abs/2601.17933v1" target="_blank">Dissipative Learning: A Framework for Viable Adaptive Systems</a>
-                            
+                            <a href="https://arxiv.org/abs/2603.06569v1" target="_blank">腾讯AI Lab：Penguin-VL突破VLM效率极限，LLM赋能视觉编码</a>
+                            <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">arXiv</span>
                             
-                            <span class="news-date">01-25 18:10</span>
+                            <span class="news-date">03-06 18:58</span>
                             
                             
                         </div>
                         
-                        <div class="paper-authors">Laurent Caraffa</div>
+                        <div class="paper-authors">Boqiang Zhang, Lei Ke, Ruihan Yang et al. (8 authors)</div>
                         
                         
-                        <p class="news-summary">We propose a perspective in which learning is an intrinsically dissipative process. Forgetting and regularization are not heuristic add-ons but structural requirements for adaptive systems. Drawing on information theory, thermodynamics, and information geometry, we introduce the BEDS (Bayesian Emergent Dissipative Structures) framework, modeling learning as the evolution of compressed belief states under dissipation constraints.   A central contribution is the Conditional Optimality Theorem, showing that Fisher-Rao regularization measuring change via information divergence rather than Euclidean distance is the unique thermodynamically optimal regularization strategy, achieving minimal dissipation. Euclidean regularization is shown to be structurally suboptimal. The framework unifies existing methods (Ridge, SIGReg, EMA, SAC) as special cases of a single governing equation.   Within this view, overfitting corresponds to over-crystallization, while catastrophic forgetting reflects insufficient dissipation control. The framework distinguishes BEDS-crystallizable problems, where beliefs converge to stable equilibria, from BEDS-maintainable problems, which require continual adaptation. It extends naturally to continual and multi-agent systems, where viability, stability under adaptation and finite resources replaces asymptotic optimality as the primary criterion. Overall, this work reframes learning as maintaining viable belief states under dissipation constraints, providing a principled lens on forgetting, regularization, and stability.</p>
+                        <p class="news-summary">腾讯AI Lab发布Penguin-VL模型，旨在突破视觉语言模型(VLM)在计算资源受限设备上的部署瓶颈。该模型创新性地采用基于LLM的视觉编码器，替代了传统依赖大规模对比预训练的视觉编码器。研究表明，Penguin-Encoder在视觉保真度和数据效率方面表现更优，尤其在文档理解、视觉知识和多视角视频理解等任务中超越了Qwen3-VL等领先模型。Penguin-VL的轻量级架构证明，提升视觉表征能力而非模型规模是性能提升的关键，为资源受限场景下的高性能VLM应用提供了新思路。</p>
                         
                         
                         <div class="tags">
-                            
-                            <span class="tag">cs.LG</span>
                             
                             <span class="tag">cs.CV</span>
                             
@@ -1980,109 +1474,33 @@ If you only listened to the loudest voices in the legacy media, you&#8217;d thin
                 </div>
             </div>
             
-            <div class="news-item paper-item">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <span class="paper-org-tag">Meta FAIR</span>
-                            
-                            <a href="https://arxiv.org/abs/2601.17921v1" target="_blank">ShapLoRA: Allocation of Low-rank Adaption on Large Language Models via Shapley Value Inspired Importance Estimation</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">arXiv</span>
-                            
-                            <span class="news-date">01-25 17:52</span>
-                            
-                            
-                        </div>
-                        
-                        <div class="paper-authors">Yi Zhao, Qinghua Yao, Xinyuan song et al. (4 authors)</div>
-                        
-                        
-                        <p class="news-summary">Low-rank adaption (LoRA) is a representative method in the field of parameter-efficient fine-tuning (PEFT), and is key to Democratizating the modern large language models (LLMs). The vanilla LoRA is implemented with uniform ranks, and the recent literature have found that properly allocating ranks on the LLM backbones results in performance boosts. However, the previous rank allocation methods have limitations since they rely on inexplanable and unreliable importance measures for the LoRA ranks. To address the above issues, we propose the ShapLoRA framework. Inspired by the explanable attribution measure Shapley Value, we combine the sensitivity-based measures with the idea of coalitions in the collaborative games among LoRA ranks, and propose a more explainable importance measure called Shapley sensitivity. In addition, we optimize the workflow of the existing works by: (a) calculating Shapley sensitivity on a separate validation set; (b) Setting up the allocating-retraining procedures for fair comparisons. We have conducted experiments on various challenging tasks, and the experimental results demonstrate that our ShapLoRA method can outperform the recent baselines with comparable tunable parameters.\footnote{Codes and fine-tuned models will be open-sourced to facilitate future research.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">cs.CL</span>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item paper-item">
+            <div class="news-item paper-item" id="item-papers-3">
                 <div class="news-content-wrapper">
                     <div class="news-text">
                         <h3 class="news-title">
                             
                             <span class="paper-org-tag">Cohere</span>
                             
-                            <a href="https://arxiv.org/abs/2601.17917v1" target="_blank">treaming-dLLM: Accelerating Diffusion LLMs via Suffix Pruning and Dynamic Decoding</a>
-                            
+                            <a href="https://arxiv.org/abs/2603.06533v1" target="_blank">NEGATE：扩散模型中实现精确语义否定的新方法</a>
+                            <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">arXiv</span>
                             
-                            <span class="news-date">01-25 17:36</span>
+                            <span class="news-date">03-06 18:21</span>
                             
                             
                         </div>
                         
-                        <div class="paper-authors">Zhongyu Xiao, Zhiwei Hao, Jianyuan Guo et al. (7 authors)</div>
+                        <div class="paper-authors">Taewon Kang, Ming C. Lin</div>
                         
                         
-                        <p class="news-summary">Diffusion Large Language Models (dLLMs) offer a compelling paradigm for natural language generation, leveraging parallel decoding and bidirectional attention to achieve superior global coherence compared to autoregressive models. While recent works have accelerated inference via KV cache reuse or heuristic decoding, they overlook the intrinsic inefficiencies within the block-wise diffusion process. Specifically, they suffer from spatial redundancy by modeling informative-sparse suffix regions uniformly and temporal inefficiency by applying fixed denoising schedules across all the decoding process. To address this, we propose Streaming-dLLM, a training-free framework that streamlines inference across both spatial and temporal dimensions. Spatially, we introduce attenuation guided suffix modeling to approximate the full context by pruning redundant mask tokens. Temporally, we employ a dynamic confidence aware strategy with an early exit mechanism, allowing the model to skip unnecessary iterations for converged tokens. Extensive experiments show that Streaming-dLLM achieves up to 68.2X speedup while maintaining generation quality, highlighting its effectiveness in diffusion decoding. The code is available at https://github.com/xiaoshideta/Streaming-dLLM.</p>
+                        <p class="news-summary">研究人员提出了一种名为NEGATE的新方法，旨在改进扩散模型在处理语言否定方面的能力。该方法通过将否定建模为扩散动态中的结构化可行性约束，从而在不重新训练模型参数的情况下，实现对语义指导的精确控制。NEGATE能够处理多种否定现象，包括对象缺失、非反转语义和多重否定等。实验表明，该方法在保持视觉质量和结构连贯性的同时，实现了强大的否定一致性，为扩散模型中的语言否定提供了一种统一的解决方案，并超越了以往的表征层面评估。</p>
                         
                         
                         <div class="tags">
                             
-                            <span class="tag">cs.LG</span>
-                            
-                            <span class="tag">cs.AI</span>
-                            
-                            <span class="tag">cs.CL</span>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item paper-item">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <span class="paper-org-tag">Meta FAIR</span>
-                            
-                            <a href="https://arxiv.org/abs/2601.17912v1" target="_blank">Causal Pre-training Under the Fairness Lens: An Empirical Study of TabPFN</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">arXiv</span>
-                            
-                            <span class="news-date">01-25 17:17</span>
-                            
-                            
-                        </div>
-                        
-                        <div class="paper-authors">Qinyi Liu, Mohammad Khalil, Naman Goel</div>
-                        
-                        
-                        <p class="news-summary">Foundation models for tabular data, such as the Tabular Prior-data Fitted Network (TabPFN), are pre-trained on a massive number of synthetic datasets generated by structural causal models (SCM). They leverage in-context learning to offer high predictive accuracy in real-world tasks. However, the fairness properties of these foundational models, which incorporate ideas from causal reasoning during pre-training, have not yet been explored in sufficient depth. In this work, we conduct a comprehensive empirical evaluation of TabPFN and its fine-tuned variants, assessing predictive performance, fairness, and robustness across varying dataset sizes and distributional shifts. Our results reveal that while TabPFN achieves stronger predictive accuracy compared to baselines and exhibits robustness to spurious correlations, improvements in fairness are moderate and inconsistent, particularly under missing-not-at-random (MNAR) covariate shifts. These findings suggest that the causal pre-training in TabPFN is helpful but insufficient for algorithmic fairness, highlighting implications for deploying such models in practice and the need for further fairness interventions.</p>
-                        
-                        
-                        <div class="tags">
-                            
-                            <span class="tag">cs.LG</span>
-                            
-                            <span class="tag">cs.AI</span>
+                            <span class="tag">cs.CV</span>
                             
                         </div>
                         
@@ -2092,6 +1510,7 @@ If you only listened to the loudest voices in the legacy media, you&#8217;d thin
             </div>
             
         </div>
+        
         
 
         <!-- Footer -->
