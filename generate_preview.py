@@ -19,6 +19,7 @@ from collectors import (
     collect_arxiv,
     collect_twitter,
     collect_hackernews,
+    collect_waytoagi,
 )
 from processors import process_items, GeminiSummarizer
 
@@ -39,6 +40,7 @@ async def generate_preview():
         collect_arxiv(config.get("arxiv", {})),
         collect_hackernews(config.get("hackernews", {})),
         collect_twitter(config.get("twitter", {})),
+        collect_waytoagi(config.get("waytoagi", {})),
     ]
     results = await asyncio.gather(*tasks, return_exceptions=True)
 

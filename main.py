@@ -26,6 +26,7 @@ from collectors import (
     collect_arxiv,
     collect_twitter,
     collect_hackernews,
+    collect_waytoagi,
     NewsItem,
 )
 from processors import GeminiSummarizer, process_items
@@ -58,6 +59,10 @@ async def collect_all_sources(config: dict) -> list[NewsItem]:
     # Hacker News
     if config.get("hackernews", {}).get("enabled", True):
         tasks.append(collect_hackernews(config.get("hackernews", {})))
+
+    # WayToAGI daily knowledge base
+    if config.get("waytoagi", {}).get("enabled", True):
+        tasks.append(collect_waytoagi(config.get("waytoagi", {})))
 
     # Run all collectors concurrently
     results = await asyncio.gather(*tasks, return_exceptions=True)

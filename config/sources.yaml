@@ -178,6 +178,11 @@ rss_sources:
     max_items: 5
     enabled: true
 
+# WayToAGI 每日知识库精选（自定义爬虫，无 RSS）
+waytoagi:
+  enabled: true
+  max_items: 8  # 每日约 5-7 条，设置稍宽
+
 # arXiv 论文配置
 arxiv:
   enabled: true
