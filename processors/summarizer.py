@@ -58,10 +58,21 @@ class GeminiSummarizer:
         location: str = "global",
     ):
         sa_file = service_account_file or os.environ.get("GOOGLE_SA_FILE", _DEFAULT_SA_FILE)
+
+        # 支持通过环境变量传入 JSON 内容（用于 CI/CD）
+        sa_json_content = os.environ.get("GOOGLE_SA_JSON")
+        if sa_json_content and not Path(sa_file).exists():
+            import tempfile
+            tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
+            tmp.write(sa_json_content)
+            tmp.close()
+            sa_file = tmp.name
+
         if not Path(sa_file).exists():
             raise FileNotFoundError(
                 f"Service account file not found: {sa_file}\n"
-                "Set GOOGLE_SA_FILE env var or place the JSON file in project root."
+                "Set GOOGLE_SA_FILE or GOOGLE_SA_JSON env var, "
+                "or place the JSON file in project root."
             )
 
         credentials = service_account.Credentials.from_service_account_file(

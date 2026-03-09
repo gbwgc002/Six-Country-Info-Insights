@@ -37,8 +37,8 @@ jobs:
 
       - name: Run AI Daily Digest
         env:
-          # Gemini API for summaries
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # Gemini (Vertex AI) service account JSON
+          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
 
           # Email configuration (Gmail SMTP)
           SMTP_SERVER: smtp.gmail.com

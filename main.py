@@ -102,14 +102,16 @@ async def main_async():
     total_items = sum(len(items) for items in categories.values())
     print(f"   After processing: {total_items} items in {len(categories)} categories\n")
 
-    # Initialize summarizer (service account file in project root)
+    # Initialize summarizer (service account file or GOOGLE_SA_JSON env var)
     highlights = ""
     sa_file = Path(__file__).parent / "transsion-sw-cd-6610d5d50199.json"
+    sa_available = sa_file.exists() or os.environ.get("GOOGLE_SA_JSON")
 
-    if sa_file.exists():
+    if sa_available:
         print("🧠 Initializing Gemini AI (Vertex AI)...")
         try:
-            summarizer = GeminiSummarizer(service_account_file=str(sa_file))
+            sa_path = str(sa_file) if sa_file.exists() else None
+            summarizer = GeminiSummarizer(service_account_file=sa_path)
 
             # Semantic dedup BEFORE translation (saves API calls)
             print("🔍 Semantic deduplication...")
@@ -132,7 +134,7 @@ async def main_async():
         except Exception as e:
             print(f"   AI error: {e}\n")
     else:
-        print("⚠️  Service account file not found, skipping AI processing\n")
+        print("⚠️  Service account not found (no file or GOOGLE_SA_JSON), skipping AI processing\n")
 
     # Send email
     to_email = os.environ.get("TO_EMAIL", "rillahai@gmail.com")

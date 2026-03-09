@@ -69,12 +69,14 @@ async def generate_preview():
 4. 36氪：智谱单日涨幅超31%，国内大模型概念股活跃
 5. 印度信实工业宣布776亿美元投资计划，将建设印度最大 AI 数据中心"""
 
-    # Try AI processing (service account file in project root)
+    # Try AI processing (service account file or GOOGLE_SA_JSON env var)
     sa_file = Path(__file__).parent / "transsion-sw-cd-6610d5d50199.json"
-    if sa_file.exists():
+    sa_available = sa_file.exists() or os.environ.get("GOOGLE_SA_JSON")
+    if sa_available:
         print("\n✨ Service account found, processing items with Gemini...")
         try:
-            summarizer = GeminiSummarizer(service_account_file=str(sa_file))
+            sa_path = str(sa_file) if sa_file.exists() else None
+            summarizer = GeminiSummarizer(service_account_file=sa_path)
 
             # Semantic dedup BEFORE translation (saves API calls)
             print("🔍 Semantic deduplication...")
@@ -99,7 +101,7 @@ async def generate_preview():
             print(f"⚠️ Failed to process/generate highlights: {e}")
             print("   Using fallback mock highlights.")
     else:
-        print("\n⚠️ Service account file not found, skipping AI processing.")
+        print("\n⚠️ Service account not found (no file or GOOGLE_SA_JSON), skipping AI processing.")
 
     html = template.render(
         date=datetime.now().strftime("%Y年%m月%d日"),
