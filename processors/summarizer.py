@@ -1,13 +1,23 @@
 """
 Gemini-based summarizer for news items with translation support.
+Uses Google GenAI SDK (Vertex AI) with service account authentication.
 """
 
+import json
 import os
 import re
 import asyncio
+from pathlib import Path
 from typing import Optional
-import google.generativeai as genai
+
+from google.oauth2 import service_account
+from google import genai
+from google.genai import types
+
 from collectors.base import NewsItem
+
+# 默认 Service Account 文件路径（项目根目录下）
+_DEFAULT_SA_FILE = str(Path(__file__).resolve().parent.parent / "transsion-sw-cd-6610d5d50199.json")
 
 
 def is_english(text: str) -> bool:
@@ -17,10 +27,7 @@ def is_english(text: str) -> bool:
 
     chinese_chars = sum(1 for c in text if '\u4e00' <= c <= '\u9fff')
 
-    # 只要包含至少1个中文字符，就认为它不是纯英文（可能已经翻译过，或者是中英混合）
-    # 放宽标准，防止 "三星 AI" (仅2个中文字符) 这种被误判为英文而丢弃翻译结果
     if chinese_chars >= 1:
-        # 如果中文字符占比极低（比如30个字符里只有1个中文），那可能是碰巧包含的
         if len(text) > 30 and (chinese_chars / len(text)) < 0.05:
             return True
         return False
@@ -28,30 +35,86 @@ def is_english(text: str) -> bool:
     return True
 
 
+def _clean_json_response(text: str) -> str:
+    """清理 Gemini 返回的 JSON 文本（去除 markdown code blocks 等）。"""
+    text = text.strip()
+    if text.startswith("```json"):
+        text = text[7:]
+    if text.startswith("```"):
+        text = text[3:]
+    if text.endswith("```"):
+        text = text[:-3]
+    return text.strip()
+
+
 class GeminiSummarizer:
-    """Use Gemini to summarize, translate and highlight key news."""
+    """Use Gemini (Vertex AI) to summarize, translate and highlight key news."""
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "gemini-2.0-flash"):
-        self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
-        if not self.api_key:
-            # Fallback to specific GEMINI key if passed or env var
-            self.api_key = os.environ.get("GEMINI_API_KEY")
+    def __init__(
+        self,
+        service_account_file: Optional[str] = None,
+        model: str = "gemini-2.0-flash",
+        project: str = "transsion-sw-cd",
+        location: str = "global",
+    ):
+        sa_file = service_account_file or os.environ.get("GOOGLE_SA_FILE", _DEFAULT_SA_FILE)
+        if not Path(sa_file).exists():
+            raise FileNotFoundError(
+                f"Service account file not found: {sa_file}\n"
+                "Set GOOGLE_SA_FILE env var or place the JSON file in project root."
+            )
 
-        if not self.api_key:
-            raise ValueError("GEMINI_API_KEY not set. Please set GEMINI_API_KEY in your environment.")
-
-        genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel(model)
-        # Limit concurrent requests to avoid rate limits
+        credentials = service_account.Credentials.from_service_account_file(
+            sa_file,
+            scopes=["https://www.googleapis.com/auth/cloud-platform"],
+        )
+        self.client = genai.Client(
+            vertexai=True,
+            project=project,
+            location=location,
+            credentials=credentials,
+        )
+        self.model_name = model
         self.semaphore = asyncio.Semaphore(5)
+
+    # ──────────────────────────────────────────────
+    #  底层调用
+    # ──────────────────────────────────────────────
+
+    async def _call(self, prompt: str, *, json_mode: bool = False) -> str:
+        """统一的 Gemini 调用入口，返回纯文本。"""
+        config = types.GenerateContentConfig(
+            temperature=0.2,
+            max_output_tokens=4096,
+        )
+        if json_mode:
+            config.response_mime_type = "application/json"
+
+        async with self.semaphore:
+            response = await self.client.aio.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+                config=config,
+            )
+
+        if not response or not response.candidates:
+            raise RuntimeError("Gemini 未返回有效响应")
+
+        candidate = response.candidates[0]
+        if candidate.content and candidate.content.parts:
+            text = candidate.content.parts[0].text
+            return text.strip() if text else ""
+
+        return ""
+
+    # ──────────────────────────────────────────────
+    #  翻译
+    # ──────────────────────────────────────────────
 
     async def translate_to_chinese(self, text: str) -> str:
         """将英文文本翻译成中文。"""
-        if not text:
-            return ""
-
-        if len(text) < 2:
-            return text
+        if not text or len(text) < 2:
+            return text or ""
 
         prompt = f"""Translate the following text into Simplified Chinese (简体中文).
 
@@ -63,11 +126,8 @@ Task Instructions:
 2. Keep brand names and technical terms in English (e.g., OpenAI, GPT-5, LLM, Claude, Google).
 3. Do not include quotes, explanations, or original text. Return only the translated Chinese string.
 """
-
         try:
-            async with self.semaphore:
-                response = await self.model.generate_content_async(prompt)
-            result = response.text.strip()
+            result = await self._call(prompt)
             # 去掉可能的外层引号
             if (result.startswith('"') and result.endswith('"')) or \
                (result.startswith("'") and result.endswith("'")):
@@ -76,6 +136,10 @@ Task Instructions:
         except Exception as e:
             print(f"Translation error: {e}")
             return text
+
+    # ──────────────────────────────────────────────
+    #  核心：标题改写 + 摘要 + 相关性过滤
+    # ──────────────────────────────────────────────
 
     async def summarize_and_translate(self, item: NewsItem) -> tuple[str, str, bool]:
         """生成摘要并翻译标题和内容。返回 (标题, 摘要, 是否已翻译)。"""
@@ -115,7 +179,6 @@ Task Instructions:
 3. Summary: Write a high-quality summary entirely in Simplified Chinese (简体中文).
    - Length: 60-100 words covering: what happened, key details, and why it matters.
    - Do NOT simply rephrase or copy the provided content — write an original synthesis.
-   - If the content is short or low-quality, rely on the title, source, and your knowledge of the topic to produce a complete summary.
    - Avoid vague openers like "本文介绍了" or "这篇文章讨论了". Lead with the core news fact.
    - Full Chinese sentences only — English product names/terms (e.g. GPT-5, API) are OK inline.
    - Tone: Professional, factual, third-person news brief.
@@ -129,60 +192,41 @@ You MUST return ONLY a valid JSON object:
 """
 
         try:
-            async with self.semaphore:
-                # Use generation_config to enforce JSON
-                response = await self.model.generate_content_async(
-                    prompt,
-                    generation_config=genai.GenerationConfig(response_mime_type="application/json")
-                )
+            text_response = _clean_json_response(await self._call(prompt, json_mode=True))
 
-            text_response = response.text.strip()
-
-            # Clean up potential markdown code blocks
-            if text_response.startswith("```json"):
-                text_response = text_response[7:]
-            if text_response.startswith("```"):
-                text_response = text_response[3:]
-            if text_response.endswith("```"):
-                text_response = text_response[:-3]
-
-            import json
             try:
-                data = json.loads(text_response.strip())
+                data = json.loads(text_response)
 
                 # Check relevance
                 if not data.get("is_relevant", True):
                     return item.title, "IRRELEVANT", False
 
-                # Get title from JSON, fallback to original if empty
                 json_title = data.get("title", "").strip()
                 title = json_title if json_title else item.title
 
                 summary = data.get("summary", "").strip()
-                is_translated = is_english(item.title)  # 只有原标题是英文才标记为已翻译
+                is_translated = is_english(item.title)
 
-                # Final sanity check for "AI: YES" in title/summary just in case
                 title = re.sub(r'^AI[:：]\s*(YES|NO|Related).*?[:：]\s*', '', title, flags=re.IGNORECASE).strip()
 
                 # 1. Fallback for empty or too-short summary
                 if not summary or len(summary.strip()) < 5:
-                     if title:
-                         summary = f"{title}（点击查看详情）"
-                     else:
-                         summary = "暂无详细摘要，请点击标题查看原文。"
+                    if title:
+                        summary = f"{title}（点击查看详情）"
+                    else:
+                        summary = "暂无详细摘要，请点击标题查看原文。"
 
                 # 2. Force translation if still English (Double Insurance)
                 if is_english(summary) and len(summary) > 10:
                     try:
                         summary = await self.translate_to_chinese(summary)
                     except Exception:
-                        pass # Keep original if translation fails
+                        pass
 
-                # 3. Check TITLE for English and force translate (with verification)
+                # 3. Check TITLE for English and force translate
                 if is_english(title) and len(title) >= 3:
                     try:
                         translated_title = await self.translate_to_chinese(title)
-                        # 验证翻译结果确实包含中文
                         if translated_title and not is_english(translated_title):
                             title = translated_title
                         else:
@@ -194,12 +238,10 @@ You MUST return ONLY a valid JSON object:
 
             except json.JSONDecodeError:
                 print(f"JSON Parse Error for '{item.title}': {text_response[:50]}...")
-                # Fallback to simple text extraction if JSON fails
                 return item.title, "Summary generation failed (JSON Error)", False
 
         except Exception as e:
             print(f"Translate & summarize error for '{item.title[:20]}...': {e}")
-            # Fallback: 翻译标题和摘要
             if is_english(item.title):
                 try:
                     translated = await self.translate_to_chinese(item.title)
@@ -209,25 +251,28 @@ You MUST return ONLY a valid JSON object:
                 except Exception:
                     pass
             if item.summary and is_english(item.summary):
-                 try:
-                     summary = await self.translate_to_chinese(item.summary)
-                 except Exception:
-                     summary = item.summary
+                try:
+                    summary = await self.translate_to_chinese(item.summary)
+                except Exception:
+                    summary = item.summary
             else:
-                 summary = item.summary or ""
+                summary = item.summary or ""
 
-        # Final Length Check
         if summary and len(summary) > 300:
             summary = summary[:297] + "..."
 
         return title, summary, is_translated
+
+    # ──────────────────────────────────────────────
+    #  单条摘要
+    # ──────────────────────────────────────────────
 
     async def summarize_item(self, item: NewsItem) -> str:
         """Generate a concise summary for a single news item (Chinese content)."""
         content_to_summarize = item.content if item.content and len(item.content) > len(item.summary or "") else (item.summary or "无")
 
         if len(content_to_summarize) > 10000:
-             content_to_summarize = content_to_summarize[:10000] + "..."
+            content_to_summarize = content_to_summarize[:10000] + "..."
 
         prompt = f"""You are a professional tech news editor. Summarize the following news item.
 
@@ -250,31 +295,15 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
 """
 
         try:
-            async with self.semaphore:
-                response = await self.model.generate_content_async(
-                    prompt,
-                    generation_config=genai.GenerationConfig(response_mime_type="application/json")
-                )
+            text_response = _clean_json_response(await self._call(prompt, json_mode=True))
 
-            text_response = response.text.strip()
-            # Clean up potential markdown code blocks
-            if text_response.startswith("```json"):
-                text_response = text_response[7:]
-            if text_response.startswith("```"):
-                text_response = text_response[3:]
-            if text_response.endswith("```"):
-                text_response = text_response[:-3]
-
-            import json
             try:
-                data = json.loads(text_response.strip())
+                data = json.loads(text_response)
                 if not data.get("is_relevant", True):
                     return "IRRELEVANT"
                 return data.get("summary", "").strip()
             except json.JSONDecodeError:
-                # Fallback
-                result = response.text.strip()
-                result = result.replace('```', '').strip()
+                result = text_response.replace('```', '').strip()
                 if "IRRELEVANT" in result.upper():
                     return "IRRELEVANT"
                 return result
@@ -283,6 +312,10 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
             print(f"Summarize error: {e}")
             return item.summary or ""
 
+    # ──────────────────────────────────────────────
+    #  今日要点
+    # ──────────────────────────────────────────────
+
     async def generate_daily_highlights(
         self,
         items_by_category: dict[str, list[NewsItem]],
@@ -290,7 +323,6 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
     ) -> str:
         """Generate overall daily highlights summary with HTML formatting."""
 
-        # Prepare content for Gemini
         content_parts = []
         for category, items in items_by_category.items():
             cat_name = category_names.get(category, category)
@@ -320,30 +352,14 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
 """
 
         try:
-            async with self.semaphore:
-                response = await self.model.generate_content_async(
-                    prompt,
-                    generation_config=genai.GenerationConfig(response_mime_type="application/json")
-                )
+            text_response = _clean_json_response(await self._call(prompt, json_mode=True))
 
-            text_response = response.text.strip()
-            # Clean up potential markdown code blocks
-            if text_response.startswith("```json"):
-                text_response = text_response[7:]
-            if text_response.startswith("```"):
-                text_response = text_response[3:]
-            if text_response.endswith("```"):
-                text_response = text_response[:-3]
-
-            import json
             try:
-                data = json.loads(text_response.strip())
+                data = json.loads(text_response)
                 highlights_list = data.get("highlights", [])
 
-                # Format as HTML
                 html_parts = []
                 for i, highlight in enumerate(highlights_list, 1):
-                    # Final sanity check for prefixes
                     clean_highlight = re.sub(r'^(AI[:：]\s*(YES|NO|Related)|Title:|Summary:).*?[:：]\s*', '', highlight, flags=re.IGNORECASE).strip()
                     if clean_highlight:
                         html_parts.append(
@@ -358,8 +374,7 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
 
             except json.JSONDecodeError:
                 print(f"JSON Parse Error for highlights: {text_response[:50]}...")
-                # Fallback to old text parsing
-                return self._format_highlights_html(response.text.strip())
+                return self._format_highlights_html(text_response)
 
             return "今日AI动态收集完成，请查看下方详情。"
 
@@ -371,7 +386,6 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
         """将要点文本转换为HTML格式。"""
         html_parts = []
 
-        # 尝试匹配数字列表 (1. xxx)
         pattern_num = r'(\d+)[.、．]\s*'
         parts_num = re.split(pattern_num, text)
 
@@ -392,14 +406,12 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
                 else:
                     i += 1
         else:
-            # 尝试匹配无序列表 (- xxx 或 * xxx)
             lines = text.split('\n')
             counter = 1
             for line in lines:
                 line = line.strip()
                 if not line:
                     continue
-                # 移除开头的 - 或 * 或 •
                 clean_line = re.sub(r'^[-*•]\s*', '', line)
                 if clean_line:
                     html_parts.append(
@@ -413,8 +425,11 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
         if html_parts:
             return '\n'.join(html_parts)
         else:
-            # 如果解析失败，返回原文本
             return f'<div class="highlight-item"><span class="highlight-text">{text}</span></div>'
+
+    # ──────────────────────────────────────────────
+    #  批量处理
+    # ──────────────────────────────────────────────
 
     async def process_items_with_translation(
         self,
@@ -438,8 +453,8 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
                 item.is_translated = is_translated
                 processed_items.append(item)
             elif isinstance(result, Exception):
-                 print(f"Error processing item {items[i].title}: {result}")
-                 processed_items.append(items[i]) # Keep original on error
+                print(f"Error processing item {items[i].title}: {result}")
+                processed_items.append(items[i])
 
         return processed_items
 
@@ -454,7 +469,6 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
         """
         print(f"🌐 Translating {len(items)} items...")
 
-        # Parallel processing
         tasks = []
         for item in items:
             tasks.append(self.summarize_and_translate(item))
@@ -469,18 +483,15 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
 
             if isinstance(result, Exception):
                 print(f"   Translation error for '{item.title[:30]}...': {result}")
-                # Keep original on error
                 valid_items.append(item)
                 continue
 
             title, summary, is_translated = result
 
-            # Filter irrelevant content
             if summary and "IRRELEVANT" in summary:
                 print(f"   🚫 Skipping irrelevant item: {item.title}")
                 continue
 
-            # 过滤缺少标题或摘要的异常条目
             if not title or not title.strip() or not summary or len(summary.strip()) < 5:
                 print(f"   🚫 Skipping item with missing title/summary: {item.title[:30]}")
                 continue
@@ -496,14 +507,16 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
         print(f"   Translated {translated_count} items (Filtered {len(items) - len(valid_items)} irrelevant)\n")
         return valid_items, translated_count
 
+    # ──────────────────────────────────────────────
+    #  语义去重
+    # ──────────────────────────────────────────────
+
     async def semantic_deduplicate(
         self,
         categories: dict[str, list['NewsItem']],
     ) -> dict[str, list['NewsItem']]:
         """使用 Gemini 识别跨来源的相同主题新闻，保留最全面的一条。"""
-        import json
 
-        # 扁平化所有条目，记录来源分类
         all_items: list[tuple[str, 'NewsItem']] = []
         for cat, items in categories.items():
             for item in items:
@@ -512,7 +525,6 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
         if len(all_items) <= 1:
             return categories
 
-        # 构建标题列表供 Gemini 分析
         titles_text = "\n".join(
             f"{i}: {item.title} [{item.source}]"
             for i, (_, item) in enumerate(all_items)
@@ -536,32 +548,18 @@ Each sub-array should contain the index numbers of news items reporting on the s
 """
 
         try:
-            async with self.semaphore:
-                response = await self.model.generate_content_async(
-                    prompt,
-                    generation_config=genai.GenerationConfig(response_mime_type="application/json")
-                )
+            text_response = _clean_json_response(await self._call(prompt, json_mode=True))
 
-            text_response = response.text.strip()
-            if text_response.startswith("```json"):
-                text_response = text_response[7:]
-            if text_response.startswith("```"):
-                text_response = text_response[3:]
-            if text_response.endswith("```"):
-                text_response = text_response[:-3]
-
-            data = json.loads(text_response.strip())
+            data = json.loads(text_response)
             groups = data.get("groups", [])
 
             if not groups:
                 return categories
 
-            # 对每组重复新闻，保留内容最丰富的一条，移除其他
             indices_to_remove: set[int] = set()
             for group in groups:
                 if len(group) < 2:
                     continue
-                # 在组内选出内容最长的条目作为保留项
                 best_idx = max(
                     group,
                     key=lambda idx: len((all_items[idx][1].content or "") + (all_items[idx][1].summary or ""))
@@ -574,13 +572,11 @@ Each sub-array should contain the index numbers of news items reporting on the s
                         print(f"   🔗 去重: 移除「{removed.title[:30]}」({removed.source})，保留「{kept.title[:30]}」({kept.source})")
                         indices_to_remove.add(idx)
 
-            # 重建分类字典，排除被移除的条目
             new_categories: dict[str, list['NewsItem']] = {cat: [] for cat in categories}
             for i, (cat, item) in enumerate(all_items):
                 if i not in indices_to_remove:
                     new_categories[cat].append(item)
 
-            # 移除空分类
             new_categories = {cat: items for cat, items in new_categories.items() if items}
 
             removed_count = len(indices_to_remove)

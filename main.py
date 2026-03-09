@@ -102,21 +102,14 @@ async def main_async():
     total_items = sum(len(items) for items in categories.values())
     print(f"   After processing: {total_items} items in {len(categories)} categories\n")
 
-    # Initialize summarizer
-    summarizer = None
+    # Initialize summarizer (service account file in project root)
     highlights = ""
+    sa_file = Path(__file__).parent / "transsion-sw-cd-6610d5d50199.json"
 
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        # Fallback check
-        if os.environ.get("ANTHROPIC_API_KEY"):
-            print("⚠️  ANTHROPIC_API_KEY found but GEMINI_API_KEY is missing.")
-            print("    The project has migrated to Google Gemini. Please set GEMINI_API_KEY.")
-
-    if api_key:
-        print("🧠 Initializing Gemini AI...")
+    if sa_file.exists():
+        print("🧠 Initializing Gemini AI (Vertex AI)...")
         try:
-            summarizer = GeminiSummarizer(api_key=api_key)
+            summarizer = GeminiSummarizer(service_account_file=str(sa_file))
 
             # Semantic dedup BEFORE translation (saves API calls)
             print("🔍 Semantic deduplication...")
@@ -124,10 +117,13 @@ async def main_async():
             total_items = sum(len(items) for items in categories.values())
             print(f"   After dedup: {total_items} items\n")
 
-            # Translate items in each category (Processing categories sequentially, items parallel)
+            # Translate items in each category
             for cat_name, items in categories.items():
                 valid_items, _ = await summarizer.process_and_filter_items(items)
                 categories[cat_name] = valid_items
+
+            # 移除处理后为空的分类
+            categories = {k: v for k, v in categories.items() if v}
 
             # Generate highlights
             print("✨ Generating daily highlights...")
@@ -136,7 +132,7 @@ async def main_async():
         except Exception as e:
             print(f"   AI error: {e}\n")
     else:
-        print("⚠️  GEMINI_API_KEY not set, skipping AI translation and summaries\n")
+        print("⚠️  Service account file not found, skipping AI processing\n")
 
     # Send email
     to_email = os.environ.get("TO_EMAIL", "rillahai@gmail.com")

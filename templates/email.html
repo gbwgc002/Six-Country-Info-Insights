@@ -450,6 +450,7 @@
             <h2>📑 今日目录 · {{ item_count }} 条资讯</h2>
             <div class="toc-list">
                 {% for category_id, items in categories.items() %}
+                {% if items %}
                 <div class="toc-category">
                     <div class="toc-category-title">
                         <a href="#cat-{{ category_id }}">{{ category_names.get(category_id, category_id) }}</a>
@@ -463,6 +464,7 @@
                         {% endfor %}
                     </ul>
                 </div>
+                {% endif %}
                 {% endfor %}
             </div>
         </div>
@@ -470,6 +472,7 @@
 
         <!-- Categories -->
         {% for category_id, items in categories.items() %}
+        {% if items %}
         <div class="category" id="cat-{{ category_id }}">
             <h2 class="category-header">
                 {{ category_names.get(category_id, category_id) }}
@@ -517,6 +520,7 @@
             </div>
             {% endfor %}
         </div>
+        {% endif %}
         {% endfor %}
 
         <!-- Footer -->

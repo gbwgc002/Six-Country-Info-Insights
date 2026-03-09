@@ -69,12 +69,12 @@ async def generate_preview():
 4. 36氪：智谱单日涨幅超31%，国内大模型概念股活跃
 5. 印度信实工业宣布776亿美元投资计划，将建设印度最大 AI 数据中心"""
 
-    # Try to generate real highlights and process items if API key is present
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if api_key:
-        print("\n✨ GEMINI_API_KEY found, processing items and generating real highlights...")
+    # Try AI processing (service account file in project root)
+    sa_file = Path(__file__).parent / "transsion-sw-cd-6610d5d50199.json"
+    if sa_file.exists():
+        print("\n✨ Service account found, processing items with Gemini...")
         try:
-            summarizer = GeminiSummarizer(api_key=api_key)
+            summarizer = GeminiSummarizer(service_account_file=str(sa_file))
 
             # Semantic dedup BEFORE translation (saves API calls)
             print("🔍 Semantic deduplication...")
@@ -86,16 +86,20 @@ async def generate_preview():
                 valid_items, _ = await summarizer.process_and_filter_items(items)
                 categories[cat_name] = valid_items
 
+            # 移除处理后为空的分类
+            categories = {k: v for k, v in categories.items() if v}
+
             # Recount items after filtering
             item_count = sum(len(items) for items in categories.values())
 
-            # Note: We are passing translated/filtered items here.
             generated_highlights = await summarizer.generate_daily_highlights(categories, category_names)
             if generated_highlights:
                 highlights = generated_highlights
         except Exception as e:
             print(f"⚠️ Failed to process/generate highlights: {e}")
             print("   Using fallback mock highlights.")
+    else:
+        print("\n⚠️ Service account file not found, skipping AI processing.")
 
     html = template.render(
         date=datetime.now().strftime("%Y年%m月%d日"),
