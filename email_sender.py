@@ -142,29 +142,35 @@ class EmailSender:
                     max-width: 80px !important;
                     max-height: 60px !important;
                 }
-                /* Table of Contents - match HTML layout */
+                /* Table of Contents - allow page breaks inside TOC */
                 .toc {
                     padding: 15px 20px !important;
-                    page-break-inside: avoid;
+                    /* DO NOT use page-break-inside: avoid on TOC
+                       — it's too large and causes blank pages */
                 }
                 .toc h2 {
                     font-size: 14px !important;
                     margin-bottom: 10px !important;
+                    page-break-after: avoid; /* keep title with content */
+                }
+                .toc-list {
+                    display: block !important; /* override flex for PDF */
                 }
                 .toc-category {
                     page-break-inside: avoid;
                     margin-bottom: 8px !important;
                 }
                 .toc-category-title {
-                    font-size: 13px !important;
+                    font-size: 14px !important;
                     margin-bottom: 6px !important;
+                    page-break-after: avoid; /* keep with items below */
                 }
                 .toc-category-title a {
                     color: #1f2937 !important;
                     text-decoration: none !important;
                 }
                 .toc-item-link {
-                    font-size: 12px !important;
+                    font-size: 13px !important;
                     margin-bottom: 4px !important;
                 }
                 .toc-item-link a {
@@ -172,11 +178,18 @@ class EmailSender:
                     text-decoration: none !important;
                 }
                 .toc-count {
-                    font-size: 10px !important;
+                    font-size: 11px !important;
                 }
-                /* Highlights */
+                /* Highlights — allow page breaks, keep individual items intact */
+                .highlights {
+                    /* DO NOT use page-break-inside: avoid here either */
+                }
                 .highlights h2 {
                     font-size: 16px !important;
+                    page-break-after: avoid; /* keep title with first item */
+                }
+                .highlights-content {
+                    display: block !important; /* override flex for PDF */
                 }
                 /* Ensure internal anchor links work */
                 a[href^="#"] {

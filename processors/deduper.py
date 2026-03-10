@@ -38,7 +38,9 @@ def filter_by_date(
     """Filter items to only include recent ones."""
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     # Allow longer window for papers (ArXiv often has delays)
-    paper_cutoff = datetime.now(timezone.utc) - timedelta(days=3.0)
+    # and china sources (WayToAGI etc. use Beijing time, midnight+08:00
+    # easily falls outside a strict 24h UTC window)
+    extended_cutoff = datetime.now(timezone.utc) - timedelta(days=2.0)
 
     filtered = []
     for item in items:
@@ -48,8 +50,12 @@ def filter_by_date(
             if pub_date.tzinfo is None:
                 pub_date = pub_date.replace(tzinfo=timezone.utc)
 
-            # Use specific cutoff for papers, strict cutoff for others
-            target_cutoff = paper_cutoff if item.category == 'papers' else cutoff
+            # Use extended window for papers and china sources
+            target_cutoff = (
+                extended_cutoff
+                if item.category in ('papers', 'china')
+                else cutoff
+            )
 
             if pub_date >= target_cutoff:
                 filtered.append(item)

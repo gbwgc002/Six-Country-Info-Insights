@@ -71,23 +71,38 @@ class WayToAGICollector(BaseCollector):
             ),
             "Accept-Language": "zh-CN,zh;q=0.9",
         }
+        # Feishu needs a guest session cookie set via the redirect chain before
+        # it serves the full SSR HTML with embedded document blocks.
+        # Strategy: use ONE persistent session across requests so cookies from
+        # the first redirect are reused on the second (retry) request.
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    WIKI_URL,
-                    headers=headers,
-                    timeout=aiohttp.ClientTimeout(total=30),
-                    allow_redirects=True,
-                ) as resp:
-                    if resp.status != 200:
-                        print(f"[WayToAGI] HTTP {resp.status} for {WIKI_URL}")
-                        return None
-                    html = await resp.text()
-                    print(f"[WayToAGI] Fetched wiki ({len(html):,} bytes)")
-                    return html
+                for attempt in range(3):
+                    try:
+                        async with session.get(
+                            WIKI_URL,
+                            headers=headers,
+                            timeout=aiohttp.ClientTimeout(total=30),
+                            allow_redirects=True,
+                        ) as resp:
+                            if resp.status != 200:
+                                print(f"[WayToAGI] HTTP {resp.status}")
+                                return None
+                            html = await resp.text()
+                            # Full HTML with embedded blocks is >800KB.
+                            # Smaller response = JS-only shell, retry with cookies.
+                            if len(html) > 800_000:
+                                print(f"[WayToAGI] Fetched wiki ({len(html):,} bytes)")
+                                return html
+                            print(
+                                f"[WayToAGI] Got stripped HTML ({len(html):,} bytes), "
+                                f"retrying with session cookies ({attempt + 1}/3)..."
+                            )
+                    except Exception as e:
+                        print(f"[WayToAGI] Fetch error (attempt {attempt + 1}): {e}")
         except Exception as e:
-            print(f"[WayToAGI] Fetch error: {e}")
-            return None
+            print(f"[WayToAGI] Session error: {e}")
+        return None
 
     def _date_heading(self, date: datetime) -> str:
         """Generate date heading text as it appears in the wiki HTML.
@@ -117,8 +132,10 @@ class WayToAGICollector(BaseCollector):
         articles = list(ARTICLE_RE.finditer(section))
         summaries = [m.group(1) for m in SUMMARY_RE.finditer(section)]
 
+        # Use noon Beijing time so the item survives the 24-hour UTC filter.
+        # midnight+08:00 = previous day 16:00 UTC, easily falls outside window.
         pub_date = date.replace(
-            hour=0, minute=0, second=0, microsecond=0,
+            hour=12, minute=0, second=0, microsecond=0,
             tzinfo=timezone(timedelta(hours=8)),
         )
         items = []

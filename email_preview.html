@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Daily Digest - 2026年03月09日</title>
+    <title>AI Daily Digest - 2026年03月10日</title>
     <style>
         /* Reset and base styles */
         body {
@@ -267,15 +267,15 @@
 
         /* Table of Contents */
         .toc {
-            background: #ffffff;
-            padding: 20px 24px;
+            background: #f8f9ff;
+            padding: 24px 24px 20px;
             border-bottom: 2px solid #e5e7eb;
         }
 
         .toc h2 {
             color: #374151;
-            font-size: 16px;
-            margin: 0 0 14px 0;
+            font-size: 18px;
+            margin: 0 0 18px 0;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -287,23 +287,23 @@
             padding: 0;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 18px;
         }
 
         .toc-category {
-            margin-bottom: 8px;
+            margin-bottom: 0;
         }
 
         .toc-category-title {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 8px;
-            padding-bottom: 4px;
-            border-bottom: 1px dashed #e5e7eb;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed #d1d5db;
         }
 
         .toc-category-title a {
@@ -317,29 +317,30 @@
 
         .toc-items {
             list-style: none;
-            margin: 0 0 0 12px;
+            margin: 0 0 0 8px;
             padding: 0;
-            color: #4b5563;
+            color: #374151;
         }
 
         .toc-item-link {
-            font-size: 13px;
-            line-height: 1.5;
-            margin-bottom: 6px;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 8px;
             position: relative;
-            padding-left: 12px;
+            padding-left: 16px;
         }
 
         .toc-item-link::before {
-            content: "•";
-            color: #9ca3af;
+            content: "›";
+            color: #4f46e5;
             position: absolute;
             left: 0;
             top: 0;
+            font-weight: 600;
         }
 
         .toc-item-link a {
-            color: #4b5563;
+            color: #374151;
             text-decoration: none;
             display: inline-block;
         }
@@ -351,8 +352,8 @@
         .toc-count {
             background: #4f46e5;
             color: white;
-            font-size: 11px;
-            padding: 1px 7px;
+            font-size: 12px;
+            padding: 2px 8px;
             border-radius: 10px;
             font-weight: 600;
         }
@@ -375,27 +376,47 @@
         @media print {
             body {
                 background-color: #fff;
+                font-family: "PingFang SC", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", "Noto Sans SC", sans-serif !important;
             }
             .container {
                 max-width: 100% !important;
                 box-shadow: none !important;
             }
-            .toc {
-                page-break-inside: avoid;
+            /* TOC — allow breaks within, keep each category together */
+            .toc h2 {
+                page-break-after: avoid;
+            }
+            .toc-list {
+                display: block !important; /* avoid flex spacing issues */
             }
             .toc-category {
                 page-break-inside: avoid;
             }
+            .toc-category-title {
+                page-break-after: avoid;
+            }
             .toc-item-link a {
                 color: #4338ca !important;
-                text-decoration: underline !important;
+                text-decoration: none !important;
             }
             .toc-category-title a {
                 color: #1f2937 !important;
-                text-decoration: underline !important;
+                text-decoration: none !important;
             }
+            /* Highlights — keep title with content, items individually intact */
+            .highlights h2 {
+                page-break-after: avoid;
+            }
+            .highlight-item {
+                page-break-inside: avoid;
+            }
+            /* News items */
             .news-item {
                 page-break-inside: avoid;
+            }
+            /* Internal anchor links */
+            a[href^="#"] {
+                color: #4338ca !important;
             }
         }
 
@@ -431,7 +452,7 @@
         <!-- Header -->
         <div class="header">
             <h1>🤖 AI Daily Digest</h1>
-            <div class="date">2026年03月09日 · 30 条资讯</div>
+            <div class="date">2026年03月10日 · 44 条资讯</div>
         </div>
 
         <!-- Highlights -->
@@ -439,9 +460,9 @@
         <div class="highlights">
             <h2>⚡ 今日要点</h2>
             <div class="highlights-content">
-                <div class="highlight-item"><span class="highlight-number">1</span><span class="highlight-text">NoDesk AI转型为DeskClaw，并在两周内迅速完成，获得近亿元融资，显示了AI应用转型的巨大潜力。</span></div>
-<div class="highlight-item"><span class="highlight-number">2</span><span class="highlight-text">前vivo产品经理宋紫薇的AI创业项目「薇光点亮」获得超亿元融资，表明市场对AI在特定行业应用的高度关注。</span></div>
-<div class="highlight-item"><span class="highlight-number">3</span><span class="highlight-text">Luma AI发布Uni-1，一款图像理解与生成一体化模型，性能超越Nano Banana 2，代表了AI模型技术的重大进步。</span></div>
+                <div class="highlight-item"><span class="highlight-number">1</span><span class="highlight-text">xAI计划自建天然气发电厂，为密西西比数据中心供电，显示了其在AI基础设施建设上的巨大投入和长远规划。</span></div>
+<div class="highlight-item"><span class="highlight-number">2</span><span class="highlight-text">开源AI平台Dify获得HSG领投的3000万美元Pre-A轮融资，表明市场对开源AI解决方案的持续看好和资本的积极涌入。</span></div>
+<div class="highlight-item"><span class="highlight-number">3</span><span class="highlight-text">OpenAI收购AI安全平台Promptfoo，旨在强化模型安全性，反映了AI行业对安全问题的日益重视。</span></div>
             </div>
         </div>
         
@@ -449,8 +470,60 @@
         <!-- Table of Contents -->
         
         <div class="toc">
-            <h2>📑 今日目录 · 30 条资讯</h2>
+            <h2>📑 今日目录 · 44 条资讯</h2>
             <div class="toc-list">
+                
+                
+                <div class="toc-category">
+                    <div class="toc-category-title">
+                        <a href="#cat-industry">💰 行业投融资</a>
+                        <span class="toc-count">10</span>
+                    </div>
+                    <ul class="toc-items">
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-1">首投Anthropic的Spark Capital拟募资30亿美元</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-2">开源AI平台Dify获HSG领投3000万美元Pre-A轮融资</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-3">xAI计划自建天然气发电厂，供电密西西比数据中心</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-4">消息称白宫将禁止联邦机构使用Anthropic AI工具</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-5">HPE营收超预期，AI服务器积压订单达50亿美元</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-6">OpenAI和Google员工声援Anthropic诉讼，反对美国防部供应链风险评估</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-7">Anthropic推出Claude Code代码审查工具，应对AI代码激增</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-8">Anthropic起诉美国国防部，反对被列为供应链风险</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-9">Neura Robotics与Qualcomm合作，采用IQ10处理器开发新机器人</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-industry-10">Nvidia支持的AI公司Nscale融资20亿美元，估值达146亿美元</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+                
                 
                 
                 <div class="toc-category">
@@ -461,31 +534,55 @@
                     <ul class="toc-items">
                         
                         <li class="toc-item-link">
-                            <a href="#item-social-1">博客作者揭示Medium上AI生成内容的“气味”，警惕低质量内容</a>
+                            <a href="#item-social-1">无需Auth0：Claude平台个人MCP服务器OAuth 2.1认证方案</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-social-2">GGUF模型漏洞：无需重启服务器即可篡改LLM输出</a>
+                            <a href="#item-social-2">用户利用Claude Code成功重写SFP模块EEPROM，实现硬件兼容</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-social-3">AI替代加速：你的议价能力正在消失</a>
+                            <a href="#item-social-3">AI时代：Loom数据封闭或将落败，Linear API开放或将胜出</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-social-4">自建AI知识库：掌控个人数据，摆脱厂商锁定</a>
+                            <a href="#item-social-4">开源代码审查工具Kodus Cloud发布，模型选择更灵活</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-social-5">利用LLM辅助反编译：破解二进制代码的新方法</a>
+                            <a href="#item-social-5">Pug工具：将API文档转化为AI Agent可用的命令行界面</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-social-6">AI过度使用致“大脑过载”，高绩效员工尤甚</a>
+                            <a href="#item-social-6">Nvidia计划推出开源AI Agent平台NemoClaw</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-social-7">自托管金融分析系统：Plaid连账户，Claude助分析，月耗约5美元</a>
+                            <a href="#item-social-7">Claude推出智能CLI工具，代码分析与配置生成</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+                
+                
+                
+                <div class="toc-category">
+                    <div class="toc-category-title">
+                        <a href="#cat-newsletter">📬 Newsletter精选</a>
+                        <span class="toc-count">3</span>
+                    </div>
+                    <ul class="toc-items">
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-newsletter-1">AI自主研究兴起：Karpathy展示LLM自迭代改进</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-newsletter-2">a16z报告：ChatGPT仍领先，AI应用全球格局呈三足鼎立之势</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-newsletter-3">Anthropic与美军陷僵局，OpenAI趁机上位推GPT-5.4</a>
                         </li>
                         
                     </ul>
@@ -496,100 +593,68 @@
                 <div class="toc-category">
                     <div class="toc-category-title">
                         <a href="#cat-china">🇨🇳 国内动态</a>
-                        <span class="toc-count">9</span>
+                        <span class="toc-count">15</span>
                     </div>
                     <ul class="toc-items">
                         
                         <li class="toc-item-link">
-                            <a href="#item-china-1">NoDesk AI转型：两周速成DeskClaw，豪取近亿元融资</a>
+                            <a href="#item-china-1">拿火音乐：AI音乐工作站海外众筹超百万美元</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-china-2">前vivo产品经理宋紫薇AI创业，「薇光点亮」获超亿元融资</a>
+                            <a href="#item-china-2">腾讯QClaw内测：一键部署“小龙虾”，接入微信QQ</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-china-3">中科大99级生创业 ACONTEXT获红杉、明势投资</a>
+                            <a href="#item-china-3">国家超算互联网OpenClaw接入飞书、企业微信</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-china-4">MetaNovas获融资，AI智能体加速新材料研发</a>
+                            <a href="#item-china-4">觅熵科技获融资，AI卫星情报助力中东局势分析</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-china-5">深圳龙岗区补贴OpenClaw“养龙虾”，最高可达200万</a>
+                            <a href="#item-china-5">WayToAGI发布Agent Skills营销增长与SEO优化指南</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-china-6">清华毕业生去向：出国比例降，华为字节成AI人才赢家</a>
+                            <a href="#item-china-6">人文工作者AI使用指南：掌控AI工作流，提升效率</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-china-7">00后大学生10天AI编程获3000万投资，陈天桥慧眼识才</a>
+                            <a href="#item-china-7">Jayson：用AI自动化小龙虾将播客转为可视化知识图</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-china-8">AI冲击下，长视频平台陷困境，短剧崛起蚕食市场</a>
+                            <a href="#item-china-8">Claude Cowork插件测评：21款插件深度解析</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-china-9">AI算力需求激增，中国西电等电网设备商或成千亿龙头</a>
-                        </li>
-                        
-                    </ul>
-                </div>
-                
-                
-                
-                <div class="toc-category">
-                    <div class="toc-category-title">
-                        <a href="#cat-industry">💰 行业投融资</a>
-                        <span class="toc-count">11</span>
-                    </div>
-                    <ul class="toc-items">
-                        
-                        <li class="toc-item-link">
-                            <a href="#item-industry-1">伊朗战事或阻碍海湾国家3000亿美元AI投资计划</a>
+                            <a href="#item-china-9">Cherry Studio简化OpenClaw安装，告别命令行难题</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-industry-2">美国中期选举：候选人利用AI和加密货币争取政治献金</a>
+                            <a href="#item-china-10">Karpathy开源MicroGPT：200行代码揭秘LLM原理</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-industry-3">哈佛研究：AI既能缓解倦怠，也可能导致“AI脑雾”</a>
+                            <a href="#item-china-11">斯坦福课程揭秘：大模型预训练底层逻辑</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-industry-4">Luma AI发布Uni-1：图像理解与生成一体化模型，超越Nano Banana 2</a>
+                            <a href="#item-china-12">Anthropic Claude Code幕后：Boris Cherny用AI重塑编程</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-industry-5">Anthropic争议：五角大楼合作会吓退AI初创公司吗？</a>
+                            <a href="#item-china-13">NoDesk AI转型：两周打造DeskClaw，亿元融资加速</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-industry-6">Circle、Stripe等构建稳定币支付，赋能AI Agent微交易</a>
+                            <a href="#item-china-14">前vivo产品经理宋紫薇AI创业，「薇光点亮」获超亿元融资</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-industry-7">美以利用AI对伊朗发动战争，速度与精度空前</a>
-                        </li>
-                        
-                        <li class="toc-item-link">
-                            <a href="#item-industry-8">AI数据中心兴起“男性营地”模式，引发关注</a>
-                        </li>
-                        
-                        <li class="toc-item-link">
-                            <a href="#item-industry-9">ZyG获5800万美元种子轮融资，AI驱动DTC品牌营销</a>
-                        </li>
-                        
-                        <li class="toc-item-link">
-                            <a href="#item-industry-10">研究发现：Anthropic、Google等LLM或助长学术造假</a>
-                        </li>
-                        
-                        <li class="toc-item-link">
-                            <a href="#item-industry-11">“亲人类宣言”遇上五角大楼-Anthropic对峙</a>
+                            <a href="#item-china-15">中科大99级校友创业 ACONTEXT获红杉、明势投资</a>
                         </li>
                         
                     </ul>
@@ -600,20 +665,56 @@
                 <div class="toc-category">
                     <div class="toc-category-title">
                         <a href="#cat-papers">📄 前沿论文</a>
-                        <span class="toc-count">3</span>
+                        <span class="toc-count">5</span>
                     </div>
                     <ul class="toc-items">
                         
                         <li class="toc-item-link">
-                            <a href="#item-papers-1">BEVLM：利用LLM语义知识提升自动驾驶鸟瞰图性能</a>
+                            <a href="#item-papers-1">异步联邦学习：新型距离度量提升梯度聚合效果</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-papers-2">腾讯AI Lab：Penguin-VL突破VLM效率极限，LLM赋能视觉编码</a>
+                            <a href="#item-papers-2">Video2LoRA：基于参考视频的语义控制视频生成框架</a>
                         </li>
                         
                         <li class="toc-item-link">
-                            <a href="#item-papers-3">NEGATE：扩散模型中实现精确语义否定的新方法</a>
+                            <a href="#item-papers-3">CoPaLink：AI驱动生物信息工具链接，提升工作流可重复性</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-papers-4">TildeOpen LLM：课程学习提升欧洲小语种模型性能</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-papers-5">RexDrug：基于LLM的药物组合智能抽取框架</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+                
+                
+                
+                <div class="toc-category">
+                    <div class="toc-category-title">
+                        <a href="#cat-big_tech">🏢 大厂动态</a>
+                        <span class="toc-count">4</span>
+                    </div>
+                    <ul class="toc-items">
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-big_tech-1">三星考虑未来Galaxy AI支持“Vibe Coding”应用开发</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-big_tech-2">Galaxy S26“Ask AI”功能受限，仅在美韩可用</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-big_tech-3">三星Galaxy S26 Ultra发布，AI功能成焦点</a>
+                        </li>
+                        
+                        <li class="toc-item-link">
+                            <a href="#item-big_tech-4">OpenAI收购AI安全平台Promptfoo，强化模型安全</a>
                         </li>
                         
                     </ul>
@@ -627,446 +728,10 @@
         <!-- Categories -->
         
         
-        <div class="category" id="cat-social">
-            <h2 class="category-header">
-                🐦 社交热议
-                <span class="count">7</span>
-            </h2>
-
-            
-            <div class="news-item " id="item-social-1">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://rmoff.net/2025/11/25/ai-smells-on-medium/" target="_blank">博客作者揭示Medium上AI生成内容的“气味”，警惕低质量内容</a>
-                            <span class="translated">已翻译</span>
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Hacker News</span>
-                            
-                            <span class="news-date">03-09 02:12</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">博客作者rmoff分享了在Medium等平台筛选文章时发现的AI生成内容的一些明显特征，称之为“气味”。这些特征包括AI生成的平庸配图、缺乏上下文的细节描述、以及ASCII艺术图等。作者认为，大量低质量AI生成内容使得发现优质内容变得更加困难，并提醒读者注意这些“气味”，以避免浪费时间阅读劣质文章。文章还提到了Inoreader等RSS阅读工具的使用。</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-social-2">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://github.com/piotrmaciejbednarski/llm-inference-tampering" target="_blank">GGUF模型漏洞：无需重启服务器即可篡改LLM输出</a>
-                            <span class="translated">已翻译</span>
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Hacker News</span>
-                            
-                            <span class="news-date">03-09 01:33</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">研究人员发现了一种针对GGUF量化模型的攻击方法，可以在LLM推理服务器运行时，通过修改模型文件中的权重来持久性地操纵LLM的输出。该攻击利用了llama.cpp默认的内存映射机制，允许恶意进程修改磁盘上的模型文件，从而影响服务器的推理结果，无需重启服务器或进行进程注入。攻击者通过修改output.weight张量中的特定token权重，可以控制模型的输出。缓解措施包括将模型文件设置为只读，或禁用内存映射功能(--no-mmap)。</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-social-3">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://technohumanity.substack.com/p/when-ai-can-finally-give-everyone" target="_blank">AI替代加速：你的议价能力正在消失</a>
-                            <span class="translated">已翻译</span>
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Hacker News</span>
-                            
-                            <span class="news-date">03-09 01:23</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">文章指出，AI技术的快速发展正导致劳动力市场议价能力的丧失。企业不再需要解雇员工，而是通过自动化和AI系统逐步替代人工，尤其针对高薪岗位。Amazon等公司已计划通过自动化大幅减少未来的人工需求。这种趋势将加剧收入不平等，并使拥有AI技术和基础设施的企业集团掌握更大的权力，最终导致劳动力价值降低，社会资源分配不均。</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-social-4">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://github.com/kaspnilsson/digital-twin-playbook" target="_blank">自建AI知识库：掌控个人数据，摆脱厂商锁定</a>
-                            <span class="translated">已翻译</span>
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Hacker News</span>
-                            
-                            <span class="news-date">03-09 01:14</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">开发者分享了一种自建AI知识库的方案，旨在解决用户数据被各大AI厂商（如OpenAI、Google）锁定的问题。该方案通过搭建基于Postgres的知识图谱，让用户可以跨模型、跨设备地使用自己的AI上下文和记忆。用户使用MCP协议连接各类AI模型，所有数据存储在用户自己的服务器上，从而避免了数据泄露和厂商锁定。此举旨在让用户真正掌控自己的AI数据，而非受制于订阅模式和厂商策略。</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-social-5">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://reorchestrate.com/posts/your-binary-is-no-longer-safe-decompilation/" target="_blank">利用LLM辅助反编译：破解二进制代码的新方法</a>
-                            <span class="translated">已翻译</span>
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Hacker News</span>
-                            
-                            <span class="news-date">03-09 01:05</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">研究人员正在探索使用大型语言模型(LLM)来自动化二进制程序的反向工程，重点是反编译过程。通过Ghidra等工具，结合Google Gemini模型的代码理解能力，LLM能够识别代码模式并自动重命名函数和变量，从而将难以理解的机器代码转化为更具可读性的伪代码。这项技术可应用于现代化旧代码或将COBOL等传统语言转换为现代语言，为软件逆向工程和代码维护带来新的可能性，同时也展示了LLM在标准基准之外的实际应用潜力。</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-social-6">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://futurism.com/artificial-intelligence/ai-brain-fry" target="_blank">AI过度使用致“大脑过载”，高绩效员工尤甚</a>
-                            <span class="translated">已翻译</span>
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Hacker News</span>
-                            
-                            <span class="news-date">03-08 23:54</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">一项针对美国近1500名全职员工的调查显示，过度使用AI工具以提高工作效率会导致“大脑过载”，尤其是在营销、软件开发、人力资源、金融和IT等领域。员工报告出现“嗡嗡”感、精神“迷雾”、头痛和决策迟缓等症状。研究表明，信息过载和频繁的任务切换是主要原因，持续监督AI工具更是加剧了精神疲劳。这种“大脑过载”不仅影响员工决策能力，还显著提高了离职意愿，对企业造成潜在经济损失。</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-social-7">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://github.com/mkash25/Claude-powered-AI-native-financial-dashboard" target="_blank">自托管金融分析系统：Plaid连账户，Claude助分析，月耗约5美元</a>
-                            <span class="translated">已翻译</span>
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Hacker News</span>
-                            
-                            <span class="news-date">03-08 23:54</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">一款自托管的个人金融分析系统在Hacker News上展示。该系统通过Plaid连接用户的真实券商账户，利用市场数据和技术指标丰富持仓信息，并使用Claude的AI能力进行买卖/持有分析，最终在Next.js仪表板上呈现。用户每月花费约5美元即可运行，主要成本来自Claude API的使用。该工具仅供个人参考，不构成财务建议，用户应咨询专业人士后再做投资决策。</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-        </div>
-        
-        
-        
-        <div class="category" id="cat-china">
-            <h2 class="category-header">
-                🇨🇳 国内动态
-                <span class="count">9</span>
-            </h2>
-
-            
-            <div class="news-item " id="item-china-1">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://36kr.com/p/3714634245009800?f=rss" target="_blank">NoDesk AI转型：两周速成DeskClaw，豪取近亿元融资</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">36氪 AI</span>
-                            
-                            <span class="news-date">03-09 02:00</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">AI公司NoDesk AI创始人宋健带领团队，在两周内基于OpenClaw快速开发出AI助手DeskClaw，并获得近亿元融资。DeskClaw是一款AI助手桌宠，能操作浏览器、读写文件，深度适配办公软件，旨在提升用户效率。宋健认为，OpenClaw代表Agent技术架构的重构，将改写软件商业化路径。NoDesk AI 正在探索AI原生组织形态，并寻求新一轮融资，其电商营销Agent产品也将通过DeskClaw企业版实现协作。</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260309/v2_3da0dae1b1dc40afab76cf96881d84fc@2057308263_oswg84347oswg1080oswg608_img_000?x-oss-process=image/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-china-2">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://36kr.com/p/3714480200085633?f=rss" target="_blank">前vivo产品经理宋紫薇AI创业，「薇光点亮」获超亿元融资</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">36氪 AI</span>
-                            
-                            <span class="news-date">03-09 01:30</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">前vivo明星产品经理宋紫薇创立的AI智能硬件公司「薇光点亮」近期完成超亿元Pre-A轮融资，由红杉中国、蓝驰创投联合领投。该公司致力于打造以时尚AI Agent为核心的智能硬件产品矩阵，首款产品或为AI原生落地镜，深度融合穿搭等场景。融资将用于人才建设、硬件研发和模型训练。宋紫薇曾成功打造多款爆款手机产品，其在消费电子领域的经验积累，以及“AI+时尚”的独特方向，使该项目备受关注。</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260309/v2_1ef5f927ec874c7d8cabbf84d27bda87@1199336245_oswg295495oswg1620oswg1080_img_jpg?x-oss-process=image/quality,q_100/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-china-3">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://36kr.com/p/3711571451572360?f=rss" target="_blank">中科大99级生创业 ACONTEXT获红杉、明势投资</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">36氪 AI</span>
-                            
-                            <span class="news-date">03-09 00:30</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">99级中科大学生叶坚白创立的ACONTEXT，近期完成数百万美元天使轮融资，由红杉中国种子基金和明势资本共同投资。ACONTEXT致力于为Agent提供一站式的自学习平台，解决Agent在复杂任务执行中的数据管理问题，提高任务成功率。该平台通过提供数据存储、决策路径观测和智能体自学习服务，帮助开发者降低Agent开发和管理门槛。叶坚白曾参与多个热门开源项目，团队成员来自字节跳动、百度、微软等公司。</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260306/v2_67a3ea1c0c304f2bb33a113c5321779b@5783683_oswg150680oswg900oswg335_img_png?x-oss-process=image/quality,q_100/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-china-4">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://36kr.com/p/3708504364462466?f=rss" target="_blank">MetaNovas获融资，AI智能体加速新材料研发</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">36氪 AI</span>
-                            
-                            <span class="news-date">03-09 00:00</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">元星智药MetaNovas近期完成A+、A++两轮融资，由富华资本、高瓴资本等投资。MetaNovas利用Agentic AI构建系统级平台，加速新材料的开发流程，将传统3-5年的开发周期缩短至12个月。其自研分子语言生成大模型，覆盖广阔化学空间，并开发性能预测模型。通过AI智能体，MetaNovas提升研发效率，降低试错成本，并已在生物活性成分、医用材料等领域取得进展，推动新材料研发进入新时代。</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260306/v2_26bbb2fcf6934f8899d08d1f026000e8@5452796_oswg213495oswg1920oswg1280_img_jpg?x-oss-process=image/quality,q_100/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-china-5">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://36kr.com/p/3714938148941957?f=rss" target="_blank">深圳龙岗区补贴OpenClaw“养龙虾”，最高可达200万</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">36氪 AI</span>
-                            
-                            <span class="news-date">03-08 23:53</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">深圳市龙岗区拟出台政策，鼓励市场化平台免费提供开源智能体OpenClaw部署服务，并对贡献代码、开发技能包、结合具身智能应用的项目，经认定后给予最高200万元补贴。腾讯创始人马化腾表示腾讯云免费安装OpenClaw服务超出预期。此外，周鸿祎也表示将发布一键安装版本。OpenClaw因图标酷似红色龙虾而走红，旨在抓住智能经济发展机遇，推动智能制造、智慧政务等领域的应用。</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-china-6">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://36kr.com/p/3713882515403142?f=rss" target="_blank">清华毕业生去向：出国比例降，华为字节成AI人才赢家</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">36氪 AI</span>
-                            
-                            <span class="news-date">03-08 09:43</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">清华大学最新毕业生去向报告显示，出国深造比例下降，国内就业成主流。华为、字节跳动等科技巨头成为清华毕业生主要去向，尤其在AI领域需求旺盛。报告还指出，赴西部和东北地区就业人数持续增长，京外就业率过半，表明清华毕业生正积极投身国家重点行业和地区发展，技术岗位需求量大，AI人才备受青睐。</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260308/v2_e3667cc5cf554e519426065134b666fc@5579416_oswg134199oswg1080oswg720_img_000?x-oss-process=image/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-china-7">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://36kr.com/p/3713983582662788?f=rss" target="_blank">00后大学生10天AI编程获3000万投资，陈天桥慧眼识才</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">36氪 AI</span>
-                            
-                            <span class="news-date">03-08 09:17</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">00后大学生BaiFu凭借AI开源项目MiroFish登上GitHub趋势榜首，并获得盛大集团陈天桥3000万投资，成为AI创业公司CEO。MiroFish是一个AI预测引擎，旨在构建模拟真实世界的数字沙盘，用于金融、政策等领域的预测。该项目仅用10天完成，体现了“Vibe Coding”和超级个体时代的潜力，以及AI工具对个人生产力的提升。硅谷“一人公司”模式正在兴起，中国也在快速跟进。</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260308/v2_6784b696ab604fb7af831869eeba5973@5579416_oswg273512oswg1080oswg1131_img_000?x-oss-process=image/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-china-8">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://36kr.com/p/3714020694061185?f=rss" target="_blank">AI冲击下，长视频平台陷困境，短剧崛起蚕食市场</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">36氪 AI</span>
-                            
-                            <span class="news-date">03-08 08:43</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">长视频平台如爱奇艺、腾讯视频、芒果TV在2025年面临营收和利润下滑的困境，国产长剧集质量下降和话题性缺失是主要原因。与此同时，短剧行业，尤其是AI短剧迅速崛起，蚕食了长视频平台的用户时长。尽管Netflix和YouTube等海外平台表现良好，但国内长视频平台需警惕AI技术带来的变革，并积极探索PUGC模式，以应对短剧带来的挑战，抓住用户对高质量长内容的需求。</p>
-                        
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-china-9">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://36kr.com/p/3714009108001160?f=rss" target="_blank">AI算力需求激增，中国西电等电网设备商或成千亿龙头</a>
-                            
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">36氪 AI</span>
-                            
-                            <span class="news-date">03-08 08:19</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">AI发展对电力需求暴增，推动中国电网设备行业迎来新一轮投资周期。中国AI模型凭借低廉的电力成本，实现“Token出海”，与美国模型竞争。思源电气、金盘科技等公司受益于国内智能算力扩容和海外电力设备短缺，订单加速交付。中国西电等特高压设备商，有望受益于国家电网在“十五五”期间的特高压工程投资，成为下一个千亿市值龙头企业。</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260308/v2_f5885340cc4f414ea55932fc247ea8b2@5579416_oswg411165oswg630oswg696_img_000?x-oss-process=image/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-        </div>
-        
-        
-        
         <div class="category" id="cat-industry">
             <h2 class="category-header">
                 💰 行业投融资
-                <span class="count">11</span>
+                <span class="count">10</span>
             </h2>
 
             
@@ -1075,24 +740,24 @@
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="http://www.techmeme.com/260308/p14#a260308p14" target="_blank">伊朗战事或阻碍海湾国家3000亿美元AI投资计划</a>
+                            <a href="http://www.techmeme.com/260309/p42#a260309p42" target="_blank">首投Anthropic的Spark Capital拟募资30亿美元</a>
                             <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">Techmeme</span>
                             
-                            <span class="news-date">03-09 01:50</span>
+                            <span class="news-date">03-10 02:25</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">伊朗的战争局势日益复杂，这可能会严重影响海湾国家原本计划投入超过3000亿美元的AI相关投资，包括数据中心、芯片等领域。这项投资计划原本被视为科技公司重要的潜在资金来源。地缘政治风险的增加，使得海湾国家在AI领域的投资决策变得更加谨慎，这对于依赖这些资金的科技企业来说，无疑是一个潜在的打击，可能会影响其未来的发展和扩张。</p>
+                        <p class="news-summary">据报道，最早投资AI公司Anthropic的风险投资公司Spark Capital正在筹集约30亿美元的新基金，比两年前的募资规模增加了50%。Spark Capital对Anthropic的早期投资获得了巨大回报，此次大规模募资反映了投资者对AI领域的持续看好。这笔资金预计将用于支持更多有潜力的人工智能初创企业，进一步推动AI技术的发展和应用。</p>
                         
                         
                     </div>
                     
-                    <img class="news-image" src="http://www.techmeme.com/260308/i14.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    <img class="news-image" src="http://www.techmeme.com/260309/i42.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
                     
                 </div>
             </div>
@@ -1102,24 +767,24 @@
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="http://www.techmeme.com/260308/p13#a260308p13" target="_blank">美国中期选举：候选人利用AI和加密货币争取政治献金</a>
+                            <a href="http://www.techmeme.com/260309/p41#a260309p41" target="_blank">开源AI平台Dify获HSG领投3000万美元Pre-A轮融资</a>
                             <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">Techmeme</span>
                             
-                            <span class="news-date">03-09 00:25</span>
+                            <span class="news-date">03-10 01:25</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">纽约时报报道，部分美国中期选举候选人正通过社交媒体和网站上的特定关键词，向加密货币和人工智能超级政治行动委员会（Super PACs）发出信号，以争取政治献金。AI和加密货币行业今年拥有近2.5亿美元的资金，旨在影响监管政策。候选人利用行业热点，例如AI，吸引资金支持，反映了科技行业对政治的影响力日益增强，以及政治竞选对新兴技术的依赖。</p>
+                        <p class="news-summary">位于加州门洛帕克的AI平台Dify宣布完成3000万美元的Pre-A轮融资，由HSG领投，公司估值达到1.8亿美元。Dify提供一个开源平台，旨在帮助团队构建、部署和运营生产级别的AI应用程序和智能工作流。此次融资将加速Dify在AI应用开发领域的布局，并进一步推动开源AI技术的发展，降低企业采用AI的门槛。Dify的平台允许开发者更便捷地创建和管理基于LLM的AI应用。</p>
                         
                         
                     </div>
                     
-                    <img class="news-image" src="http://www.techmeme.com/260308/i13.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    <img class="news-image" src="http://www.techmeme.com/260309/i41.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
                     
                 </div>
             </div>
@@ -1129,24 +794,24 @@
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="http://www.techmeme.com/260308/p12#a260308p12" target="_blank">哈佛研究：AI既能缓解倦怠，也可能导致“AI脑雾”</a>
+                            <a href="http://www.techmeme.com/260309/p40#a260309p40" target="_blank">xAI计划自建天然气发电厂，供电密西西比数据中心</a>
                             <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">Techmeme</span>
                             
-                            <span class="news-date">03-08 22:40</span>
+                            <span class="news-date">03-10 00:20</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">一项针对约1500名美国员工的哈佛商业评论研究发现，使用AI工具虽然可以减轻工作倦怠感，但也可能导致“AI脑雾”，即因使用超出认知能力的AI工具而产生的精神疲劳。研究表明，过度依赖AI可能对心理健康产生负面影响。该研究强调了在工作场所合理使用AI的重要性，避免过度依赖并关注员工的认知负荷，以充分发挥AI的积极作用并减少潜在的负面影响。</p>
+                        <p class="news-summary">Elon Musk旗下xAI计划在美国密西西比州Southaven建造一座大型天然气发电厂，专门为其数据中心供电。此举旨在确保xAI在AI模型训练和推理过程中拥有稳定且独立的电力来源，减少对公共电网的依赖。监管机构的关键会议将在选举日附近举行，距离发电厂约200英里。自建电厂反映了xAI对未来AI发展所需算力的巨大需求，以及对能源供应自主性的重视，同时也引发了关于环境影响的讨论。</p>
                         
                         
                     </div>
                     
-                    <img class="news-image" src="http://www.techmeme.com/260308/i12.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    <img class="news-image" src="http://www.techmeme.com/260309/i40.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
                     
                 </div>
             </div>
@@ -1156,24 +821,24 @@
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="http://www.techmeme.com/260308/p11#a260308p11" target="_blank">Luma AI发布Uni-1：图像理解与生成一体化模型，超越Nano Banana 2</a>
+                            <a href="http://www.techmeme.com/260309/p39#a260309p39" target="_blank">消息称白宫将禁止联邦机构使用Anthropic AI工具</a>
                             <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">Techmeme</span>
                             
-                            <span class="news-date">03-08 20:55</span>
+                            <span class="news-date">03-09 23:55</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">Luma AI发布了名为Uni-1的全新图像模型，该模型将图像理解和生成功能集成于单一架构中。据报道，Uni-1在基于逻辑的基准测试中表现出色，超越了Nano Banana 2。Uni-1与Google的Nano Banana Pro和GPT Image 1.5类似，均基于自回归Transformer构建。这一突破表明Luma AI在图像生成和理解领域取得了显著进展，有望推动相关技术的进一步发展。</p>
+                        <p class="news-summary">据Axios报道，消息人士透露，白宫正准备发布一项行政命令，正式指示联邦政府机构停止使用Anthropic的AI工具。此举的具体原因尚未明确，但可能与政府对AI技术安全性和供应商多元化的考量有关。如果该命令生效，将对Anthropic的政府业务造成重大影响，并可能促使其他AI供应商争取政府合同。此事件也反映了美国政府对AI技术应用的日益重视和谨慎态度。</p>
                         
                         
                     </div>
                     
-                    <img class="news-image" src="http://www.techmeme.com/260308/i11.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    <img class="news-image" src="http://www.techmeme.com/260309/i39.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
                     
                 </div>
             </div>
@@ -1183,19 +848,46 @@
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="https://techcrunch.com/2026/03/08/will-the-pentagons-anthropic-controversy-scare-startups-away-from-defense-work/" target="_blank">Anthropic争议：五角大楼合作会吓退AI初创公司吗？</a>
+                            <a href="http://www.techmeme.com/260309/p35#a260309p35" target="_blank">HPE营收超预期，AI服务器积压订单达50亿美元</a>
                             <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
-                            <span class="news-source">TechCrunch AI</span>
+                            <span class="news-source">Techmeme</span>
                             
-                            <span class="news-date">03-08 20:14</span>
+                            <span class="news-date">03-09 22:10</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">TechCrunch的Equity播客讨论了五角大楼与Anthropic合作引发的争议，以及该事件可能对其他寻求与美国联邦政府合作的AI初创企业产生的影响。分析认为，此次争议可能会让一些初创公司对涉足国防领域持谨慎态度，担心类似的审查和政治压力。该事件凸显了AI公司在追求政府合同时需要考虑的潜在风险，以及如何在商业利益与社会责任之间取得平衡。未来，AI初创企业或将更加审慎地评估与政府部门的合作机会。</p>
+                        <p class="news-summary">HPE公布第一季度财报，营收同比增长18%至93亿美元，略低于预期的93.7亿美元。尽管云和AI相关收入同比下降2.7%至63亿美元，但其AI服务器积压订单高达50亿美元，显示市场对HPE的AI服务器需求强劲。公司对当前季度的营收展望超出分析师预期，表明HPE在AI基础设施领域的增长潜力依然巨大，积压订单将有助于未来业绩的增长。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="http://www.techmeme.com/260309/i35.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-industry-6">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://techcrunch.com/2026/03/09/openai-and-google-employees-rush-to-anthropics-defense-in-dod-lawsuit/" target="_blank">OpenAI和Google员工声援Anthropic诉讼，反对美国防部供应链风险评估</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">TechCrunch AI</span>
+                            
+                            <span class="news-date">03-09 21:15</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">超过30名来自OpenAI和Google DeepMind的员工签署了一份声明，公开支持Anthropic针对美国国防部的诉讼。此前，美国国防部将AI公司Anthropic列为供应链风险企业。此举反映了AI行业内部对政府监管以及AI公司与政府机构关系的高度关注。员工们对Anthropic的支持，或将进一步推动关于AI安全和政府干预的讨论。</p>
                         
                         
                         <div class="tags">
@@ -1213,56 +905,37 @@
                 </div>
             </div>
             
-            <div class="news-item " id="item-industry-6">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="http://www.techmeme.com/260308/p10#a260308p10" target="_blank">Circle、Stripe等构建稳定币支付，赋能AI Agent微交易</a>
-                            <span class="translated">已翻译</span>
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
-                            
-                            <span class="news-date">03-08 19:15</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">Circle、Stripe和Coinbase等公司正在积极构建基于稳定币的支付基础设施，旨在实现AI Agent之间的经济高效的微交易。这些公司押注未来AI Agent将需要频繁进行小额支付，例如访问数据或使用API。通过利用稳定币的低成本和高效率，他们希望为AI经济奠定基础，并抢占未来市场先机。这一举措有望降低AI Agent交互的成本，并促进AI技术的更广泛应用。</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260308/i10.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
             <div class="news-item " id="item-industry-7">
                 <div class="news-content-wrapper">
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="http://www.techmeme.com/260308/p9#a260308p9" target="_blank">美以利用AI对伊朗发动战争，速度与精度空前</a>
+                            <a href="https://techcrunch.com/2026/03/09/anthropic-launches-code-review-tool-to-check-flood-of-ai-generated-code/" target="_blank">Anthropic推出Claude Code代码审查工具，应对AI代码激增</a>
                             <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
+                            <span class="news-source">TechCrunch AI</span>
                             
-                            <span class="news-date">03-08 17:50</span>
+                            <span class="news-date">03-09 19:41</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">《华尔街日报》报道，美国和以色列正在利用人工智能（AI）技术，以前所未有的速度和精度对伊朗发动攻击。AI加速了情报收集、目标定位和损害评估等环节，其军事应用版本正在重塑商业和日常生活。尽管AI提升了军事行动的效率，但错误决策的代价依然很高，需要警惕AI在战争中可能带来的风险和伦理问题。</p>
+                        <p class="news-summary">Anthropic发布了Claude Code中的代码审查工具，旨在帮助企业开发者管理日益增长的AI生成代码。该多代理系统能够自动分析AI生成的代码，标记潜在的逻辑错误，从而提高代码质量和开发效率。随着AI在软件开发中的应用日益广泛，此类工具对于确保代码可靠性和降低维护成本至关重要。Claude Code的代码审查功能为企业提供了一种有效的方式来应对AI代码激增带来的挑战。</p>
                         
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">AI</span>
+                            
+                            <span class="tag">Anthropic</span>
+                            
+                            <span class="tag">claude code</span>
+                            
+                        </div>
                         
                     </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260308/i9.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
                     
                 </div>
             </div>
@@ -1272,26 +945,28 @@
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="https://techcrunch.com/2026/03/08/owner-of-ice-detention-facility-sees-big-opportunity-in-ai-man-camps/" target="_blank">AI数据中心兴起“男性营地”模式，引发关注</a>
+                            <a href="https://techcrunch.com/2026/03/09/anthropic-sues-defense-department-over-supply-chain-risk-designation/" target="_blank">Anthropic起诉美国国防部，反对被列为供应链风险</a>
                             <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">TechCrunch AI</span>
                             
-                            <span class="news-date">03-08 16:30</span>
+                            <span class="news-date">03-09 17:25</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">随着AI数据中心需求的激增，一种被称为“男性营地”的住宿模式正变得越来越普遍。这种模式最初用于偏远油田的工人居住，现在被数据中心开发者采用，以容纳大量技术人员。由于数据中心通常位于偏远地区，这种集中住宿方式可以有效解决员工的居住问题。然而，这种模式也引发了关于工作环境和社会影响的讨论，尤其是在AI行业快速发展，对数据中心依赖日益增加的背景下。</p>
+                        <p class="news-summary">AI公司Anthropic周一起诉美国国防部，原因是该机构将其列为供应链风险。Anthropic在诉讼中称国防部的行为“前所未有且非法”。此举表明AI公司与政府监管机构之间的紧张关系正在加剧。Anthropic的诉讼可能会对其他涉及敏感数据或国家安全问题的AI公司的监管产生重大影响，并可能影响国防部未来对AI技术供应商的评估标准。</p>
                         
                         
                         <div class="tags">
                             
                             <span class="tag">AI</span>
                             
-                            <span class="tag">target hospitality</span>
+                            <span class="tag">Government & Policy</span>
+                            
+                            <span class="tag">Anthropic</span>
                             
                         </div>
                         
@@ -1305,24 +980,32 @@
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="http://www.techmeme.com/260308/p7#a260308p7" target="_blank">ZyG获5800万美元种子轮融资，AI驱动DTC品牌营销</a>
+                            <a href="https://techcrunch.com/2026/03/09/qualcomms-partnership-with-neura-robotics-is-just-the-beginning/" target="_blank">Neura Robotics与Qualcomm合作，采用IQ10处理器开发新机器人</a>
                             <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
+                            <span class="news-source">TechCrunch AI</span>
                             
-                            <span class="news-date">03-08 15:20</span>
+                            <span class="news-date">03-09 15:58</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">ZyG公司近日宣布获得由Bessemer、Viola Ventures和Lightspeed共同领投的5800万美元种子轮融资。ZyG致力于开发AI驱动的软件，帮助DTC品牌协调SEO、营销等多个环节的AI智能代理，从而提升运营效率和市场竞争力。此轮融资将用于进一步研发和扩展其AI解决方案，助力DTC品牌在全球市场中更好地与大型品牌竞争，利用AI技术缩小规模差距。</p>
+                        <p class="news-summary">Neura Robotics宣布与Qualcomm建立合作伙伴关系，将在Qualcomm最新发布的IQ10处理器基础上开发新一代机器人产品。此次合作将结合Neura Robotics在机器人领域的专业知识与Qualcomm在AI芯片方面的优势，有望推动机器人技术的创新与应用。IQ10处理器强大的计算能力和AI性能将为Neura Robotics的机器人提供更高级的感知、决策和控制能力，从而拓展其在工业自动化、服务等领域的应用。</p>
                         
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">AI</span>
+                            
+                            <span class="tag">Robotics</span>
+                            
+                            <span class="tag">humanoids</span>
+                            
+                        </div>
                         
                     </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260308/i7.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
                     
                 </div>
             </div>
@@ -1332,55 +1015,28 @@
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <a href="http://www.techmeme.com/260308/p5#a260308p5" target="_blank">研究发现：Anthropic、Google等LLM或助长学术造假</a>
-                            <span class="translated">已翻译</span>
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-source">Techmeme</span>
-                            
-                            <span class="news-date">03-08 12:00</span>
-                            
-                            
-                        </div>
-                        
-                        
-                        <p class="news-summary">一项研究表明，Anthropic、Google、OpenAI和xAI等公司的LLM可能被用于学术欺诈，使得非研究人员能够向arXiv提交捏造的论文。该研究强调了大型语言模型在学术诚信方面带来的潜在风险，并引发了对现有审核机制有效性的担忧。这意味着学术界需要重新评估论文提交和审核流程，以应对LLM技术带来的新挑战，防止虚假研究成果的传播。</p>
-                        
-                        
-                    </div>
-                    
-                    <img class="news-image" src="http://www.techmeme.com/260308/i5.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
-                    
-                </div>
-            </div>
-            
-            <div class="news-item " id="item-industry-11">
-                <div class="news-content-wrapper">
-                    <div class="news-text">
-                        <h3 class="news-title">
-                            
-                            <a href="https://techcrunch.com/2026/03/07/a-roadmap-for-ai-if-anyone-will-listen/" target="_blank">“亲人类宣言”遇上五角大楼-Anthropic对峙</a>
+                            <a href="https://techcrunch.com/2026/03/09/sandberg-clegg-join-nscale-board-as-this-stargate-norway-startup-hits-14-6b-valuation/" target="_blank">Nvidia支持的AI公司Nscale融资20亿美元，估值达146亿美元</a>
                             <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">TechCrunch AI</span>
                             
-                            <span class="news-date">03-08 06:05</span>
+                            <span class="news-date">03-09 15:09</span>
                             
                             
                         </div>
                         
                         
-                        <p class="news-summary">在五角大楼与Anthropic公司因AI安全问题产生对峙之际，“亲人类宣言”最终定稿。虽然两件事在时间上有所重叠，但其内在关联性引起了业界的广泛关注。该宣言旨在呼吁对人工智能发展进行负责任的引导，确保AI技术符合人类价值观。此次事件凸显了在AI快速发展的同时，伦理和社会责任的重要性，以及政府监管与企业自律之间的平衡。</p>
+                        <p class="news-summary">英国AI基础设施初创公司Nscale在新一轮融资中筹集了20亿美元，公司估值达到146亿美元。此轮融资由Nvidia支持，进一步巩固了Nscale在AI基础设施领域的地位。据悉，Sandberg和Clegg也加入了Nscale董事会。Nscale致力于为AI模型训练和推理提供高性能计算资源，其发展对于推动AI技术的进步至关重要。巨额融资将加速Nscale的技术研发和市场扩张。</p>
                         
                         
                         <div class="tags">
                             
                             <span class="tag">AI</span>
                             
-                            <span class="tag">Anthropic</span>
+                            <span class="tag">Enterprise</span>
                             
-                            <span class="tag">Max Tegmark</span>
+                            <span class="tag">data centers</span>
                             
                         </div>
                         
@@ -1393,10 +1049,748 @@
         
         
         
+        <div class="category" id="cat-social">
+            <h2 class="category-header">
+                🐦 社交热议
+                <span class="count">7</span>
+            </h2>
+
+            
+            <div class="news-item " id="item-social-1">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://github.com/crumrine/fastmcp-personal-auth" target="_blank">无需Auth0：Claude平台个人MCP服务器OAuth 2.1认证方案</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
+                            
+                            <span class="news-date">03-10 03:31</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">开发者发布了一种无需外部身份验证提供商（如Auth0）的解决方案，使得个人 FastMCP 服务器能够安全地连接到所有 Claude 平台，包括 Web、移动端、桌面和 Code。该方案通过 OAuth 2.1 认证，简化了配置过程，并解决了在集成过程中遇到的常见问题，例如 FastMCP 客户端注册、OAuth 端点配置、流式响应处理以及工具命名冲突等。该方案允许开发者在个人环境中更便捷地使用 Claude 的各项功能。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-social-2">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://dcmc.github.io/blog/claude-banged-my-module/" target="_blank">用户利用Claude Code成功重写SFP模块EEPROM，实现硬件兼容</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
+                            
+                            <span class="news-date">03-10 02:51</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">一名用户分享了其利用 Claude Code 大语言模型成功重写 SFP 模块 EEPROM 的经历。该用户通过 Claude Code 提供的代码，绕过传统商业编程器，直接通过网卡的 I2C 总线位操作，修改了 Finisar 光纤模块和 Flypro RJ45 模块的 EEPROM 数据，使其在不同设备上正常工作。此举展示了 LLM 在硬件调试和配置方面的潜力，为解决硬件兼容性问题提供了一种低成本、高效的方案，甚至优于传统商业工具。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-social-3">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://jamespember.substack.com/p/loom-vs-linear-a-tale-of-two-ai-cities" target="_blank">AI时代：Loom数据封闭或将落败，Linear API开放或将胜出</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
+                            
+                            <span class="news-date">03-10 01:40</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">文章分析了在AI Agent时代，SaaS产品的“粘性”逻辑变化。过去依赖封闭生态和用户界面的Loom，因缺乏API接口，数据难以被Agent调用，可能在未来竞争中处于劣势。相反，Linear项目管理工具凭借强大的API和CLI，实现了与Agent的无缝集成，用户可以通过Agent在Linear上高效完成任务，例如自动处理积压问题、添加标签等。Linear的开放策略使其在AI时代更具竞争力，或将成为赢家。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-social-4">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://github.com/kodustech/kodus-ai" target="_blank">开源代码审查工具Kodus Cloud发布，模型选择更灵活</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
+                            
+                            <span class="news-date">03-10 01:12</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">一款名为Kodus Cloud的开源AI代码审查工具发布，旨在提供Claude Code Review的替代方案。该工具的核心优势在于其模型无关性，允许用户灵活选择代码审查所使用的AI模型，并更好地控制成本。开发者可以通过自托管方式部署Kodus Cloud，或者选择使用其云服务。该项目提供了详细的文档和CLI工具，并提供与创始人进行咨询的机会，方便用户快速上手和解决问题。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-social-5">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://github.com/giorgioleonardi/pug" target="_blank">Pug工具：将API文档转化为AI Agent可用的命令行界面</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
+                            
+                            <span class="news-date">03-10 00:29</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">Pug是一款可以将任何API文档转化为高质量命令行界面(CLI)的工具。它利用LLM将API文档解析为结构化的“Bone Map”，并生成Go Cobra CLI以及CLAUDE.md、SKILL.md等文件，方便AI Agent理解和执行API任务。通过Pug，开发者可以更轻松地将各种服务与Model Context Protocol (MCP) 或本地agentic工作流程集成，无需手动设置环境变量，从而简化AI应用开发流程。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-social-6">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://www.wired.com/story/nvidia-planning-ai-agent-platform-launch-open-source/" target="_blank">Nvidia计划推出开源AI Agent平台NemoClaw</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
+                            
+                            <span class="news-date">03-09 23:31</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">Nvidia计划推出名为NemoClaw的开源AI Agent平台，旨在帮助企业部署AI智能体以执行任务。该平台将向所有公司开放，不限制于使用Nvidia芯片的产品。Nvidia已与Salesforce、Cisco、Google、Adobe和CrowdStrike等公司洽谈合作，可能提供早期访问权限以换取项目贡献。此举正值企业对AI Agent的安全性和隐私问题日益关注之际，Nvidia希望通过提供安全工具来吸引企业客户，并巩固其在AI基础设施领域的地位。同时，Nvidia也计划在开发者大会上发布新的推理计算芯片系统。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-social-7">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://github.com/cassmtnr/claude-code-starter" target="_blank">Claude推出智能CLI工具，代码分析与配置生成</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Hacker News</span>
+                            
+                            <span class="news-date">03-09 23:24</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">Anthropic的Claude推出了一款智能CLI工具，旨在通过深度分析项目代码库，为开发者生成定制化的Claude Code配置。与传统的静态脚手架工具不同，该CLI能够理解项目的架构、模式、约定和领域知识，从而生成更具针对性的文档和配置。该工具还能检测项目使用的框架，并生成额外的技能。例如，如果项目使用GitHub Actions进行持续集成，CLI将自动配置语义化版本发布流程。此工具旨在简化Claude在现有项目中的集成，提高开发效率。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div>
+        
+        
+        
+        <div class="category" id="cat-newsletter">
+            <h2 class="category-header">
+                📬 Newsletter精选
+                <span class="count">3</span>
+            </h2>
+
+            
+            <div class="news-item " id="item-newsletter-1">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://www.latent.space/p/ainews-autoresearch-sparks-of-recursive" target="_blank">AI自主研究兴起：Karpathy展示LLM自迭代改进</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Latent Space</span>
+                            
+                            <span class="news-date">03-10 02:21</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">AI自主研究正成为现实。Andrej Karpathy展示了利用Agent驱动的研究循环改进nanochat模型，在约700次自主迭代后，“达到GPT-2水平”的时间缩短了约11%。Anthropic的Claude Code代码审查工具显著提升了内部代码审查效率。此外，Perplexity的“Computer”正演变为Agent编排器，具备实际工具链，可自主运行广告活动。这些进展表明，AI Agent不仅能辅助编码，还能优化模型训练，甚至运行业务基础设施，预示着AI研究和应用的新阶段。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://substackcdn.com/image/fetch/$s_!j6Wh!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F029937e5-383d-4302-a39c-d0bdac3f797e_1188x1252.png" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-newsletter-2">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://www.a16z.news/p/top-100-gen-ai-consumer-apps-march" target="_blank">a16z报告：ChatGPT仍领先，AI应用全球格局呈三足鼎立之势</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">a16z AI</span>
+                            
+                            <span class="news-date">03-09 14:02</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">a16z发布2026年3月Gen AI消费者应用报告，指出ChatGPT在用户规模上仍遥遥领先，但Gemini和Claude等竞争对手正加速追赶。报告强调，AI应用市场正呈现美国、中国、俄罗斯三足鼎立的格局，西方AI工具在用户群体上高度重叠，而DeepSeek等产品则成为连接不同市场的桥梁。此外，图像生成工具的重要性下降，视频、音乐等创意AI应用崛起，预示着AI应用领域多元化发展趋势。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://substack-post-media.s3.amazonaws.com/public/images/302d2f79-6b12-425b-b3a5-881110fde64a_2844x1600.png" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-newsletter-3">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://lastweekin.ai/p/last-week-in-ai-337-anthropic-risk" target="_blank">Anthropic与美军陷僵局，OpenAI趁机上位推GPT-5.4</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Last Week in AI</span>
+                            
+                            <span class="news-date">03-09 07:15</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">Anthropic因合同条款与美国国防部产生争议，被列为供应链风险，其Claude模型的使用受到限制。与此同时，OpenAI与国防部达成协议，引发“QuitGPT”抵制浪潮，硬件主管也因此辞职。OpenAI还发布了GPT-5.4，包括标准版、Pro版和Thinking版，并升级了ChatGPT的默认模型至GPT-5.3 Instant，旨在减少不必要的拒绝和提高准确性。这些事件反映了AI公司在伦理、安全和商业利益之间面临的复杂挑战。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://substackcdn.com/image/fetch/$s_!tjKY!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fdc148a97-3216-4737-a62e-5b20dfed64fe_1032x586.png" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+        </div>
+        
+        
+        
+        <div class="category" id="cat-china">
+            <h2 class="category-header">
+                🇨🇳 国内动态
+                <span class="count">15</span>
+            </h2>
+
+            
+            <div class="news-item " id="item-china-1">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3715521730933127?f=rss" target="_blank">拿火音乐：AI音乐工作站海外众筹超百万美元</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-10 01:59</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">广州拿火音乐(LAVA MUSIC)凭借“材料创新+智能交互”模式起家，其LAVA STUDIO AI音乐工作站通过AI音频模型模拟经典效果器和音箱，在海外众筹超过226万美元，刷新乐器类众筹纪录。该公司此前以碳纤维智能吉他LAVA ME破局，并推出无弦吉他“精灵”。拿火音乐全年营收已达数亿元，其产品也曾登上罗永浩的直播。该公司正通过AI技术降低音乐创作门槛，目标是开拓更广阔的大众音乐市场。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260309/v2_aead15008f3f4be38827a9f27ee67fa9@6022551_oswg97644oswg1620oswg1080_img_jpg?x-oss-process=image/quality,q_100/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-2">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3716375591794051?f=rss" target="_blank">腾讯QClaw内测：一键部署“小龙虾”，接入微信QQ</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-10 00:17</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">腾讯正在内测名为QClaw的OpenClaw一键启动包，旨在降低AI Agent的部署门槛，方便用户轻松在本地电脑上部署“小龙虾”。QClaw并非腾讯自研Agent框架，而是对OpenClaw进行产品化封装，解决普通用户的使用难题。据悉，QClaw支持Kimi、MiniMax等国产模型，并可一键关联已安装的OpenClaw，未来或将接入微信、QQ双端，方便用户使用AI能力。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-3">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3715472798527617?f=rss" target="_blank">国家超算互联网OpenClaw接入飞书、企业微信</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-09 11:43</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">国家超算互联网宣布其OpenClaw服务已打通飞书、企业微信，用户可灵活选择多种模型API调用服务。联想百应与美团合作推出OpenClaw远程部署服务，并推出原生适配OpenClaw的AI终端。此外，复旦大学附属妇产科医院联合阿里云发布“红房子·启元”AI妇产科垂直大模型，其AI患者助理已获上海市备案。这些进展表明AI技术在办公、医疗等领域的应用正在加速落地。</p>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-4">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3715205580058756?f=rss" target="_blank">觅熵科技获融资，AI卫星情报助力中东局势分析</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-09 04:24</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">地理空间情报公司觅熵科技(MizarVision)宣布完成pre-A轮融资，由现象资本独家投资，金额超千万元。觅熵科技专注于商业卫星遥感与AI融合，其情报平台能提前披露中东地区美军动向。该公司利用AI大模型解读地理空间信息，为国防、能源、金融等行业提供SaaS服务。融资将用于技术研发和市场拓展，目标是打造“情报界Bloomberg”，将遥感数据转化为各行业决策的重要参考。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260309/v2_eadc185058d148fc98cd2ee38dc7623b@5920579_oswg298772oswg1080oswg608_img_000?x-oss-process=image/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-5">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://waytoagi.feishu.cn/wiki/YK6iwEXSPiDUFBkRl3ScbJ4ZnTg" target="_blank">WayToAGI发布Agent Skills营销增长与SEO优化指南</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">WayToAGI</span>
+                            
+                            <span class="news-date">03-09 12:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">WayToAGI发布了一份Agent Skills实战指南，详细解析了Skills的定义、历史以及生态系统。该指南提供了Skills的具体安装方法和跨平台使用教程，并包含一个拥有144个Skills的营销技能库，覆盖SEO、广告营销和页面搭建等多个应用场景。此外，指南还分享了推广技巧，旨在帮助用户快速掌握这套体系，使AI Agent成为可落地、可管控的生产力工具，助力营销增长和SEO优化。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">知识库精选</span>
+                            
+                            <span class="tag">WayToAGI</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-6">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://waytoagi.feishu.cn/wiki/FPu4wr66CioiTWkTesucoKdDnUh" target="_blank">人文工作者AI使用指南：掌控AI工作流，提升效率</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">WayToAGI</span>
+                            
+                            <span class="news-date">03-09 12:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">一份针对人文工作者的AI使用指南强调了在利用AI工具时保持可追溯性、可操纵性和署名的重要性。该指南并未侧重速成技巧，而是着重于将AI转变为可控的工作台，通过拆解任务、多模型对比、工业化流程等方法，帮助人文研究者主导创作方向，利用AI执行工作，从而在保证研究严谨性的同时，大幅提高工作效率，并有效避免AI幻觉。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">知识库精选</span>
+                            
+                            <span class="tag">WayToAGI</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-7">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://waytoagi.feishu.cn/wiki/BvFzw6BbfiQ4R7kpCj1cDCHKnIf" target="_blank">Jayson：用AI自动化小龙虾将播客转为可视化知识图</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">WayToAGI</span>
+                            
+                            <span class="news-date">03-09 12:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">WayToAGI报道，Jayson利用AI工具“小龙虾”实现播客内容自动化知识图谱生成。用户只需提供播客链接，该工具即可自动下载、转录、补充资料、提炼知识框架，并生成4K信息图，最终发布到飞书群。整个过程无需人工干预，从音频到知识图谱仅需约3分钟。文章提供了完整的搭建教程和代码，并分享了实践中遇到的问题及解决方案，为快速提取和可视化播客知识提供了便捷途径。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">知识库精选</span>
+                            
+                            <span class="tag">WayToAGI</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-8">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://waytoagi.feishu.cn/wiki/EbtOwvTMviaS5FkRqU3czAbdnjo" target="_blank">Claude Cowork插件测评：21款插件深度解析</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">WayToAGI</span>
+                            
+                            <span class="news-date">03-09 12:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">Anthropic为Claude Cowork推出了21款插件，旨在扩展其功能。这些插件于一月和二月分两批发布，但并非所有插件都具有同等价值。评测显示，部分插件能够显著提升工作效率，而另一些则实用性较低。该测评旨在帮助Claude用户更好地了解和选择适合自身需求的插件，从而更有效地利用Claude的强大功能。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">知识库精选</span>
+                            
+                            <span class="tag">WayToAGI</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-9">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://waytoagi.feishu.cn/wiki/LXkWw0cGQizxwbkGyhXcBN3Znee" target="_blank">Cherry Studio简化OpenClaw安装，告别命令行难题</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">WayToAGI</span>
+                            
+                            <span class="news-date">03-09 12:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">针对Windows用户安装OpenClaw时遇到的困难，WayToAGI发布解决方案，利用Cherry Studio实现一键自动化部署。此方案旨在降低OpenClaw的上手门槛，摆脱命令行操作。文章面向新手友好，提供了模型配置、API密钥设置和平台模板等详细指导，方便用户快速上手体验OpenClaw。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">知识库精选</span>
+                            
+                            <span class="tag">WayToAGI</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-10">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://waytoagi.feishu.cn/wiki/GA2swbA4liHIxYkNWYwczpkEnhb" target="_blank">Karpathy开源MicroGPT：200行代码揭秘LLM原理</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">WayToAGI</span>
+                            
+                            <span class="news-date">03-09 12:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">知名AI专家Karpathy开源了名为MicroGPT的Python项目，仅用200行代码演示了大型语言模型（LLM）的核心原理。该项目使用32000个人名作为数据集，通过分词、嵌入和注意力机制等关键步骤，训练出一个能够生成逼真新名字的模型。MicroGPT旨在降低LLM的学习门槛，即使是非技术背景的开发者也能理解其内部运作机制，是学习LLM原理的优秀入门资源。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">知识库精选</span>
+                            
+                            <span class="tag">WayToAGI</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-11">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://waytoagi.feishu.cn/wiki/KSl0wBYlJi3XmOkg1cscPgFJnnb" target="_blank">斯坦福课程揭秘：大模型预训练底层逻辑</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">WayToAGI</span>
+                            
+                            <span class="news-date">03-09 12:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">WayToAGI报道，斯坦福大学课程深入解析了大模型预训练的底层逻辑。文章指出，大模型依赖Transformer架构实现上下文理解和高效训练，文本需经BPE拆分为token才能被识别。高质量训练语料通过FineWeb流程筛选清洗，保障数据质量。AI的回应本质上是基于训练数据预测下一个token，而非真正的“智能”。该课程旨在帮助读者理解LLM的工作原理，建立清晰认知。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">知识库精选</span>
+                            
+                            <span class="tag">WayToAGI</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-12">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://waytoagi.feishu.cn/wiki/RIPfw7GJiiEHEgkM46ZcwxllnVh" target="_blank">Anthropic Claude Code幕后：Boris Cherny用AI重塑编程</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">WayToAGI</span>
+                            
+                            <span class="news-date">03-09 12:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">Anthropic的开发者工具Claude Code正快速增长。该工具由前Meta工程师Boris Cherny创建，他曾在Meta负责Facebook Groups、Instagram以及整个Meta的代码质量。Cherny在Pragmatic Engineer播客中分享了Claude Code的起源、他的工程理念以及对软件工程行业未来的看法。他的经验和观点对于理解AI如何改变软件开发流程具有重要意义，预示着AI辅助编程的新时代。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">知识库精选</span>
+                            
+                            <span class="tag">WayToAGI</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-13">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3714634245009800?f=rss" target="_blank">NoDesk AI转型：两周打造DeskClaw，亿元融资加速</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-09 02:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">AI公司NoDesk AI在获得近亿元融资后，创始人宋健带领团队用两周时间开发了AI助手DeskClaw，旨在重构Agent技术架构。DeskClaw个人版已内测，企业版开源，可操作浏览器、读写文件，并深度适配飞书、钉钉等。宋健认为OpenClaw改变了大模型应用落地的中间过程，NoDesk AI将通过DeskClaw的企业版实现AI协作，并探索All in One的AI产品形态，为电商营销提供更高效的解决方案。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260309/v2_3da0dae1b1dc40afab76cf96881d84fc@2057308263_oswg84347oswg1080oswg608_img_000?x-oss-process=image/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-14">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3714480200085633?f=rss" target="_blank">前vivo产品经理宋紫薇AI创业，「薇光点亮」获超亿元融资</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-09 01:30</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">前vivo明星产品经理宋紫薇创立的AI智能硬件公司「薇光点亮」近期完成超亿元Pre-A轮融资，由红杉中国、蓝驰创投联合领投。该公司致力于打造以时尚AI Agent为核心的智能硬件产品矩阵，首款产品或为AI原生时尚落地镜，深度融合用户穿搭场景。融资将用于人才建设、硬件研发和模型训练。宋紫薇曾成功打造iQOO手机，拥有丰富的消费电子经验，此次创业备受关注，其核心团队成员来自宝马、理想等知名企业。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260309/v2_1ef5f927ec874c7d8cabbf84d27bda87@1199336245_oswg295495oswg1620oswg1080_img_jpg?x-oss-process=image/quality,q_100/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-china-15">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://36kr.com/p/3711571451572360?f=rss" target="_blank">中科大99级校友创业 ACONTEXT获红杉、明势投资</a>
+                            
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">36氪 AI</span>
+                            
+                            <span class="news-date">03-09 00:30</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">99年中科大毕业生叶坚白创立的ACONTEXT，近日完成数百万美元天使轮融资，由红杉中国种子基金和明势资本投资。ACONTEXT 致力于为 Agent 提供一站式的自学习平台，解决 Agent 在复杂任务执行中的数据管理问题，提高任务成功率。ACONTEXT 通过提供数据存储、决策路径观测和智能体自学习服务，降低 Agent 的开发和管理门槛。创始人叶坚白曾就职于微软亚洲研究院和光年之外等公司，拥有丰富的AI研发经验。</p>
+                        
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.36krcdn.com/hsossms/20260306/v2_67a3ea1c0c304f2bb33a113c5321779b@5783683_oswg150680oswg900oswg335_img_png?x-oss-process=image/quality,q_100/format,jpg/interlace,1" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+        </div>
+        
+        
+        
         <div class="category" id="cat-papers">
             <h2 class="category-header">
                 📄 前沿论文
-                <span class="count">3</span>
+                <span class="count">5</span>
             </h2>
 
             
@@ -1405,32 +1799,30 @@
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <span class="paper-org-tag">Cohere</span>
+                            <span class="paper-org-tag">Stability AI</span>
                             
-                            <a href="https://arxiv.org/abs/2603.06576v1" target="_blank">BEVLM：利用LLM语义知识提升自动驾驶鸟瞰图性能</a>
+                            <a href="https://arxiv.org/abs/2603.08211v1" target="_blank">异步联邦学习：新型距离度量提升梯度聚合效果</a>
                             <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">arXiv</span>
                             
-                            <span class="news-date">03-06 18:59</span>
+                            <span class="news-date">03-09 10:40</span>
                             
                             
                         </div>
                         
-                        <div class="paper-authors">Thomas Monninger, Shaoyuan Xie, Qi Alfred Chen et al. (4 authors)</div>
+                        <div class="paper-authors">Patrick Wilhelm, Odej Kao</div>
                         
                         
-                        <p class="news-summary">新型框架BEVLM将大型语言模型(LLM)的语义理解能力融入自动驾驶的鸟瞰图(BEV)表示中，显著提升了自动驾驶系统的性能。该框架通过统一的BEV特征作为LLM的输入，使LLM能够更有效地进行跨视角推理，精度提升高达46%。同时，BEVLM将LLM的语义知识提炼到BEV表示中，在安全关键场景下的端到端驾驶性能提升了29%。这项研究弥合了空间结构和语义丰富度之间的差距，为自动驾驶领域带来了新的突破。</p>
+                        <p class="news-summary">研究表明，在异步联邦学习(FL)中，梯度陈旧性会影响模型收敛和精度。为解决此问题，研究人员探索了多种距离度量方法，以更准确地评估梯度陈旧性的影响，并将其集成到聚合过程中。实验结果表明，某些距离度量能够提高异构客户端和非独立同分布数据下的训练效率和稳定性，为异步FL的实际部署奠定了基础。该研究为优化异步联邦学习算法提供了新思路。</p>
                         
                         
                         <div class="tags">
                             
-                            <span class="tag">cs.CV</span>
+                            <span class="tag">cs.LG</span>
                             
                             <span class="tag">cs.AI</span>
-                            
-                            <span class="tag">cs.LG</span>
                             
                         </div>
                         
@@ -1444,23 +1836,23 @@
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <span class="paper-org-tag">Tencent</span>
+                            <span class="paper-org-tag">Cohere</span>
                             
-                            <a href="https://arxiv.org/abs/2603.06569v1" target="_blank">腾讯AI Lab：Penguin-VL突破VLM效率极限，LLM赋能视觉编码</a>
+                            <a href="https://arxiv.org/abs/2603.08210v1" target="_blank">Video2LoRA：基于参考视频的语义控制视频生成框架</a>
                             <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">arXiv</span>
                             
-                            <span class="news-date">03-06 18:58</span>
+                            <span class="news-date">03-09 10:40</span>
                             
                             
                         </div>
                         
-                        <div class="paper-authors">Boqiang Zhang, Lei Ke, Ruihan Yang et al. (8 authors)</div>
+                        <div class="paper-authors">Zexi Wu, Qinghe Wang, Jing Dai et al. (8 authors)</div>
                         
                         
-                        <p class="news-summary">腾讯AI Lab发布Penguin-VL模型，旨在突破视觉语言模型(VLM)在计算资源受限设备上的部署瓶颈。该模型创新性地采用基于LLM的视觉编码器，替代了传统依赖大规模对比预训练的视觉编码器。研究表明，Penguin-Encoder在视觉保真度和数据效率方面表现更优，尤其在文档理解、视觉知识和多视角视频理解等任务中超越了Qwen3-VL等领先模型。Penguin-VL的轻量级架构证明，提升视觉表征能力而非模型规模是性能提升的关键，为资源受限场景下的高性能VLM应用提供了新思路。</p>
+                        <p class="news-summary">研究人员提出了一种名为Video2LoRA的新框架，用于实现语义控制的视频生成。该框架通过参考视频进行条件控制，利用轻量级超网络预测个性化的LoRA权重，并将其与辅助矩阵结合，形成自适应LoRA模块，集成到冻结的扩散骨干网络中。这种设计使得模型能够在保留关键风格和内容变化的同时，生成与参考语义一致的视频，无需针对每个条件进行训练。该模型体积小巧（小于150MB），易于存储和部署，并在各种条件下实现了连贯、语义对齐的生成，对未见过的语义表现出强大的零样本泛化能力。</p>
                         
                         
                         <div class="tags">
@@ -1479,28 +1871,249 @@
                     <div class="news-text">
                         <h3 class="news-title">
                             
-                            <span class="paper-org-tag">Cohere</span>
+                            <span class="paper-org-tag">Meta FAIR</span>
                             
-                            <a href="https://arxiv.org/abs/2603.06533v1" target="_blank">NEGATE：扩散模型中实现精确语义否定的新方法</a>
+                            <a href="https://arxiv.org/abs/2603.08195v1" target="_blank">CoPaLink：AI驱动生物信息工具链接，提升工作流可重复性</a>
                             <span class="translated">已翻译</span>
                         </h3>
                         <div class="news-meta">
                             <span class="news-source">arXiv</span>
                             
-                            <span class="news-date">03-06 18:21</span>
+                            <span class="news-date">03-09 10:24</span>
                             
                             
                         </div>
                         
-                        <div class="paper-authors">Taewon Kang, Ming C. Lin</div>
+                        <div class="paper-authors">Clémence Sebe, Olivier Ferret, Aurélie Névéol et al. (6 authors)</div>
                         
                         
-                        <p class="news-summary">研究人员提出了一种名为NEGATE的新方法，旨在改进扩散模型在处理语言否定方面的能力。该方法通过将否定建模为扩散动态中的结构化可行性约束，从而在不重新训练模型参数的情况下，实现对语义指导的精确控制。NEGATE能够处理多种否定现象，包括对象缺失、非反转语义和多重否定等。实验表明，该方法在保持视觉质量和结构连贯性的同时，实现了强大的否定一致性，为扩散模型中的语言否定提供了一种统一的解决方案，并超越了以往的表征层面评估。</p>
+                        <p class="news-summary">研究人员发布CoPaLink，一种利用人工智能技术自动链接生物信息学工具的新方法。该方法通过命名实体识别（NER）和知识库，将科研论文中的工具描述与工作流代码中的工具调用关联起来，从而提高生物信息学工作流的透明度、可重复性和可重用性。CoPaLink在Nextflow工作流上的评估中取得了较高的F1值（84-89）和联合准确率（66），为生物信息学研究的标准化和自动化提供了有力支持。</p>
                         
                         
                         <div class="tags">
                             
-                            <span class="tag">cs.CV</span>
+                            <span class="tag">cs.CL</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item paper-item" id="item-papers-4">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <span class="paper-org-tag">Hugging Face</span>
+                            
+                            <a href="https://arxiv.org/abs/2603.08182v1" target="_blank">TildeOpen LLM：课程学习提升欧洲小语种模型性能</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">arXiv</span>
+                            
+                            <span class="news-date">03-09 10:03</span>
+                            
+                            
+                        </div>
+                        
+                        <div class="paper-authors">Toms Bergmanis, Martins Kronis, Ingus Jānis Pretkalniņš et al. (8 authors)</div>
+                        
+                        
+                        <p class="news-summary">TildeOpen发布了一款300亿参数的开源LLM，专注于提升34种欧洲语言的性能，尤其针对低资源语言。该模型采用课程学习方法，结合数据集上采样，平衡了不同语言的数据分布，从而在计算资源有限的情况下，超越了其他多语言LLM。在多项评测中，TildeOpen在文本生成和理解方面表现出色，尤其在波罗的海语、芬兰-乌戈尔语和斯拉夫语系中优势明显。人工评估显示，其语言错误率降低了高达十倍。该模型及相关资源已在Hugging Face上开源，表明精心设计的数据和训练策略可在不增加模型规模或训练量的情况下显著提高多语言模型质量。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">cs.CL</span>
+                            
+                            <span class="tag">cs.AI</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item paper-item" id="item-papers-5">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <span class="paper-org-tag">Cohere</span>
+                            
+                            <a href="https://arxiv.org/abs/2603.08166v1" target="_blank">RexDrug：基于LLM的药物组合智能抽取框架</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">arXiv</span>
+                            
+                            <span class="news-date">03-09 09:47</span>
+                            
+                            
+                        </div>
+                        
+                        <div class="paper-authors">Zhijun Wang, Ling Luo, Dinghao Pan et al. (7 authors)</div>
+                        
+                        
+                        <p class="news-summary">大连理工大学研究团队发布RexDrug，一种基于大型语言模型(LLM)的药物组合抽取框架，旨在解决从生物医学文献中自动提取药物组合信息的难题。RexDrug采用多智能体协作和强化学习等技术，能够有效识别复杂药物组合及其潜在的兼容性逻辑。在DrugComb数据集上的实验表明，RexDrug的性能优于现有方法，并在DDI13语料库上验证了其通用性。该框架为精准医疗和药物研发提供了更可靠的解决方案。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">cs.CL</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div>
+        
+        
+        
+        <div class="category" id="cat-big_tech">
+            <h2 class="category-header">
+                🏢 大厂动态
+                <span class="count">4</span>
+            </h2>
+
+            
+            <div class="news-item " id="item-big_tech-1">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://www.sammobile.com/news/future-samsung-galaxy-ai-will-let-you-vibe-code-apps-exactly-how-you-want/" target="_blank">三星考虑未来Galaxy AI支持“Vibe Coding”应用开发</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">SamMobile</span>
+                            
+                            <span class="news-date">03-09 16:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">三星正在探索将“Vibe Coding”引入未来的Galaxy AI平台。据三星移动体验部门高管透露，公司正在研究允许用户通过AI直接定制应用程序的可能性。目前的Galaxy AI主要提供预设工具，而Vibe Coding有望使用户能够更深入地修改应用行为甚至代码。虽然该功能距离实际应用可能还需要数年时间，但它展示了三星在AI领域的长期愿景，即为用户提供高度个性化的设备体验。当前最新款Galaxy AI手机为S26，One UI 8.5将为更多设备带来AI功能。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">Galaxy AI</span>
+                            
+                            <span class="tag">One UI</span>
+                            
+                            <span class="tag">Samsung Electronics</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-big_tech-2">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://www.sammobile.com/news/galaxy-s26-ai-feature-very-limited-availability/" target="_blank">Galaxy S26“Ask AI”功能受限，仅在美韩可用</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">SamMobile</span>
+                            
+                            <span class="news-date">03-09 13:22</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">三星Galaxy S26系列推出的Galaxy AI新功能“Ask AI”目前仅在美国和韩国可用。该功能集成于Samsung Browser中，利用AI算法和Perplexity技术，帮助用户跨网页比较和整理信息，例如酒店价格或餐厅评价，并汇总成表格。目前尚不清楚该功能是否会扩展到支持Galaxy AI的旧设备。用户期待三星通过更新Samsung Browser，在更多国家和语言中推出此功能。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">Phone</span>
+                            
+                            <span class="tag">Samsung Internet</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://www.sammobile.com/wp-content/uploads/2026/03/Samsung-Browser-Ask-AI-Feature-Galaxy-Unpacked-2026.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-big_tech-3">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://news.samsung.com/global/global-influencers-gathered-at-teamgalaxy-connect-2026-in-san-francisco" target="_blank">三星Galaxy S26 Ultra发布，AI功能成焦点</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">Samsung Newsroom</span>
+                            
+                            <span class="news-date">03-09 11:40</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">三星在旧金山举办#TeamGalaxy Connect 2026活动，正式发布Galaxy S26 Ultra和Galaxy Buds4 Pro。活动汇集了来自35个国家的140位#TeamGalaxy网红，他们率先体验了新产品，并分享了使用感受。Galaxy S26 Ultra凭借其强大的AI集成和卓越的相机性能，特别是Privacy Display和Photo Assist功能，受到了广泛关注。网红们围绕相机、游戏和音效三大主题，创作了大量内容，充分展示了新产品的创新特性。此次活动进一步提升了三星Galaxy系列在全球的影响力。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">Mobile</span>
+                            
+                            <span class="tag">#TeamGalaxy Connect</span>
+                            
+                            <span class="tag">AI phone</span>
+                            
+                        </div>
+                        
+                    </div>
+                    
+                    <img class="news-image" src="https://img.global.news.samsung.com/global/wp-content/uploads/2026/03/09110145/Samsung-Mobile-Galaxy-Unpacked-2026-TeamGalaxy-Connect-2026_Thumb932-728x410.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+                    
+                </div>
+            </div>
+            
+            <div class="news-item " id="item-big_tech-4">
+                <div class="news-content-wrapper">
+                    <div class="news-text">
+                        <h3 class="news-title">
+                            
+                            <a href="https://openai.com/index/openai-to-acquire-promptfoo" target="_blank">OpenAI收购AI安全平台Promptfoo，强化模型安全</a>
+                            <span class="translated">已翻译</span>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-source">OpenAI Blog</span>
+                            
+                            <span class="news-date">03-09 10:00</span>
+                            
+                            
+                        </div>
+                        
+                        
+                        <p class="news-summary">OpenAI宣布收购AI安全平台Promptfoo，旨在加强其人工智能系统的安全性。Promptfoo专注于帮助企业在AI系统开发阶段识别和修复潜在漏洞。此次收购表明OpenAI正积极投入资源，提升其AI产品的安全性，应对日益增长的AI安全风险。通过整合Promptfoo的技术，OpenAI有望构建更安全可靠的AI生态系统，并为企业提供更强大的AI安全保障。</p>
+                        
+                        
+                        <div class="tags">
+                            
+                            <span class="tag">Company</span>
                             
                         </div>
                         
