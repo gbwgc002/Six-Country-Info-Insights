@@ -103,6 +103,87 @@ rss_sources:
     max_items: 10
     enabled: true
 
+  # === 手机品牌 AI 动态 (OPPO/vivo/华为/小米/荣耀) ===
+  huawei_newsroom:
+    name: "Huawei Newsroom"
+    url: "https://www.huawei.com/en/rss-feeds/huawei-updates/rss"
+    category: "phone_ai"
+    keywords: ["AI", "intelligence", "HarmonyOS", "Pangu", "MagicOS", "smart", "model", "agent"]
+    max_items: 10
+    enabled: true
+
+  ithome:
+    name: "IT之家"
+    url: "https://www.ithome.com/rss/"
+    category: "phone_ai"
+    keywords: ["OPPO", "vivo", "华为", "小米", "荣耀", "Redmi", "OnePlus", "一加", "realme", "iQOO", "HarmonyOS", "鸿蒙", "ColorOS", "OriginOS", "MagicOS", "HyperOS", "澎湃OS"]
+    max_items: 15
+    enabled: true
+
+  ifanr:
+    name: "爱范儿"
+    url: "https://www.ifanr.com/feed"
+    category: "phone_ai"
+    keywords: ["OPPO", "vivo", "华为", "小米", "荣耀", "Redmi", "OnePlus", "一加", "realme", "iQOO", "HarmonyOS", "鸿蒙", "ColorOS", "OriginOS", "MagicOS", "HyperOS", "澎湃OS"]
+    max_items: 10
+    enabled: true
+
+  gsmarena:
+    name: "GSMArena"
+    url: "https://www.gsmarena.com/rss-news-reviews.php3"
+    category: "phone_ai"
+    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO", "HarmonyOS", "ColorOS", "OriginOS", "MagicOS", "HyperOS"]
+    max_items: 10
+    enabled: true
+
+  android_authority:
+    name: "Android Authority"
+    url: "https://www.androidauthority.com/feed/"
+    category: "phone_ai"
+    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO", "HarmonyOS", "ColorOS", "OriginOS", "MagicOS", "HyperOS"]
+    max_items: 10
+    enabled: true
+
+  xda_developers:
+    name: "XDA Developers"
+    url: "https://www.xda-developers.com/feed/"
+    category: "phone_ai"
+    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO", "HarmonyOS", "ColorOS", "OriginOS", "MagicOS", "HyperOS"]
+    max_items: 10
+    enabled: true
+
+  fonearena:
+    name: "FoneArena"
+    url: "https://www.fonearena.com/blog/feed"
+    category: "phone_ai"
+    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO"]
+    max_items: 10
+    enabled: true
+
+  gadgets360:
+    name: "Gadgets 360"
+    url: "https://feeds.feedburner.com/gadgets360-latest.xml"
+    category: "phone_ai"
+    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO"]
+    max_items: 10
+    enabled: true
+
+  gizmologi:
+    name: "Gizmologi"
+    url: "https://gizmologi.id/feed/"
+    category: "phone_ai"
+    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO"]
+    max_items: 10
+    enabled: true
+
+  selular_id:
+    name: "Selular.ID"
+    url: "https://selular.id/feed/"
+    category: "phone_ai"
+    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO"]
+    max_items: 10
+    enabled: true
+
   # === Trending Models & Projects ===
   huggingface_blog:
     name: "Hugging Face Blog"
@@ -279,6 +360,7 @@ output:
   # 分类显示顺序
   category_order:
     - "big_tech"
+    - "phone_ai"
     - "papers"
     - "newsletter"
     - "industry"
@@ -289,6 +371,7 @@ output:
   # 分类中文名
   category_names:
     big_tech: "🏢 大厂动态"
+    phone_ai: "📱 手机AI动态"
     papers: "📄 前沿论文"
     newsletter: "📬 Newsletter精选"
     industry: "💰 行业投融资"

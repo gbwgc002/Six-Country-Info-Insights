@@ -170,6 +170,15 @@ Task Instructions:
         if len(raw_content) > 10000:
             raw_content = raw_content[:10000] + "..."
 
+        # phone_ai 分类需要更严格的相关性判断
+        phone_ai_extra = ""
+        if item.category == "phone_ai":
+            phone_ai_extra = """
+   IMPORTANT - Strict filtering for smartphone news:
+   - Return true ONLY if the news is specifically about AI features, AI models, AI capabilities, or AI-powered software on smartphones.
+   - Return false for: electric vehicles (EVs/cars), battery specs, camera hardware specs without AI, phone design leaks, pricing/availability, unboxing, gaming handhelds, accessories (chargers, cases, coolers), chip/SoC specs without AI focus, display/screen specs, general OS updates without AI features, smartwatches, earbuds, laptops.
+   - A news article merely MENTIONING a phone brand is NOT enough. The core topic must be about AI technology or AI features."""
+
         prompt = f"""You are a professional Chinese tech news editor. Analyze the following news item.
 
 Title: {item.title}
@@ -177,8 +186,9 @@ Source: {item.source}
 Content: {raw_content.strip()}
 
 Task Instructions:
-1. Relevance Check: Is this news primarily about Artificial Intelligence (AI), LLMs, Machine Learning, or Generative AI?
-   - Return false for: General Tech without AI angle, Crypto, Blockchain, Politics, pure Science, product launches unrelated to AI.
+1. Relevance Check: Is this news primarily about Artificial Intelligence (AI), LLMs, Machine Learning, Generative AI, or smartphone AI features (on-device AI, AI camera, AI assistant, AI agents on phones)?
+   - Return true for: AI-powered features in smartphones (OPPO, vivo, Huawei, Xiaomi, Honor, etc.), on-device AI models, AI OS features.
+   - Return false for: General Tech without AI angle, Crypto, Blockchain, Politics, pure Science, product launches unrelated to AI (e.g. pure hardware specs, pricing, availability without AI features).{phone_ai_extra}
 
 2. Title Rewrite: Write an informative Chinese headline that captures the KEY POINT of this news.
    - MUST be in Simplified Chinese (简体中文) with Chinese characters.

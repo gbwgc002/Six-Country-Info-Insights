@@ -139,8 +139,16 @@ class EmailSender:
                     line-height: 1.5 !important;
                 }
                 .news-image {
+                    width: 80px !important;
+                    height: 60px !important;
                     max-width: 80px !important;
                     max-height: 60px !important;
+                    float: right !important;
+                    margin-left: 12px !important;
+                    margin-bottom: 4px !important;
+                }
+                .news-content-wrapper {
+                    display: block !important; /* override flex for PDF to prevent overlap */
                 }
                 /* Table of Contents - allow page breaks inside TOC */
                 .toc {

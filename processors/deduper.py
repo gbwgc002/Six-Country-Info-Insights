@@ -50,10 +50,10 @@ def filter_by_date(
             if pub_date.tzinfo is None:
                 pub_date = pub_date.replace(tzinfo=timezone.utc)
 
-            # Use extended window for papers and china sources
+            # Use extended window for papers, china and phone_ai sources
             target_cutoff = (
                 extended_cutoff
-                if item.category in ('papers', 'china')
+                if item.category in ('papers', 'china', 'phone_ai')
                 else cutoff
             )
 
