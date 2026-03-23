@@ -1,6 +1,9 @@
 """
-Gemini-based summarizer for news items with translation support.
+Gemini-based summarizer for six-country user research insights.
 Uses Google GenAI SDK (Vertex AI) with service account authentication.
+
+Translates, summarises, filters and highlights news from
+Russia, India, Indonesia, Nigeria, Kenya, Pakistan.
 """
 
 import json
@@ -16,27 +19,24 @@ from google.genai import types
 
 from collectors.base import NewsItem
 
-# 默认 Service Account 文件路径（项目根目录下）
-_DEFAULT_SA_FILE = str(Path(__file__).resolve().parent.parent / "transsion-sw-cd-6610d5d50199.json")
+# Default service account file path (project root)
+_DEFAULT_SA_FILE = ""
 
 
 def is_english(text: str) -> bool:
-    """检查文本是否主要是英文（或非中文）。"""
+    """Check if text is primarily English (non-Chinese)."""
     if not text:
         return False
-
     chinese_chars = sum(1 for c in text if '\u4e00' <= c <= '\u9fff')
-
     if chinese_chars >= 1:
         if len(text) > 30 and (chinese_chars / len(text)) < 0.05:
             return True
         return False
-
     return True
 
 
 def _clean_json_response(text: str) -> str:
-    """清理 Gemini 返回的 JSON 文本（去除 markdown code blocks 等）。"""
+    """Clean Gemini JSON response (strip markdown code blocks)."""
     text = text.strip()
     if text.startswith("```json"):
         text = text[7:]
@@ -47,28 +47,47 @@ def _clean_json_response(text: str) -> str:
     return text.strip()
 
 
+# Target countries for filtering
+TARGET_COUNTRIES = [
+    "Russia", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan",
+    "Russian", "Indian", "Indonesian", "Nigerian", "Kenyan", "Pakistani",
+    "Moscow", "Delhi", "Mumbai", "Jakarta", "Lagos", "Abuja", "Nairobi",
+    "Karachi", "Islamabad", "Lahore", "Kolkata", "Chennai", "Bangalore",
+    "Hyderabad", "Surabaya", "Bandung", "Kano", "Mombasa", "Peshawar",
+    "Africa", "African", "South Asia", "Southeast Asia",
+]
+
+
 class GeminiSummarizer:
-    """Use Gemini (Vertex AI) to summarize, translate and highlight key news."""
+    """Use Gemini (Vertex AI) to summarize, translate and highlight insights."""
 
     def __init__(
         self,
         service_account_file: Optional[str] = None,
         model: str = "gemini-2.0-flash",
-        project: str = "transsion-sw-cd",
+        project: str = "",  # Set your Google Cloud project ID
         location: str = "global",
     ):
+        # Resolve project from env or default
+        project = os.environ.get("GOOGLE_CLOUD_PROJECT", project)
+        if not project:
+            raise ValueError(
+                "Google Cloud project ID not set. "
+                "Set GOOGLE_CLOUD_PROJECT env var or pass project= parameter."
+            )
+
         sa_file = service_account_file or os.environ.get("GOOGLE_SA_FILE", _DEFAULT_SA_FILE)
 
-        # 支持通过环境变量传入 JSON 内容（用于 CI/CD）
+        # Support injecting JSON content via env (for CI/CD)
         sa_json_content = os.environ.get("GOOGLE_SA_JSON")
-        if sa_json_content and not Path(sa_file).exists():
+        if sa_json_content and (not sa_file or not Path(sa_file).exists()):
             import tempfile
             tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
             tmp.write(sa_json_content)
             tmp.close()
             sa_file = tmp.name
 
-        if not Path(sa_file).exists():
+        if not sa_file or not Path(sa_file).exists():
             raise FileNotFoundError(
                 f"Service account file not found: {sa_file}\n"
                 "Set GOOGLE_SA_FILE or GOOGLE_SA_JSON env var, "
@@ -89,11 +108,11 @@ class GeminiSummarizer:
         self.semaphore = asyncio.Semaphore(5)
 
     # ──────────────────────────────────────────────
-    #  底层调用
+    #  Low-level call
     # ──────────────────────────────────────────────
 
     async def _call(self, prompt: str, *, json_mode: bool = False) -> str:
-        """统一的 Gemini 调用入口，返回纯文本。"""
+        """Unified Gemini call, returns plain text."""
         config = types.GenerateContentConfig(
             temperature=0.2,
             max_output_tokens=4096,
@@ -109,7 +128,7 @@ class GeminiSummarizer:
             )
 
         if not response or not response.candidates:
-            raise RuntimeError("Gemini 未返回有效响应")
+            raise RuntimeError("Gemini returned no valid response")
 
         candidate = response.candidates[0]
         if candidate.content and candidate.content.parts:
@@ -119,11 +138,11 @@ class GeminiSummarizer:
         return ""
 
     # ──────────────────────────────────────────────
-    #  翻译
+    #  Translation
     # ──────────────────────────────────────────────
 
     async def translate_to_chinese(self, text: str) -> str:
-        """将英文文本翻译成中文。"""
+        """Translate text to Simplified Chinese."""
         if not text or len(text) < 2:
             return text or ""
 
@@ -133,13 +152,13 @@ Original Text:
 "{text}"
 
 Task Instructions:
-1. Translate the text into natural-sounding Simplified Chinese.
-2. Keep brand names and technical terms in English (e.g., OpenAI, GPT-5, LLM, Claude, Google).
-3. Do not include quotes, explanations, or original text. Return only the translated Chinese string.
+1. Translate into natural-sounding Simplified Chinese.
+2. Keep proper nouns, brand names and technical terms in their original language (e.g., M-Pesa, Flutterwave, Jumia, TikTok, Google Play, UPI).
+3. Keep country and city names in Chinese (e.g., 尼日利亚, 肯尼亚, 印度, 印尼, 巴基斯坦, 俄罗斯).
+4. Return ONLY the translated Chinese string — no quotes, no explanations.
 """
         try:
             result = await self._call(prompt)
-            # 去掉可能的外层引号
             if (result.startswith('"') and result.endswith('"')) or \
                (result.startswith("'") and result.endswith("'")):
                 result = result[1:-1].strip()
@@ -149,65 +168,67 @@ Task Instructions:
             return text
 
     # ──────────────────────────────────────────────
-    #  核心：标题改写 + 摘要 + 相关性过滤
+    #  Core: Classify + Summarize + Translate + Content filter
     # ──────────────────────────────────────────────
 
     async def summarize_and_translate(self, item: NewsItem) -> tuple[str, str, bool]:
-        """生成摘要并翻译标题和内容。返回 (标题, 摘要, 是否已翻译)。"""
+        """Generate summary and translate. Returns (title, summary, is_translated)."""
         title = item.title
         summary = item.summary or ""
         is_translated = False
 
-        # 优先使用完整内容进行总结，取较长的那个
         raw_content = item.content if item.content and len(item.content) > len(item.summary or "") else (item.summary or "")
 
-        # 内容质量门槛：不足80字则直接丢弃，不送给 AI
+        # Content quality threshold: discard items shorter than 80 chars
         if len(raw_content.strip()) < 80:
-            print(f"   🗑️ 内容过短，丢弃: {item.title[:40]}")
+            print(f"   🗑️ Content too short, discarding: {item.title[:40]}")
             return item.title, "IRRELEVANT", False
 
-        # 限制输入长度，避免token溢出
         if len(raw_content) > 10000:
             raw_content = raw_content[:10000] + "..."
 
-        # phone_ai 分类需要更严格的相关性判断
-        phone_ai_extra = ""
-        if item.category == "phone_ai":
-            phone_ai_extra = """
-   IMPORTANT - Strict filtering for smartphone news:
-   - Return true ONLY if the news is specifically about AI features, AI models, AI capabilities, or AI-powered software on smartphones.
-   - Return false for: electric vehicles (EVs/cars), battery specs, camera hardware specs without AI, phone design leaks, pricing/availability, unboxing, gaming handhelds, accessories (chargers, cases, coolers), chip/SoC specs without AI focus, display/screen specs, general OS updates without AI features, smartwatches, earbuds, laptops.
-   - A news article merely MENTIONING a phone brand is NOT enough. The core topic must be about AI technology or AI features."""
-
-        prompt = f"""You are a professional Chinese tech news editor. Analyze the following news item.
+        prompt = f"""You are a professional Chinese analyst specialising in user-research insights for emerging markets.
+Your job is to evaluate news from six target countries: Russia, India, Indonesia, Nigeria, Kenya, Pakistan.
 
 Title: {item.title}
 Source: {item.source}
 Content: {raw_content.strip()}
 
-Task Instructions:
-1. Relevance Check: Is this news primarily about Artificial Intelligence (AI), LLMs, Machine Learning, Generative AI, or smartphone AI features (on-device AI, AI camera, AI assistant, AI agents on phones)?
-   - Return true for: AI-powered features in smartphones (OPPO, vivo, Huawei, Xiaomi, Honor, etc.), on-device AI models, AI OS features.
-   - Return false for: General Tech without AI angle, Crypto, Blockchain, Politics, pure Science, product launches unrelated to AI (e.g. pure hardware specs, pricing, availability without AI features).{phone_ai_extra}
+═══ TASK ═══
 
-2. Title Rewrite: Write an informative Chinese headline that captures the KEY POINT of this news.
-   - MUST be in Simplified Chinese (简体中文) with Chinese characters.
-   - Keep brand names and technical terms in English (e.g., OpenAI, GPT-5, LLM, Claude, Google).
-   - Be SPECIFIC about WHO did WHAT: "OpenAI发布GPT-5，多模态能力全面超越前代" NOT just "GPT-5发布".
-   - Target length: 20-35 characters.
-   - Do NOT translate word-for-word. Write a proper informative Chinese news headline.
+1. **CONTENT SAFETY CHECK** (mandatory first step):
+   Return is_relevant=false immediately if the content contains:
+   - Sexually explicit or pornographic material
+   - Graphic violence or gore
+   - Extreme political propaganda or hate speech
+   - Terrorism promotion
+   - Content that is purely about domestic politics with no relevance to market/consumer/tech insights
 
-3. Summary: Write a high-quality summary entirely in Simplified Chinese (简体中文).
-   - Length: 60-100 words covering: what happened, key details, and why it matters.
-   - Do NOT simply rephrase or copy the provided content — write an original synthesis.
-   - Avoid vague openers like "本文介绍了" or "这篇文章讨论了". Lead with the core news fact.
-   - Full Chinese sentences only — English product names/terms (e.g. GPT-5, API) are OK inline.
-   - Tone: Professional, factual, third-person news brief.
+2. **RELEVANCE CHECK** — Is this news useful for "desktop research insights" (洞察桌面研究)?
+   Return is_relevant=true if the news relates to ANY of these dimensions for the six target countries:
+   - 🏛️ Macro & Infrastructure: government policies (tariffs, app bans, regulations), 5G/telecom rollout, power grid, natural disasters, internet connectivity
+   - 💰 Commerce & Economy: inflation, consumer spending, e-commerce, mobile money/fintech, retail trends, payment methods, price changes
+   - 🚀 Digital Ecosystem: startup funding, app trends, Google Play dynamics, local tech companies, super apps, digital wallets
+   - 🎭 Pop Culture & Sentiment: trending topics, Gen Z culture, festivals/holidays, music/film, social media trends, memes, public debates
+   - 📱 Mobile Market: smartphone launches, market share, brand dynamics (Transsion/Tecno/Infinix/itel, Samsung, Xiaomi, OPPO, vivo, realme)
+   Return is_relevant=false if none of the above apply.
 
-You MUST return ONLY a valid JSON object:
+3. **TITLE REWRITE** — Write an informative Chinese headline:
+   - MUST be in Simplified Chinese (简体中文)
+   - Prefix with country flag emoji: 🇷🇺🇮🇳🇮🇩🇳🇬🇰🇪🇵🇰 (or 🌍 for multi-country)
+   - Be SPECIFIC: WHO did WHAT in WHERE
+   - Keep brand names / proper nouns in original language
+   - Target: 20-40 characters
+
+4. **SUMMARY** — Write a concise summary in Simplified Chinese:
+   - 60-120 words, covering: what happened, key details, and **why it matters for user research / product insights**
+   - Lead with the core fact — no vague openers
+   - Professional, factual tone
+
+Return ONLY a valid JSON object:
 {{
     "is_relevant": true or false,
-    "title": "Rewritten Chinese headline",
+    "title": "Chinese headline with country flag",
     "summary": "Chinese summary"
 }}
 """
@@ -218,7 +239,6 @@ You MUST return ONLY a valid JSON object:
             try:
                 data = json.loads(text_response)
 
-                # Check relevance
                 if not data.get("is_relevant", True):
                     return item.title, "IRRELEVANT", False
 
@@ -230,28 +250,24 @@ You MUST return ONLY a valid JSON object:
 
                 title = re.sub(r'^AI[:：]\s*(YES|NO|Related).*?[:：]\s*', '', title, flags=re.IGNORECASE).strip()
 
-                # 1. Fallback for empty or too-short summary
                 if not summary or len(summary.strip()) < 5:
                     if title:
                         summary = f"{title}（点击查看详情）"
                     else:
                         summary = "暂无详细摘要，请点击标题查看原文。"
 
-                # 2. Force translation if still English (Double Insurance)
+                # Force translate if still English
                 if is_english(summary) and len(summary) > 10:
                     try:
                         summary = await self.translate_to_chinese(summary)
                     except Exception:
                         pass
 
-                # 3. Check TITLE for English and force translate
                 if is_english(title) and len(title) >= 3:
                     try:
                         translated_title = await self.translate_to_chinese(title)
                         if translated_title and not is_english(translated_title):
                             title = translated_title
-                        else:
-                            print(f"   ⚠️ Title translation still English, keeping: {title[:30]}...")
                     except Exception as e:
                         print(f"   Title translation failed: {e}")
 
@@ -285,56 +301,7 @@ You MUST return ONLY a valid JSON object:
         return title, summary, is_translated
 
     # ──────────────────────────────────────────────
-    #  单条摘要
-    # ──────────────────────────────────────────────
-
-    async def summarize_item(self, item: NewsItem) -> str:
-        """Generate a concise summary for a single news item (Chinese content)."""
-        content_to_summarize = item.content if item.content and len(item.content) > len(item.summary or "") else (item.summary or "无")
-
-        if len(content_to_summarize) > 10000:
-            content_to_summarize = content_to_summarize[:10000] + "..."
-
-        prompt = f"""You are a professional tech news editor. Summarize the following news item.
-
-Title: {item.title}
-Source: {item.source}
-Content: {content_to_summarize}
-
-Task Instructions:
-1. Relevance Check: Determine if this news is primarily about Artificial Intelligence (AI).
-   - Return false for: General Tech, Crypto, Politics, Science.
-2. Summarization: Write a concise summary in Simplified Chinese (简体中文).
-   - Length: 50-100 words.
-   - Tone: Professional news brief.
-
-You MUST return ONLY a valid JSON object matching this schema exactly:
-{{
-    "is_relevant": true or false,
-    "summary": "Chinese summary here"
-}}
-"""
-
-        try:
-            text_response = _clean_json_response(await self._call(prompt, json_mode=True))
-
-            try:
-                data = json.loads(text_response)
-                if not data.get("is_relevant", True):
-                    return "IRRELEVANT"
-                return data.get("summary", "").strip()
-            except json.JSONDecodeError:
-                result = text_response.replace('```', '').strip()
-                if "IRRELEVANT" in result.upper():
-                    return "IRRELEVANT"
-                return result
-
-        except Exception as e:
-            print(f"Summarize error: {e}")
-            return item.summary or ""
-
-    # ──────────────────────────────────────────────
-    #  今日要点
+    #  Daily highlights
     # ──────────────────────────────────────────────
 
     async def generate_daily_highlights(
@@ -342,7 +309,7 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
         items_by_category: dict[str, list[NewsItem]],
         category_names: dict[str, str]
     ) -> str:
-        """Generate overall daily highlights summary with HTML formatting."""
+        """Generate daily highlights with HTML formatting."""
 
         content_parts = []
         for category, items in items_by_category.items():
@@ -353,21 +320,25 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
 
         all_content = "\n".join(content_parts)
 
-        prompt = f"""You are an AI industry analyst. Based on the following news list, select the top 3 most important news items for today.
+        prompt = f"""You are a senior user-research analyst covering six emerging markets: Russia, India, Indonesia, Nigeria, Kenya, Pakistan.
+
+Based on the following news list, select the top 3 most important insights for product teams and user researchers today.
 
 News List:
 {all_content}
 
 Task Instructions:
-1. Selection: Select exactly 3 most impactful AI news items (major releases, funding, breakthroughs).
-2. Summarization: Write a concise summary for each selected item in Simplified Chinese (简体中文).
+1. Select exactly 3 items that are most actionable for product/UX teams building for these markets.
+2. Prioritise: infrastructure changes that affect device usage, consumer behaviour shifts, breakout apps or services, and cultural moments that reveal user needs.
+3. Write each highlight as a complete sentence in Simplified Chinese (简体中文).
+4. Each highlight should explain WHY it matters for user research, not just WHAT happened.
 
-You MUST return ONLY a valid JSON object matching this schema exactly:
+Return ONLY a valid JSON object:
 {{
     "highlights": [
-        "First highlight in complete Chinese sentence.",
-        "Second highlight in complete Chinese sentence.",
-        "Third highlight in complete Chinese sentence."
+        "First insight in Chinese — what happened and why it matters.",
+        "Second insight in Chinese.",
+        "Third insight in Chinese."
     ]
 }}
 """
@@ -397,14 +368,14 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
                 print(f"JSON Parse Error for highlights: {text_response[:50]}...")
                 return self._format_highlights_html(text_response)
 
-            return "今日AI动态收集完成，请查看下方详情。"
+            return "今日六国洞察收集完成，请查看下方详情。"
 
         except Exception as e:
             print(f"Highlights error: {e}")
-            return "今日AI动态收集完成，请查看下方详情。"
+            return "今日六国洞察收集完成，请查看下方详情。"
 
     def _format_highlights_html(self, text: str) -> str:
-        """将要点文本转换为HTML格式。"""
+        """Convert highlight text to HTML format."""
         html_parts = []
 
         pattern_num = r'(\d+)[.、．]\s*'
@@ -449,45 +420,16 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
             return f'<div class="highlight-item"><span class="highlight-text">{text}</span></div>'
 
     # ──────────────────────────────────────────────
-    #  批量处理
+    #  Batch processing
     # ──────────────────────────────────────────────
-
-    async def process_items_with_translation(
-        self,
-        items: list[NewsItem],
-        max_items: int = 30
-    ) -> list[NewsItem]:
-        """处理新闻项：翻译英文内容并生成摘要 (Parallel)."""
-        tasks = []
-        for item in items[:max_items]:
-            tasks.append(self.summarize_and_translate(item))
-
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-
-        processed_items = []
-        for i, result in enumerate(results):
-            if isinstance(result, tuple):
-                title, summary, is_translated = result
-                item = items[i]
-                item.title = title
-                item.summary = summary
-                item.is_translated = is_translated
-                processed_items.append(item)
-            elif isinstance(result, Exception):
-                print(f"Error processing item {items[i].title}: {result}")
-                processed_items.append(items[i])
-
-        return processed_items
 
     async def process_and_filter_items(
         self,
         items: list[NewsItem],
         max_items: int = 30,
     ) -> tuple[list[NewsItem], int]:
-        """
-        Process items with translation and filter out irrelevant content.
-        Returns (valid_items, translated_count).
-        """
+        """Process items with translation, filter irrelevant content.
+        Returns (valid_items, translated_count)."""
         print(f"🌐 Translating {len(items)} items...")
 
         tasks = []
@@ -529,14 +471,14 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
         return valid_items, translated_count
 
     # ──────────────────────────────────────────────
-    #  语义去重
+    #  Semantic deduplication
     # ──────────────────────────────────────────────
 
     async def semantic_deduplicate(
         self,
         categories: dict[str, list['NewsItem']],
     ) -> dict[str, list['NewsItem']]:
-        """使用 Gemini 识别跨来源的相同主题新闻，保留最全面的一条。"""
+        """Use Gemini to identify cross-source duplicate stories."""
 
         all_items: list[tuple[str, 'NewsItem']] = []
         for cat, items in categories.items():
@@ -551,21 +493,21 @@ You MUST return ONLY a valid JSON object matching this schema exactly:
             for i, (_, item) in enumerate(all_items)
         )
 
-        prompt = f"""You are a professional tech news editor. Group the following news headlines into identical topics/events.
+        prompt = f"""You are a professional news editor. Group the following headlines into identical topics/events.
 
 News Headlines:
 {titles_text}
 
 Task Instructions:
-1. Grouping: Identify groups of news headlines that are reporting on the exact same specific event.
-2. Similarity Threshold: Only group headlines together if they are clearly about the exact same release, event, or specific announcement. If they are just generally similar topics (e.g. two different models released by different companies), do not group them.
+1. Identify groups of headlines reporting on the EXACT SAME specific event.
+2. Only group if they are clearly about the same release, event, or announcement.
 3. If no identical events exist, return an empty array.
 
-You MUST return ONLY a valid JSON object matching this schema exactly:
+Return ONLY a valid JSON object:
 {{
     "groups": [[0, 3, 7], [2, 5]]
 }}
-Each sub-array should contain the index numbers of news items reporting on the same event.
+Each sub-array contains index numbers of news items about the same event.
 """
 
         try:
@@ -590,7 +532,7 @@ Each sub-array should contain the index numbers of news items reporting on the s
                     if idx != best_idx and 0 <= idx < len(all_items):
                         removed = all_items[idx][1]
                         kept = all_items[best_idx][1]
-                        print(f"   🔗 去重: 移除「{removed.title[:30]}」({removed.source})，保留「{kept.title[:30]}」({kept.source})")
+                        print(f"   🔗 Dedup: removed「{removed.title[:30]}」({removed.source}), kept「{kept.title[:30]}」({kept.source})")
                         indices_to_remove.add(idx)
 
             new_categories: dict[str, list['NewsItem']] = {cat: [] for cat in categories}
@@ -602,12 +544,12 @@ Each sub-array should contain the index numbers of news items reporting on the s
 
             removed_count = len(indices_to_remove)
             if removed_count:
-                print(f"   ✅ 语义去重完成：移除 {removed_count} 条重复新闻")
+                print(f"   ✅ Semantic dedup done: removed {removed_count} duplicates")
 
             return new_categories
 
         except Exception as e:
-            print(f"   ⚠️ 语义去重失败（保留全部）: {e}")
+            print(f"   ⚠️ Semantic dedup failed (keeping all): {e}")
             return categories
 
     async def batch_summarize(
@@ -615,5 +557,6 @@ Each sub-array should contain the index numbers of news items reporting on the s
         items: list[NewsItem],
         max_items: int = 20
     ) -> list[NewsItem]:
-        """Batch summarize multiple items (for efficiency)."""
-        return await self.process_items_with_translation(items, max_items)
+        """Batch summarize multiple items."""
+        valid, _ = await self.process_and_filter_items(items, max_items)
+        return valid

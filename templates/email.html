@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Daily Digest - {{ date }}</title>
+    <title>六国用研洞察 - {{ date }}</title>
     <style>
         /* Reset and base styles */
         body {
@@ -23,7 +23,7 @@
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
             color: white;
             padding: 32px 24px;
             text-align: center;
@@ -451,8 +451,9 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🤖 AI Daily Digest</h1>
-            <div class="date">{{ date }} · {{ item_count }} 条资讯</div>
+            <h1>🔍 六国用研洞察</h1>
+            <div class="date">{{ date }} · {{ item_count }} 条洞察</div>
+            <div class="subtitle" style="opacity:0.85;font-size:12px;margin-top:4px;">🇷🇺 Russia · 🇮🇳 India · 🇮🇩 Indonesia · 🇳🇬 Nigeria · 🇰🇪 Kenya · 🇵🇰 Pakistan</div>
         </div>
 
         <!-- Highlights -->
@@ -468,7 +469,7 @@
         <!-- Table of Contents -->
         {% if categories %}
         <div class="toc">
-            <h2>📑 今日目录 · {{ item_count }} 条资讯</h2>
+            <h2>📑 今日目录 · {{ item_count }} 条洞察</h2>
             <div class="toc-list">
                 {% for category_id, items in categories.items() %}
                 {% if items %}
@@ -547,10 +548,9 @@
         <!-- Footer -->
         <div class="footer">
             <p>
-                由 <strong>AI Daily Digest</strong> 自动生成<br>
-                数据来源：RSS feeds, arXiv, Hacker News, X/Twitter<br>
-                <a href="https://github.com/Rillarilla/ai-daily-digest">查看源码</a> ·
-                <a href="mailto:rillahai@gmail.com?subject=Feedback">反馈建议</a>
+                由 <strong>六国用研洞察 (Six-Country Info Insights)</strong> 自动生成<br>
+                数据来源：40+ RSS feeds covering Russia, India, Indonesia, Nigeria, Kenya, Pakistan<br>
+                <a href="https://github.com/gbwgc002/Six-Country-Info-Insights">查看源码</a>
             </p>
         </div>
     </div>

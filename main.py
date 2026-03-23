@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-AI Daily Digest - Main entry point.
+Six-Country Info Insights (六国用研洞察)
 
-Collects AI news from multiple sources, summarizes with Gemini,
-and sends a beautifully formatted email digest.
+Collects user-research insights from Russia, India, Indonesia,
+Nigeria, Kenya, and Pakistan — covering macro environment, commerce,
+digital ecosystems, pop culture, and mobile markets.
+
+Summarises with Gemini AI and pushes via Feishu bot / email.
 """
 
 import asyncio
@@ -23,10 +26,6 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from collectors import (
     collect_all_rss,
-    collect_arxiv,
-    collect_twitter,
-    collect_hackernews,
-    collect_waytoagi,
     NewsItem,
 )
 from processors import GeminiSummarizer, process_items
@@ -44,25 +43,9 @@ async def collect_all_sources(config: dict) -> list[NewsItem]:
     """Collect news from all configured sources."""
     tasks = []
 
-    # RSS sources
+    # RSS sources (primary collection method)
     if config.get("rss_sources"):
         tasks.append(collect_all_rss(config["rss_sources"]))
-
-    # arXiv papers
-    if config.get("arxiv", {}).get("enabled", True):
-        tasks.append(collect_arxiv(config.get("arxiv", {})))
-
-    # Twitter/X
-    if config.get("twitter", {}).get("enabled", True):
-        tasks.append(collect_twitter(config.get("twitter", {})))
-
-    # Hacker News
-    if config.get("hackernews", {}).get("enabled", True):
-        tasks.append(collect_hackernews(config.get("hackernews", {})))
-
-    # WayToAGI daily knowledge base
-    if config.get("waytoagi", {}).get("enabled", True):
-        tasks.append(collect_waytoagi(config.get("waytoagi", {})))
 
     # Run all collectors concurrently
     results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -80,7 +63,8 @@ async def collect_all_sources(config: dict) -> list[NewsItem]:
 async def main_async():
     """Main entry point (Async)."""
     print(f"\n{'='*60}")
-    print(f"🤖 AI Daily Digest - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    print(f"🔍 六国用研洞察 - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    print(f"   Russia · India · Indonesia · Nigeria · Kenya · Pakistan")
     print(f"{'='*60}\n")
 
     # Load config
@@ -90,7 +74,7 @@ async def main_async():
     # Get output settings
     output_config = config.get("output", {})
     category_names = output_config.get("category_names", {})
-    max_per_category = output_config.get("max_per_category", 5)
+    max_per_category = output_config.get("max_per_category", 15)
 
     # Collect from all sources
     print("📡 Collecting from sources...")
@@ -109,13 +93,17 @@ async def main_async():
 
     # Initialize summarizer (service account file or GOOGLE_SA_JSON env var)
     highlights = ""
-    sa_file = Path(__file__).parent / "transsion-sw-cd-6610d5d50199.json"
-    sa_available = sa_file.exists() or os.environ.get("GOOGLE_SA_JSON")
+    sa_file = None
+    # Look for any service account JSON file in project root
+    for f in Path(__file__).parent.glob("*-sa-*.json"):
+        sa_file = f
+        break
+    sa_available = (sa_file and sa_file.exists()) or os.environ.get("GOOGLE_SA_JSON")
 
     if sa_available:
-        print("🧠 Initializing Gemini AI (Vertex AI)...")
+        print("🧠 Initializing Gemini AI...")
         try:
-            sa_path = str(sa_file) if sa_file.exists() else None
+            sa_path = str(sa_file) if (sa_file and sa_file.exists()) else None
             summarizer = GeminiSummarizer(service_account_file=sa_path)
 
             # Semantic dedup BEFORE translation (saves API calls)
@@ -129,7 +117,7 @@ async def main_async():
                 valid_items, _ = await summarizer.process_and_filter_items(items)
                 categories[cat_name] = valid_items
 
-            # 移除处理后为空的分类
+            # Remove empty categories after processing
             categories = {k: v for k, v in categories.items() if v}
 
             # Generate highlights
@@ -142,8 +130,11 @@ async def main_async():
         print("⚠️  Service account not found (no file or GOOGLE_SA_JSON), skipping AI processing\n")
 
     # Send email
-    to_email = os.environ.get("TO_EMAIL", "rillahai@gmail.com")
-    print(f"📧 Sending email to {to_email}...")
+    to_email = os.environ.get("TO_EMAIL", "")
+    if to_email:
+        print(f"📧 Sending email to {to_email}...")
+    else:
+        print("📧 TO_EMAIL not set, skipping email...")
 
     # Generate PDF for both email and Feishu
     email_sender = EmailSender()
@@ -154,17 +145,19 @@ async def main_async():
     if WEASYPRINT_AVAILABLE:
         pdf_dir = Path(__file__).parent / "output"
         pdf_dir.mkdir(exist_ok=True)
-        pdf_path = str(pdf_dir / f"AI_Daily_Digest_{date_str}.pdf")
+        pdf_path = str(pdf_dir / f"Six_Country_Insights_{date_str}.pdf")
         email_sender.generate_pdf(html_content, pdf_path)
 
     # Send email with PDF attachment
-    subject = f"🤖 AI Daily Digest - {datetime.now().strftime('%m/%d')}"
-    email_success = email_sender.send(to_email, subject, html_content, pdf_path)
+    email_success = False
+    if to_email:
+        subject = f"🔍 六国用研洞察 - {datetime.now().strftime('%m/%d')}"
+        email_success = email_sender.send(to_email, subject, html_content, pdf_path)
 
-    if email_success:
-        print("✅ Email sent successfully!")
-    else:
-        print("❌ Failed to send email. Check SMTP configuration.")
+        if email_success:
+            print("✅ Email sent successfully!")
+        else:
+            print("❌ Failed to send email. Check SMTP configuration.")
 
     # Publish to Feishu (independent of email)
     publishers_config = config.get("publishers", {})
@@ -174,7 +167,7 @@ async def main_async():
         print("\n🚀 Publishing to Feishu...")
         publisher = FeishuPublisher()
         if publisher.is_configured():
-            title = feishu_config.get("title_format", "AI Daily Digest - {date}").format(date=date_str)
+            title = feishu_config.get("title_format", "🔍 六国用研洞察 - {date}").format(date=date_str)
 
             # Publish to Feishu Bot (Push)
             bot_config = publishers_config.get("feishu_bot", {})
@@ -209,7 +202,7 @@ async def main_async():
         else:
             print("   ⚠️ Feishu publisher enabled but credentials not found (FEISHU_APP_ID/SECRET)")
 
-    print("\n✅ Daily digest completed!")
+    print("\n✅ Daily insights digest completed!")
     return 0
 
 

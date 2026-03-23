@@ -1,394 +1,551 @@
-# AI Daily Digest - 数据源配置
-# 可以随时添加/删除/修改数据源
+# Six-Country Info Insights - 六国用研洞察数据源配置
+# 目标国家: 俄罗斯🇷🇺 印度🇮🇳 印尼🇮🇩 尼日利亚🇳🇬 肯尼亚🇰🇪 巴基斯坦🇵🇰
 
+# ============================================================
 # RSS 数据源
+# ============================================================
 rss_sources:
-  # === 大厂动态 ===
-  apple:
-    name: "Apple Newsroom"
-    url: "https://www.apple.com/newsroom/rss-feed.rss"
-    category: "big_tech"
-    keywords: ["AI", "intelligence", "machine learning", "Siri", "neural"]
-    max_items: 10
-    enabled: true
 
-  google_ai:
-    name: "Google AI Blog"
-    url: "https://blog.google/technology/ai/rss/"
-    category: "big_tech"
-    keywords: []  # 空表示全部接收
-    max_items: 10
-    enabled: true
+  # ============================================================
+  # 维度0: 各国基础新闻 (country_news)
+  # ============================================================
 
-  deepmind:
-    name: "DeepMind Blog"
-    url: "https://deepmind.google/blog/rss.xml"
-    category: "big_tech"
+  # --- 🇷🇺 俄罗斯 ---
+  moscow_times:
+    name: "The Moscow Times"
+    url: "https://www.themoscowtimes.com/rss/news"
+    category: "country_news"
     keywords: []
     max_items: 10
     enabled: true
 
-  openai:
-    name: "OpenAI Blog"
-    url: "https://openai.com/news/rss.xml"
-    category: "big_tech"
+  tass:
+    name: "TASS"
+    url: "https://tass.com/rss/v2.xml"
+    category: "country_news"
     keywords: []
     max_items: 10
     enabled: true
 
-  anthropic:
-    name: "Anthropic News"
-    url: "https://www.anthropic.com/rss"  # 404 Not Found
-    category: "big_tech"
-    keywords: []
-    max_items: 10
-    enabled: false
-
-  # === 投融资 & 行业新闻 ===
-  techcrunch_ai:
-    name: "TechCrunch AI"
-    url: "https://techcrunch.com/category/artificial-intelligence/feed/"
-    category: "industry"
-    keywords: []  # Rely on LLM filtering for relevance
-    max_items: 15
-    enabled: true
-
-  venturebeat_ai:
-    name: "VentureBeat AI"
-    url: "https://venturebeat.com/category/ai/feed/"
-    category: "industry"
+  # --- 🇮🇳 印度 ---
+  times_of_india:
+    name: "Times of India"
+    url: "https://timesofindia.indiatimes.com/rssfeedstopstories.cms"
+    category: "country_news"
     keywords: []
     max_items: 10
     enabled: true
 
-  techmeme:
-    name: "Techmeme"
-    url: "https://www.techmeme.com/feed.xml"
-    category: "industry"
-    keywords: []  # Rely on LLM filtering
-    max_items: 10
-    enabled: true
-
-  # === 中文科技媒体 ===
-  36kr_ai:
-    name: "36氪 AI"
-    url: "https://36kr.com/feed"
-    category: "china"
-    keywords: ["AI融资", "人工智能融资", "大模型融资", "AI投资", "人工智能投资", "大模型", "GPT", "智能体", "AIGC", "Sora", "Claude", "Gemini"]
-    max_items: 10
-    enabled: true
-
-  jiqizhixin:
-    name: "机器之心"
-    url: "https://www.jiqizhixin.com/rss"
-    category: "china"
+  ndtv:
+    name: "NDTV"
+    url: "https://feeds.feedburner.com/ndtvnews-top-stories"
+    category: "country_news"
     keywords: []
     max_items: 10
     enabled: true
 
-  # === 三星手机 ===
-  samsung_newsroom:
-    name: "Samsung Newsroom"
-    url: "https://news.samsung.com/global/feed"
-    category: "big_tech"
-    keywords: ["Galaxy", "phone", "mobile", "smartphone", "手机", "折叠", "foldable", "One UI", "S2", "S25", "S26", "Z Flip", "Z Fold"]
-    max_items: 10
-    enabled: true
-
-  sammobile:
-    name: "SamMobile"
-    url: "https://www.sammobile.com/feed/"
-    category: "big_tech"
+  hindustan_times:
+    name: "Hindustan Times"
+    url: "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml"
+    category: "country_news"
     keywords: []
     max_items: 10
     enabled: true
 
-  # === 手机品牌 AI 动态 (OPPO/vivo/华为/小米/荣耀) ===
-  huawei_newsroom:
-    name: "Huawei Newsroom"
-    url: "https://www.huawei.com/en/rss-feeds/huawei-updates/rss"
-    category: "phone_ai"
-    keywords: ["AI", "intelligence", "HarmonyOS", "Pangu", "MagicOS", "smart", "model", "agent"]
-    max_items: 10
-    enabled: true
-
-  ithome:
-    name: "IT之家"
-    url: "https://www.ithome.com/rss/"
-    category: "phone_ai"
-    keywords: ["OPPO", "vivo", "华为", "小米", "荣耀", "Redmi", "OnePlus", "一加", "realme", "iQOO", "HarmonyOS", "鸿蒙", "ColorOS", "OriginOS", "MagicOS", "HyperOS", "澎湃OS"]
-    max_items: 15
-    enabled: true
-
-  ifanr:
-    name: "爱范儿"
-    url: "https://www.ifanr.com/feed"
-    category: "phone_ai"
-    keywords: ["OPPO", "vivo", "华为", "小米", "荣耀", "Redmi", "OnePlus", "一加", "realme", "iQOO", "HarmonyOS", "鸿蒙", "ColorOS", "OriginOS", "MagicOS", "HyperOS", "澎湃OS"]
-    max_items: 10
-    enabled: true
-
-  gsmarena:
-    name: "GSMArena"
-    url: "https://www.gsmarena.com/rss-news-reviews.php3"
-    category: "phone_ai"
-    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO", "HarmonyOS", "ColorOS", "OriginOS", "MagicOS", "HyperOS"]
-    max_items: 10
-    enabled: true
-
-  android_authority:
-    name: "Android Authority"
-    url: "https://www.androidauthority.com/feed/"
-    category: "phone_ai"
-    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO", "HarmonyOS", "ColorOS", "OriginOS", "MagicOS", "HyperOS"]
-    max_items: 10
-    enabled: true
-
-  xda_developers:
-    name: "XDA Developers"
-    url: "https://www.xda-developers.com/feed/"
-    category: "phone_ai"
-    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO", "HarmonyOS", "ColorOS", "OriginOS", "MagicOS", "HyperOS"]
-    max_items: 10
-    enabled: true
-
-  fonearena:
-    name: "FoneArena"
-    url: "https://www.fonearena.com/blog/feed"
-    category: "phone_ai"
-    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO"]
-    max_items: 10
-    enabled: true
-
-  gadgets360:
-    name: "Gadgets 360"
-    url: "https://feeds.feedburner.com/gadgets360-latest.xml"
-    category: "phone_ai"
-    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO"]
-    max_items: 10
-    enabled: true
-
+  # --- 🇮🇩 印尼 ---
   gizmologi:
     name: "Gizmologi"
     url: "https://gizmologi.id/feed/"
-    category: "phone_ai"
-    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO"]
+    category: "country_news"
+    keywords: []
     max_items: 10
     enabled: true
 
   selular_id:
     name: "Selular.ID"
     url: "https://selular.id/feed/"
-    category: "phone_ai"
-    keywords: ["OPPO", "vivo", "Huawei", "Xiaomi", "Honor", "Redmi", "OnePlus", "realme", "iQOO"]
-    max_items: 10
-    enabled: true
-
-  # === Trending Models & Projects ===
-  huggingface_blog:
-    name: "Hugging Face Blog"
-    url: "https://huggingface.co/blog/feed.xml"
-    category: "papers"
-    keywords: []
-    max_items: 5
-    enabled: true
-
-  # === Newsletter & 深度分析 ===
-  a16z:
-    name: "a16z AI"
-    url: "https://www.a16z.news/feed/"
-    category: "newsletter"
-    keywords: ["AI", "Artificial Intelligence"]
-    max_items: 10
-    enabled: true
-
-  a16z_podcast:
-    name: "a16z Podcast"
-    url: "https://feeds.simplecast.com/JGE3yC0V"
-    category: "podcast"
-    keywords: ["AI", "artificial intelligence", "LLM", "machine learning", "AGI", "GPT"]
-    max_items: 5
-    enabled: true
-
-  latent_space_newsletter:
-    name: "Latent Space"
-    url: "https://www.latent.space/feed"
-    category: "newsletter"
+    category: "country_news"
     keywords: []
     max_items: 10
     enabled: true
 
-  last_week_in_ai:
-    name: "Last Week in AI"
-    url: "https://lastweekin.ai/feed"
-    category: "newsletter"
+  # --- 🇳🇬 尼日利亚 ---
+  punch_ng:
+    name: "Punch Nigeria"
+    url: "https://punchng.com/feed/"
+    category: "country_news"
     keywords: []
     max_items: 10
     enabled: true
 
-  bens_bites:
-    name: "Ben's Bites"
-    url: "https://www.bensbites.com/feed"
-    category: "newsletter"
+  vanguard_ng:
+    name: "Vanguard Nigeria"
+    url: "https://www.vanguardngr.com/feed/"
+    category: "country_news"
     keywords: []
     max_items: 10
     enabled: true
 
-  # === Podcasts ===
-  no_priors:
-    name: "No Priors"
-    url: "https://feeds.simplecast.com/82FI35Px"
-    category: "podcast"
+  channels_tv:
+    name: "Channels TV"
+    url: "https://www.channelstv.com/feed/"
+    category: "country_news"
     keywords: []
-    max_items: 5
+    max_items: 10
     enabled: true
 
-  latent_space_podcast:
-    name: "Latent Space Podcast"
-    url: "https://www.latent.space/feed"
-    category: "podcast"
+  # --- 🇰🇪 肯尼亚 ---
+  standard_ke:
+    name: "The Standard Kenya"
+    url: "https://www.standardmedia.co.ke/rss/headlines.php"
+    category: "country_news"
     keywords: []
-    max_items: 5
+    max_items: 10
     enabled: true
 
-  twiml_ai:
-    name: "TWIML AI Podcast"
-    url: "https://feeds.megaphone.fm/MLN2155636147"
-    category: "podcast"
+  kenyans:
+    name: "Kenyans.co.ke"
+    url: "https://www.kenyans.co.ke/rss.xml"
+    category: "country_news"
     keywords: []
-    max_items: 5
+    max_items: 10
     enabled: true
 
-# WayToAGI 每日知识库精选（自定义爬虫，无 RSS）
-waytoagi:
-  enabled: true
-  max_items: 8  # 每日约 5-7 条，设置稍宽
+  # --- 🇵🇰 巴基斯坦 ---
+  express_tribune:
+    name: "Express Tribune"
+    url: "https://tribune.com.pk/feed/home"
+    category: "country_news"
+    keywords: []
+    max_items: 10
+    enabled: true
 
-# arXiv 论文配置
+  geo_news:
+    name: "Geo News"
+    url: "https://www.geo.tv/rss/1/0"
+    category: "country_news"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  propakistani:
+    name: "ProPakistani"
+    url: "https://propakistani.pk/feed/"
+    category: "country_news"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  # ============================================================
+  # 维度1: 宏观环境与物理边界 (macro_infra)
+  # 政策、基建、5G、电网、灾害
+  # ============================================================
+
+  light_reading:
+    name: "Light Reading"
+    url: "https://www.lightreading.com/rss.xml"
+    category: "macro_infra"
+    keywords: ["5G", "Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "emerging market", "spectrum", "telecom", "infrastructure", "broadband", "mobile network"]
+    max_items: 10
+    enabled: true
+
+  mobile_world_live:
+    name: "Mobile World Live"
+    url: "https://www.mobileworldlive.com/feed/"
+    category: "macro_infra"
+    keywords: ["Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "5G", "spectrum", "mobile operator", "network"]
+    max_items: 10
+    enabled: true
+
+  bbc_africa:
+    name: "BBC Africa"
+    url: "https://feeds.bbci.co.uk/news/world/africa/rss.xml"
+    category: "macro_infra"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  bbc_russian:
+    name: "BBC Russian"
+    url: "https://feeds.bbci.co.uk/russian/rss.xml"
+    category: "macro_infra"
+    keywords: []
+    max_items: 8
+    enabled: true
+
+  bbc_hindi:
+    name: "BBC Hindi"
+    url: "https://feeds.bbci.co.uk/hindi/rss.xml"
+    category: "macro_infra"
+    keywords: []
+    max_items: 8
+    enabled: true
+
+  bbc_indonesia:
+    name: "BBC Indonesia"
+    url: "https://feeds.bbci.co.uk/indonesia/rss.xml"
+    category: "macro_infra"
+    keywords: []
+    max_items: 8
+    enabled: true
+
+  bbc_urdu:
+    name: "BBC Urdu"
+    url: "https://feeds.bbci.co.uk/urdu/rss.xml"
+    category: "macro_infra"
+    keywords: []
+    max_items: 8
+    enabled: true
+
+  bbc_hausa:
+    name: "BBC Hausa"
+    url: "https://feeds.bbci.co.uk/hausa/rss.xml"
+    category: "macro_infra"
+    keywords: []
+    max_items: 8
+    enabled: true
+
+  bbc_swahili:
+    name: "BBC Swahili"
+    url: "https://feeds.bbci.co.uk/swahili/rss.xml"
+    category: "macro_infra"
+    keywords: []
+    max_items: 8
+    enabled: true
+
+  al_jazeera:
+    name: "Al Jazeera"
+    url: "https://www.aljazeera.com/xml/rss/all.xml"
+    category: "macro_infra"
+    keywords: ["Russia", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Africa", "South Asia"]
+    max_items: 10
+    enabled: true
+
+  france24_africa:
+    name: "France24 Africa"
+    url: "https://www.france24.com/en/africa/rss"
+    category: "macro_infra"
+    keywords: []
+    max_items: 8
+    enabled: true
+
+  # ============================================================
+  # 维度2: 商业流转与消费气象 (commerce_economy)
+  # 通胀、电商、支付、购买力
+  # ============================================================
+
+  rest_of_world:
+    name: "Rest of World"
+    url: "https://restofworld.org/feed/latest"
+    category: "commerce_economy"
+    keywords: []
+    max_items: 15
+    enabled: true
+
+  krasia:
+    name: "KrASIA"
+    url: "https://kr-asia.com/feed"
+    category: "commerce_economy"
+    keywords: ["India", "Indonesia", "Pakistan", "Southeast Asia", "South Asia", "e-commerce", "fintech", "payment", "consumer"]
+    max_items: 10
+    enabled: true
+
+  inc42:
+    name: "Inc42"
+    url: "https://inc42.com/feed/"
+    category: "commerce_economy"
+    keywords: ["e-commerce", "fintech", "payment", "consumer", "UPI", "PhonePe", "Paytm", "Flipkart", "funding"]
+    max_items: 10
+    enabled: true
+
+  economic_times:
+    name: "Economic Times India"
+    url: "https://economictimes.indiatimes.com/rssfeedstopstories.cms"
+    category: "commerce_economy"
+    keywords: ["inflation", "consumer", "e-commerce", "rupee", "GDP", "retail", "spending"]
+    max_items: 10
+    enabled: true
+
+  businessday_ng:
+    name: "BusinessDay Nigeria"
+    url: "https://businessday.ng/feed/"
+    category: "commerce_economy"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  medianama:
+    name: "Medianama"
+    url: "https://www.medianama.com/feed/"
+    category: "commerce_economy"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  next_billion:
+    name: "Next Billion"
+    url: "https://nextbillion.net/feed/"
+    category: "commerce_economy"
+    keywords: []
+    max_items: 8
+    enabled: true
+
+  africanews:
+    name: "Africanews"
+    url: "https://www.africanews.com/feed/"
+    category: "commerce_economy"
+    keywords: ["economy", "inflation", "trade", "business", "e-commerce", "mobile money", "fintech", "Nigeria", "Kenya"]
+    max_items: 10
+    enabled: true
+
+  # ============================================================
+  # 维度3: 数字生态与本土创投 (digital_ecosystem)
+  # App异动、初创融资、本土明星App
+  # ============================================================
+
+  techcabal:
+    name: "TechCabal"
+    url: "https://techcabal.com/feed/"
+    category: "digital_ecosystem"
+    keywords: []
+    max_items: 15
+    enabled: true
+
+  techpoint_africa:
+    name: "TechPoint Africa"
+    url: "https://techpoint.africa/feed/"
+    category: "digital_ecosystem"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  disrupt_africa:
+    name: "Disrupt Africa"
+    url: "https://disruptafrica.com/feed/"
+    category: "digital_ecosystem"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  techeconomy_ng:
+    name: "TechEconomy Nigeria"
+    url: "https://techeconomy.ng/feed/"
+    category: "digital_ecosystem"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  techweez_ke:
+    name: "Techweez Kenya"
+    url: "https://techweez.com/feed/"
+    category: "digital_ecosystem"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  it_news_africa:
+    name: "IT News Africa"
+    url: "https://www.itnewsafrica.com/feed/"
+    category: "digital_ecosystem"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  indian_express_tech:
+    name: "Indian Express Tech"
+    url: "https://indianexpress.com/section/technology/feed/"
+    category: "digital_ecosystem"
+    keywords: ["app", "startup", "Google Play", "fintech", "agritech", "edtech", "download", "India"]
+    max_items: 10
+    enabled: true
+
+  # ============================================================
+  # 维度4: 流行文化与公共情绪 (pop_culture)
+  # 热搜、影视音乐、meme、Z世代
+  # ============================================================
+
+  global_voices:
+    name: "Global Voices"
+    url: "https://globalvoices.org/feed/"
+    category: "pop_culture"
+    keywords: ["Russia", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Africa", "South Asia", "youth", "Gen Z", "culture", "social media", "TikTok", "protest", "festival"]
+    max_items: 15
+    enabled: true
+
+  vice_world:
+    name: "Vice World"
+    url: "https://www.vice.com/en/rss"
+    category: "pop_culture"
+    keywords: ["Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "Gen Z", "youth", "culture", "TikTok", "meme"]
+    max_items: 10
+    enabled: true
+
+  mashable:
+    name: "Mashable"
+    url: "https://mashable.com/feeds/rss/all"
+    category: "pop_culture"
+    keywords: ["Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "trending", "viral", "Gen Z", "TikTok", "social media"]
+    max_items: 10
+    enabled: true
+
+  coda_story:
+    name: "Coda Story"
+    url: "https://www.codastory.com/feed/"
+    category: "pop_culture"
+    keywords: ["Russia", "Africa", "India", "Indonesia", "disinformation", "digital", "social media", "culture"]
+    max_items: 8
+    enabled: true
+
+  the_diplomat:
+    name: "The Diplomat"
+    url: "https://thediplomat.com/feed/"
+    category: "pop_culture"
+    keywords: ["India", "Indonesia", "Pakistan", "South Asia", "Southeast Asia", "youth", "society", "culture", "digital"]
+    max_items: 8
+    enabled: true
+
+  dw_africa:
+    name: "DW Africa"
+    url: "https://rss.dw.com/xml/rss-en-africa"
+    category: "pop_culture"
+    keywords: ["culture", "youth", "music", "film", "festival", "Nigeria", "Kenya", "social media"]
+    max_items: 8
+    enabled: true
+
+  allafrica_nigeria:
+    name: "AllAfrica Nigeria"
+    url: "https://allafrica.com/tools/headlines/rdf/nigeria/headlines.rdf"
+    category: "pop_culture"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  allafrica_kenya:
+    name: "AllAfrica Kenya"
+    url: "https://allafrica.com/tools/headlines/rdf/kenya/headlines.rdf"
+    category: "pop_culture"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  daily_trust_ng:
+    name: "Daily Trust Nigeria"
+    url: "https://dailytrust.com/feed/"
+    category: "pop_culture"
+    keywords: ["culture", "festival", "youth", "Ramadan", "Eid", "music", "Nollywood", "social media", "tradition"]
+    max_items: 8
+    enabled: true
+
+  # ============================================================
+  # 维度5: 手机与硬件市场 (mobile_market)
+  # ============================================================
+
+  gsmarena:
+    name: "GSMArena"
+    url: "https://www.gsmarena.com/rss-news-reviews.php3"
+    category: "mobile_market"
+    keywords: ["India", "Africa", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "Transsion", "Tecno", "Infinix", "itel", "Samsung", "Xiaomi", "Redmi", "OPPO", "vivo", "realme", "Nokia"]
+    max_items: 10
+    enabled: true
+
+  gadgets360:
+    name: "Gadgets 360"
+    url: "https://feeds.feedburner.com/gadgets360-latest.xml"
+    category: "mobile_market"
+    keywords: ["smartphone", "phone", "mobile", "Transsion", "Tecno", "Infinix", "itel", "Samsung", "Xiaomi", "Redmi", "OPPO", "vivo", "realme", "Nokia", "review", "launch"]
+    max_items: 10
+    enabled: true
+
+  fonearena:
+    name: "FoneArena"
+    url: "https://www.fonearena.com/blog/feed"
+    category: "mobile_market"
+    keywords: ["Transsion", "Tecno", "Infinix", "itel", "Samsung", "Xiaomi", "Redmi", "OPPO", "vivo", "realme", "Nokia", "India", "Africa"]
+    max_items: 10
+    enabled: true
+
+  phoneradar:
+    name: "PhoneRadar India"
+    url: "https://www.phoneradar.com/feed/"
+    category: "mobile_market"
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  gizmologi_mobile:
+    name: "Gizmologi Mobile"
+    url: "https://gizmologi.id/feed/"
+    category: "mobile_market"
+    keywords: ["smartphone", "phone", "HP", "Tecno", "Infinix", "itel", "Samsung", "Xiaomi", "OPPO", "vivo", "realme"]
+    max_items: 8
+    enabled: true
+
+  selular_mobile:
+    name: "Selular.ID Mobile"
+    url: "https://selular.id/feed/"
+    category: "mobile_market"
+    keywords: ["smartphone", "phone", "HP", "Tecno", "Infinix", "itel", "Samsung", "Xiaomi", "OPPO", "vivo", "realme"]
+    max_items: 8
+    enabled: true
+
+# ============================================================
+# arXiv 论文 - 关闭 (不适用于用研洞察场景)
+# ============================================================
 arxiv:
-  enabled: true
-  categories:
-    - "cs.AI"   # Artificial Intelligence
-    - "cs.LG"   # Machine Learning
-    - "cs.CL"   # Computation and Language (NLP)
-    - "cs.CV"   # Computer Vision
-  max_results: 20
-  # 按热度过滤 (可选)
-  min_score: 0  # 0表示不过滤
+  enabled: false
 
-# X/Twitter 替代方案配置
+# ============================================================
+# Twitter/X - 关闭 (Nitter 不稳定)
+# ============================================================
 twitter:
-  enabled: false  # Disabled due to Nitter instability
-  method: "nitter"  # nitter | rss_bridge | manual
+  enabled: false
+  method: "nitter"
+  accounts: []
+  nitter_instances: []
 
-  # 关注的账号 (通过 Nitter RSS) - AI主要布道者
-  accounts:
-    # AI公司创始人/CEO
-    - username: "sama"
-      name: "Sam Altman (OpenAI CEO)"
-    - username: "gaborbrigs"
-      name: "Dario Amodei (Anthropic CEO)"
-    - username: "satlomat"
-      name: "Satya Nadella (Microsoft CEO)"
-    - username: "sundarpichai"
-      name: "Sundar Pichai (Google CEO)"
-
-    # AI研究先驱
-    - username: "ylecun"
-      name: "Yann LeCun (Meta AI Chief)"
-    - username: "demaboris"
-      name: "Andrej Karpathy (Ex-Tesla/OpenAI)"
-    - username: "JeffDean"
-      name: "Jeff Dean (Google)"
-    - username: "goodfloow"
-      name: "Ian Goodfellow (DeepMind)"
-    - username: "ilyasut"
-      name: "Ilya Sutskever (SSI)"
-
-    # AI意见领袖/投资人
-    - username: "emaboris"
-      name: "Emad Mostaque (Stability AI)"
-    - username: "elaboris"
-      name: "Elon Musk (xAI)"
-    - username: "naval"
-      name: "Naval Ravikant"
-    - username: "garrytan"
-      name: "Garry Tan (YC)"
-
-    # AI开发者/创作者
-    - username: "swyx"
-      name: "Swyx (AI Engineer)"
-    - username: "simonw"
-      name: "Simon Willison"
-    - username: "kaborashid"
-      name: "Kaif Rashid"
-    - username: "DrJimFan"
-      name: "Jim Fan (NVIDIA)"
-    - username: "LangChainAI"
-      name: "LangChain"
-
-  # 搜索关键词 (如果 Nitter 支持)
-  search_terms:
-    - "AI breakthrough"
-    - "LLM"
-    - "GPT"
-    - "Claude"
-
-  # Nitter 实例列表 (会自动尝试可用的)
-  nitter_instances:
-    - "https://nitter.privacyredirect.com"
-    - "https://xcancel.com"
-    - "https://nitter.poast.org"
-    - "https://nitter.tiekoetter.com"
-    - "https://nitter.catsarch.com"
-    - "https://nitter.privacy.com.de"
-    - "https://nitter.moomoo.me"
-    - "https://nitter.perennialte.ch"
-
-# Hacker News 热门 AI 讨论
+# ============================================================
+# Hacker News - 关闭 (不适用于用研洞察场景)
+# ============================================================
 hackernews:
-  enabled: true
-  url: "https://hnrss.org/newest?q=AI+OR+LLM+OR+GPT+OR+Claude"
-  min_points: 1  # Lowered to 1 to catch newest items (we filter by AI relevance later)
-  max_items: 10
+  enabled: false
 
+# ============================================================
+# WayToAGI - 关闭 (AI 特定场景)
+# ============================================================
+waytoagi:
+  enabled: false
+
+# ============================================================
 # 输出配置
+# ============================================================
 output:
-  # 每个分类最多显示多少条 (增加此值以容纳更多来源，特别是Podcast)
-  max_per_category: 20
+  max_per_category: 15
 
-  # 分类显示顺序
   category_order:
-    - "big_tech"
-    - "phone_ai"
-    - "papers"
-    - "newsletter"
-    - "industry"
-    - "podcast"
-    - "social"
-    - "china"
+    - "macro_infra"
+    - "commerce_economy"
+    - "digital_ecosystem"
+    - "pop_culture"
+    - "mobile_market"
+    - "country_news"
 
-  # 分类中文名
   category_names:
-    big_tech: "🏢 大厂动态"
-    phone_ai: "📱 手机AI动态"
-    papers: "📄 前沿论文"
-    newsletter: "📬 Newsletter精选"
-    industry: "💰 行业投融资"
-    podcast: "🎙️ 播客更新"
-    social: "🐦 社交热议"
-    china: "🇨🇳 国内动态"
+    macro_infra: "🏛️ 宏观环境与基础设施"
+    commerce_economy: "💰 商业流转与消费气象"
+    digital_ecosystem: "🚀 数字生态与本土创投"
+    pop_culture: "🎭 流行文化与公共情绪"
+    mobile_market: "📱 手机与硬件市场"
+    country_news: "🌍 各国要闻速递"
 
+# ============================================================
 # 发布渠道配置
+# ============================================================
 publishers:
   feishu:
     enabled: true
-    title_format: "🤖 AI Daily Digest - {date}"
-    # Credentials (FEISHU_APP_ID, FEISHU_APP_SECRET) loaded from env vars
+    title_format: "🔍 六国用研洞察 - {date}"
 
   feishu_bot:
     enabled: true
-    # Target chat ID (group ID starting with oc_) loaded from FEISHU_BOT_CHAT_ID
-    # or can be set here directly if not secret
     chat_id: ""
-    title_format: "🤖 AI Daily Digest - {date}"
+    title_format: "🔍 六国用研洞察 - {date}"

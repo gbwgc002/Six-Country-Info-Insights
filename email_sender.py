@@ -283,14 +283,14 @@ def send_digest_email(
     html = sender.render_email(categories, category_names, highlights)
 
     date_str = datetime.now().strftime("%Y-%m-%d")
-    subject = f"🤖 AI Daily Digest - {datetime.now().strftime('%m/%d')}"
+    subject = f"🔍 六国用研洞察 - {datetime.now().strftime('%m/%d')}"
 
     # Generate PDF
     pdf_path = None
     if WEASYPRINT_AVAILABLE:
         pdf_dir = Path(__file__).parent / "output"
         pdf_dir.mkdir(exist_ok=True)
-        pdf_path = str(pdf_dir / f"AI_Daily_Digest_{date_str}.pdf")
+        pdf_path = str(pdf_dir / f"Six_Country_Insights_{date_str}.pdf")
         sender.generate_pdf(html, pdf_path)
 
     return sender.send(to_email, subject, html, pdf_path)
