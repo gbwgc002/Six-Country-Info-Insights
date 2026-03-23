@@ -1,4 +1,4 @@
-name: AI Daily Digest
+name: Six-Country Info Insights
 
 on:
   # 每天北京时间早上7点运行 (UTC 23:00 前一天)
@@ -37,6 +37,9 @@ jobs:
 
       - name: Run AI Daily Digest
         env:
+          # Google Cloud project ID
+          GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }} 
+
           # Gemini (Vertex AI) service account JSON
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
 
@@ -46,11 +49,12 @@ jobs:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           FROM_EMAIL: ${{ secrets.SMTP_USER }}
-          TO_EMAIL: rillahai@gmail.com
+          TO_EMAIL: ${{ secrets.TO_EMAIL }}                          
 
           # Feishu Configuration
           FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
+          FEISHU_ADMIN_OPEN_ID: ${{ secrets.FEISHU_ADMIN_OPEN_ID }}  
           FEISHU_BOT_CHAT_ID: ${{ secrets.FEISHU_BOT_CHAT_ID }}
 
         run: |
