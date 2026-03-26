@@ -204,14 +204,23 @@ Content: {raw_content.strip()}
    - Terrorism promotion
    - Content that is purely about domestic politics with no relevance to market/consumer/tech insights
 
-2. **RELEVANCE CHECK** — Is this news useful for "desktop research insights" (洞察桌面研究)?
-   Return is_relevant=true if the news relates to ANY of these dimensions for the six target countries:
-   - 🏛️ Macro & Infrastructure: government policies (tariffs, app bans, regulations), 5G/telecom rollout, power grid, natural disasters, internet connectivity
-   - 💰 Commerce & Economy: inflation, consumer spending, e-commerce, mobile money/fintech, retail trends, payment methods, price changes
-   - 🚀 Digital Ecosystem: startup funding, app trends, Google Play dynamics, local tech companies, super apps, digital wallets
-   - 🎭 Pop Culture & Sentiment: trending topics, Gen Z culture, festivals/holidays, music/film, social media trends, memes, public debates
-   - 📱 Mobile Market: smartphone launches, market share, brand dynamics (Transsion/Tecno/Infinix/itel, Samsung, Xiaomi, OPPO, vivo, realme)
-   Return is_relevant=false if none of the above apply.
+2. **RELEVANCE CHECK** — Is this news genuinely useful for "Mobile UX & Product Desktop Research" (移动端用研与产品洞察)?
+   Your goal is to find insights that could inspire new smartphone OS features, hardware designs, app localizations, or digital marketing strategies.
+
+   Return is_relevant=true ONLY IF the news significantly relates to ANY of these dimensions for the target countries (Pakistan, Russia, India, Indonesia, Nigeria, Kenya):
+
+   - 🏛️ Macro & Digital Survival: government tech/app regulations, data privacy laws, telecom pricing/5G, severe power grid instability, or crisis events that change how people use mobile devices.
+   - 💰 Tech-Driven Commerce: inflation driving new digital behavior (e.g., micro-loans, BNPL), local e-commerce shifts, mobile money adoption, or digital tools for local merchants/gig workers.
+   - 🚀 Digital Ecosystem & Tools: local startup funding, breakout apps/widgets, Google Play/App Store dynamics, super apps, or shifts in local digital productivity.
+   - 🎭 Digital Lifestyle & Subcultures: Gen Z digital behavior, online gaming/fandom communities, shifts in social media *usage* (not just the content), or cultural events that influence digital aesthetics and localized campaigns.
+   - 📱 Mobile Market & Hardware: smartphone launches, market share, brand dynamics (Transsion/Tecno/Infinix/itel, Samsung, Xiaomi, OPPO, vivo, realme), or hardware supply chain news.
+
+   🚫 EXCLUSION RULES (Return is_relevant=false IMMEDIATELY if the news is about):
+   1. Celebrity gossip, entertainment industry drama, or influencer feuds (e.g., comedians arguing, movie reviews).
+   2. Routine local crime, standard political bickering, or generic sports match results.
+   3. Broad macro-economics or societal news that has ZERO clear connection to digital consumption, tech habits, or mobile phone usage.
+
+   Return is_relevant=false if it hits any exclusion rules OR if the relevance to mobile/digital UX is too weak.
 
 3. **TITLE REWRITE** — Write an informative Chinese headline:
    - MUST be in Simplified Chinese (简体中文)
