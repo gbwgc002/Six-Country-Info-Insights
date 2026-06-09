@@ -61,13 +61,27 @@ TARGET_COUNTRIES = [
 class GeminiSummarizer:
     """Use Gemini (Vertex AI) to summarize, translate and highlight insights."""
 
+    # Default model. NOTE: gemini-2.0-flash was retired by Google on
+    # 2026-06-01 and now returns 404 NOT_FOUND on Vertex AI, which silently
+    # broke summaries/translations/highlights. We default to a current model
+    # and allow overriding via the GEMINI_MODEL env var so future model
+    # migrations need no code change.
+    # gemini-3.5-flash: GA since 2026-05-19, no retirement date announced.
+    DEFAULT_MODEL = "gemini-3.5-flash"
+
     def __init__(
         self,
         service_account_file: Optional[str] = None,
-        model: str = "gemini-2.0-flash",
+        model: Optional[str] = None,
         project: str = "",  # Set your Google Cloud project ID
         location: str = "global",
     ):
+        # Resolve model: explicit arg > GEMINI_MODEL env var > default
+        model = model or os.environ.get("GEMINI_MODEL") or self.DEFAULT_MODEL
+
+        # Resolve location: env var override > default ("global")
+        location = os.environ.get("GOOGLE_CLOUD_LOCATION", location)
+
         # Resolve project from env or default
         project = os.environ.get("GOOGLE_CLOUD_PROJECT", project)
         if not project:
@@ -106,6 +120,10 @@ class GeminiSummarizer:
         )
         self.model_name = model
         self.semaphore = asyncio.Semaphore(5)
+        # Track whether we've already warned about a retired/unavailable model
+        # so the log isn't flooded across dozens of concurrent calls.
+        self._model_error_logged = False
+        print(f"   🧠 Gemini model: {self.model_name} (project={project}, location={location})")
 
     # ──────────────────────────────────────────────
     #  Low-level call
@@ -121,11 +139,27 @@ class GeminiSummarizer:
             config.response_mime_type = "application/json"
 
         async with self.semaphore:
-            response = await self.client.aio.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=config,
-            )
+            try:
+                response = await self.client.aio.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt,
+                    config=config,
+                )
+            except Exception as e:
+                # Make a retired / unavailable model obvious in the logs.
+                msg = str(e)
+                if not self._model_error_logged and (
+                    "404" in msg or "NOT_FOUND" in msg or "not found" in msg.lower()
+                    or "was not found" in msg.lower() or "deprecat" in msg.lower()
+                    or "retired" in msg.lower()
+                ):
+                    self._model_error_logged = True
+                    print(
+                        f"   ❌ Gemini model '{self.model_name}' appears unavailable "
+                        f"(retired/404). Set the GEMINI_MODEL env var to a current "
+                        f"model (e.g. gemini-2.5-flash). Error: {msg[:200]}"
+                    )
+                raise
 
         if not response or not response.candidates:
             raise RuntimeError("Gemini returned no valid response")
