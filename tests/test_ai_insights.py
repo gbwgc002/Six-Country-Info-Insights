@@ -1,0 +1,187 @@
+import unittest
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
+import yaml
+
+from ai_insights import (
+    filter_recent_candidates,
+    get_week_period,
+    render_daily_section,
+)
+from collectors.base import NewsItem
+from collectors.rss_collector import RSSCollector
+from processors.ai_insights_summarizer import ScoredInsight
+from processors.summarizer import GeminiSummarizer
+from publishers.feishu_publisher import FeishuPublisher
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class WeekPeriodTests(unittest.TestCase):
+    def test_current_and_previous_natural_week(self):
+        now = datetime(2026, 7, 27, 7, 30, tzinfo=ZoneInfo("Asia/Shanghai"))
+        current = get_week_period(now)
+        previous = get_week_period(now, previous=True)
+
+        self.assertEqual(str(current.start), "2026-07-27")
+        self.assertEqual(str(current.end), "2026-08-02")
+        self.assertEqual(current.title, "AI洞察资讯周报｜2026.07.27–08.02")
+        self.assertEqual(str(previous.start), "2026-07-20")
+        self.assertEqual(str(previous.end), "2026-07-26")
+
+
+class CandidateFilteringTests(unittest.TestCase):
+    def test_recent_filter_deduplicates_and_excludes_old_items(self):
+        now = datetime(2026, 7, 27, 0, 0, tzinfo=timezone.utc)
+        recent = NewsItem(
+            title="Recent",
+            url="https://example.com/recent",
+            source="Source",
+            category="major_ai",
+            published=now - timedelta(hours=4),
+        )
+        duplicate = NewsItem(
+            title="Recent duplicate",
+            url="https://example.com/recent",
+            source="Other",
+            category="major_ai",
+            published=now - timedelta(hours=2),
+        )
+        old = NewsItem(
+            title="Old",
+            url="https://example.com/old",
+            source="Source",
+            category="major_ai",
+            published=now - timedelta(days=4),
+        )
+
+        result = filter_recent_candidates(
+            [recent, duplicate, old],
+            lookback_hours=48,
+            now=now,
+        )
+        self.assertEqual([item.url for item in result], [recent.url])
+
+    def test_daily_markdown_keeps_evidence_link(self):
+        item = NewsItem(
+            title="Original",
+            url="https://example.com/source",
+            source="Research Lab",
+            category="human_ai",
+            published=datetime(2026, 7, 26, tzinfo=timezone.utc),
+        )
+        insight = ScoredInsight(
+            item=item,
+            title_cn="AI 交互研究",
+            category="human_ai",
+            relevance_score=9,
+            actionability_score=8,
+            impact_score=7,
+            credibility_score=9,
+            summary_cn="研究发布。",
+            why_it_matters="可用于评估 Agent。",
+            action_hint="加入可控性指标。",
+        )
+        markdown = render_daily_section(
+            [insight],
+            local_date=date(2026, 7, 27),
+        )
+        self.assertIn("https://example.com/source", markdown)
+        self.assertIn("为什么值得关注", markdown)
+        self.assertIn("建议动作", markdown)
+
+
+class SourceIsolationTests(unittest.TestCase):
+    def test_ai_sources_are_in_separate_configuration(self):
+        with (ROOT / "config" / "sources.yaml").open(encoding="utf-8") as file:
+            six_country = yaml.safe_load(file)
+        with (ROOT / "config" / "ai_insights_sources.yaml").open(
+            encoding="utf-8"
+        ) as file:
+            ai_insights = yaml.safe_load(file)
+
+        self.assertIn("moscow_times", six_country["rss_sources"])
+        self.assertNotIn("nngroup", six_country["rss_sources"])
+        self.assertIn("nngroup", ai_insights["rss_sources"])
+        self.assertEqual(
+            GeminiSummarizer.DEFAULT_MODEL,
+            "gemini-3.6-flash",
+        )
+
+    def test_required_keyword_group_is_anded_with_primary_group(self):
+        collector = RSSCollector(
+            "phone_ai",
+            {
+                "name": "Phone AI",
+                "url": "https://example.com/feed",
+                "keywords": ["OPPO", "vivo"],
+                "require_keywords": ["AI", "agent"],
+            },
+        )
+        text = "OPPO launches a new AI agent"
+        self.assertTrue(
+            collector.filter_by_keywords(text, collector.keywords)
+            and collector.filter_by_required_keywords(
+                text,
+                collector.require_keywords,
+            )
+        )
+        text_without_ai = "OPPO launches a new color"
+        self.assertFalse(
+            collector.filter_by_keywords(text_without_ai, collector.keywords)
+            and collector.filter_by_required_keywords(
+                text_without_ai,
+                collector.require_keywords,
+            )
+        )
+
+
+class FeishuTests(unittest.TestCase):
+    def test_block_text_preserves_link_target(self):
+        block = {
+            "block_type": 2,
+            "text": {
+                "elements": [
+                    {
+                        "text_run": {
+                            "content": "原始来源",
+                            "text_element_style": {
+                                "link": {"url": "https://example.com/article"}
+                            },
+                        }
+                    }
+                ]
+            },
+        }
+        text = FeishuPublisher._extract_block_text(block)
+        self.assertEqual(
+            text,
+            "原始来源 (https://example.com/article)",
+        )
+
+
+class WorkflowTests(unittest.TestCase):
+    def test_schedules_and_commands(self):
+        daily = (ROOT / ".github" / "workflows" / "ai-insights-daily.yml").read_text(
+            encoding="utf-8"
+        )
+        weekly = (ROOT / ".github" / "workflows" / "ai-insights-weekly.yml").read_text(
+            encoding="utf-8"
+        )
+        six_country = (ROOT / ".github" / "workflows" / "daily-digest.yml").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn('cron: "30 23 * * *"', daily)
+        self.assertIn("python ai_insights.py collect", daily)
+        self.assertIn('cron: "0 9 * * 1"', weekly)
+        self.assertIn("python ai_insights.py publish", weekly)
+        self.assertIn("cron: '0 23 * * *'", six_country)
+        self.assertIn("python main.py", six_country)
+        self.assertIn("GEMINI_MODEL: gemini-3.6-flash", six_country)
+
+
+if __name__ == "__main__":
+    unittest.main()

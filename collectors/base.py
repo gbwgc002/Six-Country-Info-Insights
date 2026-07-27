@@ -71,3 +71,13 @@ class BaseCollector(ABC):
             return True  # No filter = accept all
         text_lower = text.lower()
         return any(kw.lower() in text_lower for kw in keywords)
+
+    def filter_by_required_keywords(
+        self,
+        text: str,
+        required_keywords: list[str],
+    ) -> bool:
+        """Check a second OR-list that is ANDed with the primary list."""
+        if not required_keywords:
+            return True
+        return self.filter_by_keywords(text, required_keywords)

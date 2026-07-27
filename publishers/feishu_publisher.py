@@ -172,6 +172,34 @@ class FeishuPublisher:
             print(f"   ⚠️ List error: {e}")
             return []
 
+    async def find_document_by_title(self, title: str) -> dict | None:
+        """Find a recently edited app-owned document by its exact title."""
+        files = await self.list_app_documents()
+        for file_info in files:
+            file_title = (
+                file_info.get("name")
+                or file_info.get("title")
+                or file_info.get("file_name")
+            )
+            if file_title != title:
+                continue
+            token = (
+                file_info.get("token")
+                or file_info.get("file_token")
+                or file_info.get("document_id")
+            )
+            if token:
+                return {
+                    "document_id": token,
+                    "title": file_title,
+                    "url": (
+                        file_info.get("url")
+                        or f"https://feishu.cn/docx/{token}"
+                    ),
+                    "raw": file_info,
+                }
+        return None
+
     async def create_document(self, title: str) -> str:
         """Create a new Docx and return its document_id."""
         token = await self._get_tenant_access_token()
@@ -310,23 +338,102 @@ class FeishuPublisher:
             }
         }
 
-    async def write_content(self, document_id: str, blocks: list[dict]):
-        """Append blocks to the document."""
+    async def write_content(
+        self,
+        document_id: str,
+        blocks: list[dict],
+        index: int | None = None,
+    ):
+        """Append blocks, or insert them at a specific root-child index."""
         token = await self._get_tenant_access_token()
         url = f"{self.BASE_URL}/docx/v1/documents/{document_id}/blocks/{document_id}/children"
         headers = {"Authorization": f"Bearer {token}"}
 
         # Feishu has limits on block creation (e.g. 50 at a time)
         batch_size = 50
+        current_index = index
         for i in range(0, len(blocks), batch_size):
             batch = blocks[i:i+batch_size]
             payload = {"children": batch}
+            if current_index is not None:
+                payload["index"] = current_index
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(url, json=payload, headers=headers) as response:
                     data = await response.json()
                     if data.get("code") != 0:
                         print(f"Error writing blocks batch {i}: {data.get('msg')}")
+                    elif current_index is not None:
+                        current_index += len(batch)
+
+    @staticmethod
+    def _extract_block_text(block: dict) -> str:
+        """Flatten one Feishu text-like block and preserve embedded URLs."""
+        text_keys = (
+            "text",
+            "heading1",
+            "heading2",
+            "heading3",
+            "heading4",
+            "heading5",
+            "heading6",
+            "bullet",
+            "ordered",
+            "quote",
+        )
+        for key in text_keys:
+            body = block.get(key)
+            if not isinstance(body, dict):
+                continue
+            pieces = []
+            for element in body.get("elements", []):
+                text_run = element.get("text_run", {})
+                content = text_run.get("content", "")
+                style = text_run.get("text_element_style", {})
+                link = style.get("link", {}) if isinstance(style, dict) else {}
+                url = link.get("url") if isinstance(link, dict) else None
+                if url and url not in content:
+                    content = f"{content} ({url})"
+                pieces.append(content)
+            return "".join(pieces).strip()
+        return ""
+
+    async def read_document_text(self, document_id: str) -> str:
+        """Read all document blocks and return a plain-text representation."""
+        token = await self._get_tenant_access_token()
+        headers = {"Authorization": f"Bearer {token}"}
+        page_token = None
+        lines = []
+
+        while True:
+            url = (
+                f"{self.BASE_URL}/docx/v1/documents/{document_id}/blocks"
+                "?document_revision_id=-1&page_size=500"
+            )
+            if page_token:
+                url += f"&page_token={page_token}"
+
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers) as response:
+                    data = await response.json()
+                    if data.get("code") != 0:
+                        raise Exception(
+                            f"Read Doc Error: {data.get('msg', '')}"
+                        )
+
+            result = data.get("data", {})
+            for block in result.get("items", []):
+                text = self._extract_block_text(block)
+                if text:
+                    lines.append(text)
+
+            if not result.get("has_more"):
+                break
+            page_token = result.get("page_token")
+            if not page_token:
+                break
+
+        return "\n".join(lines)
 
     async def upload_file(self, file_path: str, file_name: str = None, parent_type: str = "explorer") -> dict:
         """Upload a file to Feishu Drive.
@@ -713,3 +820,58 @@ class FeishuPublisher:
         card_content = self._build_card_content(title, highlights, categories, category_names, doc_url)
         await self._send_message(chat_id, "interactive", card_content)
 
+    async def send_ai_insights_card(
+        self,
+        chat_id: str,
+        title: str,
+        highlights: str,
+        doc_url: str,
+    ):
+        """Send the independent weekly AI Insights card."""
+        elements = [
+            {
+                "tag": "div",
+                "text": {
+                    "tag": "lark_md",
+                    "content": f"**本周核心判断**\n\n{highlights}",
+                },
+            },
+            {"tag": "hr"},
+            {
+                "tag": "action",
+                "actions": [
+                    {
+                        "tag": "button",
+                        "text": {
+                            "tag": "plain_text",
+                            "content": "查看完整周报",
+                        },
+                        "type": "primary",
+                        "multi_url": {
+                            "url": doc_url,
+                            "pc_url": doc_url,
+                            "ios_url": doc_url,
+                            "android_url": doc_url,
+                        },
+                    }
+                ],
+            },
+            {
+                "tag": "note",
+                "elements": [
+                    {
+                        "tag": "plain_text",
+                        "content": "AI Insights · User Research & Consumer Insights",
+                    }
+                ],
+            },
+        ]
+        card = {
+            "config": {"wide_screen_mode": True},
+            "header": {
+                "template": "purple",
+                "title": {"tag": "plain_text", "content": title},
+            },
+            "elements": elements,
+        }
+        await self._send_message(chat_id, "interactive", json.dumps(card))

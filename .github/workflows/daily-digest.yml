@@ -42,6 +42,7 @@ jobs:
 
           # Gemini (Vertex AI) service account JSON
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+          GEMINI_MODEL: gemini-3.6-flash
 
           # Email configuration (Gmail SMTP)
           SMTP_SERVER: smtp.gmail.com

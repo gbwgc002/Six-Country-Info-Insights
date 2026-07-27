@@ -66,8 +66,8 @@ class GeminiSummarizer:
     # broke summaries/translations/highlights. We default to a current model
     # and allow overriding via the GEMINI_MODEL env var so future model
     # migrations need no code change.
-    # gemini-3.5-flash: GA since 2026-05-19, no retirement date announced.
-    DEFAULT_MODEL = "gemini-3.5-flash"
+    # gemini-3.6-flash is the stable production model used by both digests.
+    DEFAULT_MODEL = "gemini-3.6-flash"
 
     def __init__(
         self,
