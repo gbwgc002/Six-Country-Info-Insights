@@ -869,7 +869,7 @@ class FeishuPublisher:
         card = {
             "config": {"wide_screen_mode": True},
             "header": {
-                "template": "purple",
+                "template": "blue",
                 "title": {"tag": "plain_text", "content": title},
             },
             "elements": elements,
