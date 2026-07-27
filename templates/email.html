@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>六国用研洞察 - {{ date }}</title>
+    <title>{{ report_title | default('六国用研洞察') }} - {{ date }}</title>
     <style>
         /* Reset and base styles */
         body {
@@ -451,15 +451,15 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🔍 六国用研洞察</h1>
+            <h1>{{ report_icon | default('🔍') }} {{ report_title | default('六国用研洞察') }}</h1>
             <div class="date">{{ date }} · {{ item_count }} 条洞察</div>
-            <div class="subtitle" style="opacity:0.85;font-size:12px;margin-top:4px;">🇷🇺 Russia · 🇮🇳 India · 🇮🇩 Indonesia · 🇳🇬 Nigeria · 🇰🇪 Kenya · 🇵🇰 Pakistan</div>
+            <div class="subtitle" style="opacity:0.85;font-size:12px;margin-top:4px;">{{ report_subtitle | default('🇷🇺 Russia · 🇮🇳 India · 🇮🇩 Indonesia · 🇳🇬 Nigeria · 🇰🇪 Kenya · 🇵🇰 Pakistan') }}</div>
         </div>
 
         <!-- Highlights -->
         {% if highlights %}
         <div class="highlights">
-            <h2>⚡ 今日要点</h2>
+            <h2>{{ highlights_title | default('⚡ 今日要点') }}</h2>
             <div class="highlights-content">
                 {{ highlights | safe }}
             </div>
@@ -469,7 +469,7 @@
         <!-- Table of Contents -->
         {% if categories %}
         <div class="toc">
-            <h2>📑 今日目录 · {{ item_count }} 条洞察</h2>
+            <h2>{{ toc_title | default('📑 今日目录') }} · {{ item_count }} 条洞察</h2>
             <div class="toc-list">
                 {% for category_id, items in categories.items() %}
                 {% if items %}
@@ -545,11 +545,25 @@
         {% endif %}
         {% endfor %}
 
+        {% if recommendations %}
+        <div class="highlights">
+            <h2>{{ recommendations_title | default('💡 行动建议') }}</h2>
+            <div class="highlights-content">
+                {% for recommendation in recommendations %}
+                <div class="highlight-item">
+                    <span class="highlight-number">{{ loop.index }}</span>
+                    <span class="highlight-text">{{ recommendation }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Footer -->
         <div class="footer">
             <p>
-                由 <strong>六国用研洞察 (Six-Country Info Insights)</strong> 自动生成<br>
-                数据来源：40+ RSS feeds covering Russia, India, Indonesia, Nigeria, Kenya, Pakistan<br>
+                由 <strong>{{ footer_title | default('六国用研洞察 (Six-Country Info Insights)') }}</strong> 自动生成<br>
+                {{ footer_description | default('数据来源：40+ RSS feeds covering Russia, India, Indonesia, Nigeria, Kenya, Pakistan') }}<br>
                 <a href="https://github.com/gbwgc002/Six-Country-Info-Insights">查看源码</a>
             </p>
         </div>
