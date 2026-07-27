@@ -88,7 +88,7 @@ The independent AI Insights workflows run as follows:
 | Workflow | UTC+8 schedule | Behaviour |
 |---|---:|---|
 | `ai-insights-daily.yml` | Daily 07:30 | Collect, score, deduplicate, and append candidates to the current natural-week Feishu document; no group message |
-| `ai-insights-weekly.yml` | Monday 17:00 | Finalize the previous natural week's document and send one card to the existing Feishu group |
+| `ai-insights-weekly.yml` | Monday 17:00 | Finalize the previous natural week, generate and upload a styled PDF, then send one PDF-linked card to the existing Feishu group |
 
 Both pipelines use `gemini-3.6-flash`. The model can still be overridden with
 the `GEMINI_MODEL` environment variable for manual runs.
@@ -114,7 +114,7 @@ processors/
 publishers/
   feishu_publisher.py        # Feishu doc + bot card publisher
 templates/
-  email.html                 # Jinja2 email/PDF template
+  email.html                 # Shared Jinja2 email/PDF visual template
 email_sender.py              # SMTP email sender + PDF generation
 main.py                      # Entry point
 ai_insights.py               # AI Insights collect/publish entry point
