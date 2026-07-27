@@ -8,11 +8,17 @@ import yaml
 from ai_insights import (
     filter_recent_candidates,
     get_week_period,
+    render_highlights_html,
     render_daily_section,
 )
 from collectors.base import NewsItem
 from collectors.rss_collector import RSSCollector
-from processors.ai_insights_summarizer import ScoredInsight
+from email_sender import EmailSender
+from processors.ai_insights_summarizer import (
+    ScoredInsight,
+    WeeklyDigest,
+    WeeklyDigestItem,
+)
 from processors.summarizer import GeminiSummarizer
 from publishers.feishu_publisher import FeishuPublisher
 
@@ -162,6 +168,68 @@ class FeishuTests(unittest.TestCase):
         )
 
 
+class WeeklyReportTests(unittest.TestCase):
+    def _digest(self):
+        return WeeklyDigest(
+            core_judgments=["AI 用研进入工作流执行阶段"],
+            items=[
+                WeeklyDigestItem(
+                    title="AI 研究平台更新",
+                    url="https://example.com/research",
+                    source="Research Lab",
+                    published="2026-07-26",
+                    category="user_research",
+                    what_happened="平台新增研究执行能力。",
+                    why_it_matters="可减少重复工作。",
+                    action_hint="先在低风险环节试点。",
+                )
+            ],
+            team_advice=["关键执行操作保留人工确认。"],
+        )
+
+    def test_structured_digest_drives_markdown_and_pdf_data(self):
+        digest = self._digest()
+        markdown = digest.to_markdown()
+        categories = digest.to_report_categories()
+
+        self.assertIn("## 本周最终精选", markdown)
+        self.assertIn("https://example.com/research", markdown)
+        self.assertIn("user_research", categories)
+        self.assertEqual(categories["user_research"][0].source, "Research Lab")
+
+    def test_ai_report_reuses_six_country_template_with_ai_labels(self):
+        digest = self._digest()
+        renderer = EmailSender()
+        report_html = renderer.render_email(
+            categories=digest.to_report_categories(),
+            category_names={"user_research": "用研与消费者洞察"},
+            highlights=render_highlights_html(digest.core_judgments),
+            date_label="2026年07月20日 至 2026年07月26日",
+            report_title="AI洞察资讯周报",
+            report_subtitle="AI Insights",
+            highlights_title="本周核心判断",
+            toc_title="本期目录",
+            recommendations=digest.team_advice,
+            recommendations_title="本周给团队的三条建议",
+        )
+        self.assertIn("AI洞察资讯周报", report_html)
+        self.assertIn("本周核心判断", report_html)
+        self.assertIn("本周给团队的三条建议", report_html)
+        self.assertIn("AI 研究平台更新", report_html)
+
+    def test_six_country_template_defaults_are_unchanged(self):
+        report_html = EmailSender().render_email(
+            categories={},
+            category_names={},
+        )
+        self.assertIn("<h1>🔍 六国用研洞察</h1>", report_html)
+        self.assertIn("⚡ 今日要点", (ROOT / "templates" / "email.html").read_text())
+        self.assertIn(
+            "🇷🇺 Russia · 🇮🇳 India · 🇮🇩 Indonesia",
+            report_html,
+        )
+
+
 class WorkflowTests(unittest.TestCase):
     def test_schedules_and_commands(self):
         daily = (ROOT / ".github" / "workflows" / "ai-insights-daily.yml").read_text(
@@ -178,6 +246,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("python ai_insights.py collect", daily)
         self.assertIn('cron: "0 9 * * 1"', weekly)
         self.assertIn("python ai_insights.py publish", weekly)
+        self.assertIn("fonts-noto-cjk", weekly)
         self.assertIn("cron: '0 23 * * *'", six_country)
         self.assertIn("python main.py", six_country)
         self.assertIn("GEMINI_MODEL: gemini-3.6-flash", six_country)

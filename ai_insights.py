@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import html
 import os
 from collections import Counter
 from dataclasses import dataclass
@@ -20,11 +21,14 @@ load_dotenv()
 from collectors import NewsItem, collect_all_rss, collect_arxiv
 from processors.ai_insights_summarizer import (
     AIInsightsSummarizer,
+    CATEGORY_NAMES,
     ScoredInsight,
+    WeeklyDigest,
     extract_urls,
 )
 from processors.deduper import deduplicate_items
 from publishers.feishu_publisher import FeishuPublisher
+from email_sender import EmailSender, WEASYPRINT_AVAILABLE
 
 DEFAULT_CONFIG = Path(__file__).parent / "config" / "ai_insights_sources.yaml"
 
@@ -195,6 +199,65 @@ def render_daily_section(
     return "\n\n".join(parts)
 
 
+def render_highlights_html(items: list[str]) -> str:
+    """Render trusted presentation markup from escaped AI-generated text."""
+    return "\n".join(
+        (
+            '<div class="highlight-item">'
+            f'<span class="highlight-number">{index}</span>'
+            f'<span class="highlight-text">{html.escape(item)}</span>'
+            "</div>"
+        )
+        for index, item in enumerate(items[:3], start=1)
+    )
+
+
+def generate_ai_insights_pdf(
+    digest: WeeklyDigest,
+    period: WeekPeriod,
+) -> str | None:
+    """Render the weekly digest with the existing six-country visual system."""
+    if not WEASYPRINT_AVAILABLE:
+        print("WeasyPrint is unavailable; AI Insights PDF cannot be generated.")
+        return None
+
+    renderer = EmailSender()
+    categories = digest.to_report_categories()
+    html_content = renderer.render_email(
+        categories=categories,
+        category_names=CATEGORY_NAMES,
+        highlights=render_highlights_html(digest.core_judgments),
+        date_label=(
+            f"{period.start:%Y年%m月%d日} 至 "
+            f"{period.end:%Y年%m月%d日}"
+        ),
+        report_icon="",
+        report_title="AI洞察资讯周报",
+        report_subtitle=(
+            "AI Insights · User Research · Consumer Insights · Mobile AI"
+        ),
+        highlights_title="本周核心判断",
+        toc_title="本期目录",
+        recommendations=[
+            html.escape(advice) for advice in digest.team_advice
+        ],
+        recommendations_title="本周给团队的三条建议",
+        footer_title="AI洞察资讯周报 (AI Insights)",
+        footer_description=(
+            "聚焦用户研究、消费者洞察、研究工作流与手机 AI"
+        ),
+    )
+
+    pdf_dir = Path(__file__).parent / "output"
+    pdf_dir.mkdir(exist_ok=True)
+    pdf_path = pdf_dir / (
+        f"AI_Insights_{period.start:%Y-%m-%d}_{period.end:%Y-%m-%d}.pdf"
+    )
+    if not renderer.generate_pdf(html_content, str(pdf_path)):
+        return None
+    return str(pdf_path)
+
+
 async def collect_daily(config: dict, dry_run: bool = False) -> int:
     settings = config.get("settings", {})
     timezone_name = settings.get("timezone", "Asia/Shanghai")
@@ -311,8 +374,8 @@ async def publish_weekly(config: dict, dry_run: bool = False) -> int:
         return 0
 
     collected_text = await publisher.read_document_text(document["document_id"])
-    if "本周最终精选" in collected_text:
-        print("This weekly document is already finalized; skipping duplicate push.")
+    if "AI洞察PDF：" in collected_text:
+        print("This weekly PDF was already published; skipping duplicate push.")
         return 0
     if "每日收集" not in collected_text:
         print("The weekly document contains no daily candidates.")
@@ -322,12 +385,14 @@ async def publish_weekly(config: dict, dry_run: bool = False) -> int:
         return 1
 
     summarizer = create_summarizer()
-    final_markdown, highlights = await summarizer.generate_weekly_digest(
+    digest = await summarizer.generate_weekly_digest(
         collected_text=collected_text,
         period_label=f"{period.start:%Y-%m-%d} 至 {period.end:%Y-%m-%d}",
         max_weekly_items=int(settings.get("max_weekly_items", 10)),
         vendor_weekly_cap=int(settings.get("vendor_weekly_cap", 3)),
     )
+    final_markdown = digest.to_markdown()
+    highlights = digest.card_highlights
 
     if dry_run:
         print("\nDRY RUN — no document or group message was changed:\n")
@@ -341,20 +406,39 @@ async def publish_weekly(config: dict, dry_run: bool = False) -> int:
         print("FEISHU_BOT_CHAT_ID is missing.")
         return 1
 
-    # Insert the final editorial summary at the top. Existing daily evidence
-    # remains below it for traceability.
-    await publisher.write_content(
-        document["document_id"],
-        publisher._markdown_to_blocks(final_markdown),
-        index=0,
+    pdf_path = generate_ai_insights_pdf(digest, period)
+    if not pdf_path:
+        return 1
+    pdf_url = await publisher.upload_pdf(
+        pdf_path,
+        period.title,
+        chat_ids[0],
     )
+    if not pdf_url:
+        print("AI Insights PDF upload failed; no group message was sent.")
+        return 1
+
+    # Keep the weekly Feishu document as the collection/evidence store. Add
+    # the editorial summary once, while the user-facing card opens the PDF.
+    if "本周最终精选" not in collected_text:
+        await publisher.write_content(
+            document["document_id"],
+            publisher._markdown_to_blocks(final_markdown),
+            index=0,
+        )
     for chat_id in chat_ids:
         await publisher.send_ai_insights_card(
             chat_id=chat_id,
             title=period.title,
             highlights=highlights,
-            doc_url=document["url"],
+            doc_url=pdf_url,
         )
+    pdf_marker = f"## PDF版本\n\nAI洞察PDF：[查看完整周报]({pdf_url})"
+    await publisher.write_content(
+        document["document_id"],
+        publisher._markdown_to_blocks(pdf_marker),
+        index=0,
+    )
     print(f"Published weekly digest to {len(chat_ids)} Feishu group(s).")
     return 0
 

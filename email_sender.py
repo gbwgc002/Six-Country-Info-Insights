@@ -51,6 +51,8 @@ class EmailSender:
         categories: dict[str, list[NewsItem]],
         category_names: dict[str, str],
         highlights: str = "",
+        date_label: str = None,
+        **report_context,
     ) -> str:
         """Render email HTML from template."""
         template = self.jinja_env.get_template("email.html")
@@ -60,11 +62,12 @@ class EmailSender:
 
         # Render
         html = template.render(
-            date=datetime.now().strftime("%Y年%m月%d日"),
+            date=date_label or datetime.now().strftime("%Y年%m月%d日"),
             item_count=item_count,
             highlights=highlights,
             categories=categories,
             category_names=category_names,
+            **report_context,
         )
 
         return html

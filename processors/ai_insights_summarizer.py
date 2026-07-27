@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+import html
 import json
 import re
 from dataclasses import dataclass
-from datetime import timezone
+from datetime import datetime, timezone
 from typing import Any
 
 from google.genai import types
@@ -87,6 +88,115 @@ class ScoredInsight:
                 f"- 建议动作：{self.action_hint}",
             ]
         )
+
+
+@dataclass(frozen=True)
+class WeeklyDigestItem:
+    """One editorially selected item in the final weekly report."""
+
+    title: str
+    url: str
+    source: str
+    published: str
+    category: str
+    what_happened: str
+    why_it_matters: str
+    action_hint: str
+
+    def to_markdown(self) -> str:
+        category_name = CATEGORY_NAMES.get(self.category, self.category)
+        return "\n".join(
+            [
+                f"### [{self.title}]({self.url})",
+                f"- 来源：{self.source}｜{self.published}｜{category_name}",
+                f"- 发生了什么：{self.what_happened}",
+                f"- 为什么值得关注：{self.why_it_matters}",
+                f"- 建议动作：{self.action_hint}",
+            ]
+        )
+
+    def to_news_item(self) -> NewsItem:
+        """Adapt the weekly item to the existing six-country PDF template."""
+        published_at = None
+        match = re.search(r"\d{4}-\d{2}-\d{2}", self.published)
+        if match:
+            try:
+                published_at = datetime.strptime(
+                    match.group(0),
+                    "%Y-%m-%d",
+                ).replace(tzinfo=timezone.utc)
+            except ValueError:
+                published_at = None
+
+        summary = " ".join(
+            [
+                f"发生了什么：{self.what_happened}",
+                f"为什么值得关注：{self.why_it_matters}",
+                f"建议动作：{self.action_hint}",
+            ]
+        )
+        return NewsItem(
+            title=html.escape(self.title),
+            url=html.escape(self.url, quote=True),
+            source=html.escape(self.source),
+            category=self.category,
+            published=published_at,
+            summary=html.escape(summary),
+            tags=["AI洞察", "行动建议"],
+        )
+
+
+@dataclass(frozen=True)
+class WeeklyDigest:
+    """Structured weekly output shared by Feishu, Markdown, and PDF."""
+
+    core_judgments: list[str]
+    items: list[WeeklyDigestItem]
+    team_advice: list[str]
+
+    @property
+    def card_highlights(self) -> str:
+        return "\n".join(
+            f"- {judgment}" for judgment in self.core_judgments[:3]
+        )
+
+    def to_markdown(self) -> str:
+        parts = ["## 本周最终精选", "", "## 本周核心判断"]
+        parts.extend(
+            f"{index}. {judgment}"
+            for index, judgment in enumerate(self.core_judgments[:3], start=1)
+        )
+
+        for category, category_name in CATEGORY_NAMES.items():
+            category_items = [
+                item for item in self.items if item.category == category
+            ]
+            if not category_items:
+                continue
+            parts.extend(["", f"## {category_name}", ""])
+            parts.append(
+                "\n\n".join(item.to_markdown() for item in category_items)
+            )
+
+        if self.team_advice:
+            parts.extend(["", "## 本周给团队的三条建议"])
+            parts.extend(
+                f"{index}. {advice}"
+                for index, advice in enumerate(self.team_advice[:3], start=1)
+            )
+        return "\n".join(parts).strip()
+
+    def to_report_categories(self) -> dict[str, list[NewsItem]]:
+        categories: dict[str, list[NewsItem]] = {}
+        for category in CATEGORY_NAMES:
+            category_items = [
+                item.to_news_item()
+                for item in self.items
+                if item.category == category
+            ]
+            if category_items:
+                categories[category] = category_items
+        return categories
 
 
 class AIInsightsSummarizer(GeminiSummarizer):
@@ -279,8 +389,8 @@ class AIInsightsSummarizer(GeminiSummarizer):
         period_label: str,
         max_weekly_items: int = 10,
         vendor_weekly_cap: int = 3,
-    ) -> tuple[str, str]:
-        """Create final weekly Markdown and compact Feishu-card highlights."""
+    ) -> WeeklyDigest:
+        """Create one structured digest for Markdown, Feishu, and PDF."""
         prompt = f"""你是“AI 洞察资讯周报”的主编。请基于下方一周内每天积累的候选资讯，生成最终周报。
 
 统计周期：{period_label}
@@ -299,10 +409,26 @@ class AIInsightsSummarizer(GeminiSummarizer):
 候选资料：
 {collected_text[:80000]}
 
-返回严格 JSON：
+返回严格 JSON。不要返回 Markdown，不要添加以下字段之外的内容：
 {{
-  "document_markdown": "以 ## 本周最终精选 开头的完整 Markdown。依次包含：本周核心判断（3点）；按主题组织的精选资讯；本周给团队的三条建议。",
-  "card_highlights": "适合飞书卡片的3条短要点，每条以 - 开头，总计不超过500个中文字符"
+  "core_judgments": ["本周核心判断1", "本周核心判断2", "本周核心判断3"],
+  "sections": [
+    {{
+      "category": "user_research|research_tools|human_ai|speech_language|mobile_ai|major_ai",
+      "items": [
+        {{
+          "title": "准确、克制的中文标题",
+          "url": "候选资料中原样复制的原始链接",
+          "source": "候选资料中原样复制的来源",
+          "published": "YYYY-MM-DD或日期未知",
+          "what_happened": "发生了什么，1-2句",
+          "why_it_matters": "为什么值得用研/洞察团队关注，1-2句",
+          "action_hint": "贴近实际工作的可执行建议，1句"
+        }}
+      ]
+    }}
+  ],
+  "team_advice": ["团队建议1", "团队建议2", "团队建议3"]
 }}
 """
         raw = await self._call_extended(
@@ -311,11 +437,68 @@ class AIInsightsSummarizer(GeminiSummarizer):
             max_output_tokens=10000,
         )
         data = json.loads(_clean_json_response(raw))
-        markdown = str(data.get("document_markdown") or "").strip()
-        highlights = str(data.get("card_highlights") or "").strip()
-        if "本周最终精选" not in markdown:
-            markdown = f"## 本周最终精选\n\n{markdown}"
-        return markdown, highlights
+        known_urls = extract_urls(collected_text)
+        seen_urls: set[str] = set()
+        items: list[WeeklyDigestItem] = []
+
+        for section in data.get("sections", []):
+            category = str(section.get("category") or "").strip()
+            if category not in CATEGORY_NAMES:
+                continue
+            for record in section.get("items", []):
+                url = str(record.get("url") or "").strip()
+                if (
+                    not url
+                    or url not in known_urls
+                    or url in seen_urls
+                    or len(items) >= max_weekly_items
+                ):
+                    continue
+                title = str(record.get("title") or "").strip()
+                if not title:
+                    continue
+                seen_urls.add(url)
+                items.append(
+                    WeeklyDigestItem(
+                        title=title,
+                        url=url,
+                        source=str(record.get("source") or "原始来源").strip(),
+                        published=str(
+                            record.get("published") or "日期未知"
+                        ).strip(),
+                        category=category,
+                        what_happened=str(
+                            record.get("what_happened") or ""
+                        ).strip(),
+                        why_it_matters=str(
+                            record.get("why_it_matters") or ""
+                        ).strip(),
+                        action_hint=str(
+                            record.get("action_hint") or ""
+                        ).strip(),
+                    )
+                )
+
+        if not items:
+            raise RuntimeError(
+                "Gemini weekly digest contained no valid source-linked items"
+            )
+
+        core_judgments = [
+            str(item).strip()
+            for item in data.get("core_judgments", [])
+            if str(item).strip()
+        ][:3]
+        team_advice = [
+            str(item).strip()
+            for item in data.get("team_advice", [])
+            if str(item).strip()
+        ][:3]
+        return WeeklyDigest(
+            core_judgments=core_judgments,
+            items=items,
+            team_advice=team_advice,
+        )
 
 
 def extract_urls(text: str) -> set[str]:
