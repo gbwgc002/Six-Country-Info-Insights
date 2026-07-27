@@ -4,6 +4,10 @@ Automated daily intelligence digest covering **Russia, India, Indonesia, Nigeria
 
 Collects 40+ RSS sources across six dimensions, uses **Google Gemini AI** to summarise, translate to Chinese, filter irrelevant/unsafe content, and delivers a structured digest via **Feishu bot** and/or **email**.
 
+The repository also contains an independent **AI Insights Weekly** pipeline
+for user-research and consumer-insight teams. It does not change the
+six-country source list, processing prompt, delivery format, or schedule.
+
 ## Coverage Dimensions
 
 | Dimension | Description | Example Sources |
@@ -79,6 +83,16 @@ python main.py
 
 The workflow (`.github/workflows/daily-digest.yml`) runs automatically every day at **07:00 Beijing time**.
 
+The independent AI Insights workflows run as follows:
+
+| Workflow | UTC+8 schedule | Behaviour |
+|---|---:|---|
+| `ai-insights-daily.yml` | Daily 07:30 | Collect, score, deduplicate, and append candidates to the current natural-week Feishu document; no group message |
+| `ai-insights-weekly.yml` | Monday 17:00 | Finalize the previous natural week's document and send one card to the existing Feishu group |
+
+Both pipelines use `gemini-3.6-flash`. The model can still be overridden with
+the `GEMINI_MODEL` environment variable for manual runs.
+
 Add these **Repository Secrets** in GitHub:
 - `GOOGLE_CLOUD_PROJECT`
 - `GOOGLE_SA_JSON`
@@ -90,6 +104,7 @@ Add these **Repository Secrets** in GitHub:
 
 ```
 config/sources.yaml          # RSS source configuration (6 dimensions)
+config/ai_insights_sources.yaml # Independent AI Insights sources and thresholds
 collectors/
   base.py                    # NewsItem dataclass + BaseCollector
   rss_collector.py           # RSS feed collector
@@ -102,12 +117,14 @@ templates/
   email.html                 # Jinja2 email/PDF template
 email_sender.py              # SMTP email sender + PDF generation
 main.py                      # Entry point
+ai_insights.py               # AI Insights collect/publish entry point
 .github/workflows/           # CI/CD
 ```
 
 ## Customisation
 
 - **Add/remove RSS sources**: edit `config/sources.yaml`
+- **Adjust AI Insights sources**: edit `config/ai_insights_sources.yaml`
 - **Adjust categories**: update `category_order` and `category_names` in the `output` section
 - **Tune AI behaviour**: modify prompts in `processors/summarizer.py`
 

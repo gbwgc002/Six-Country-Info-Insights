@@ -21,6 +21,7 @@ class RSSCollector(BaseCollector):
         self.source_name = source_config["name"]
         self.category = source_config.get("category", "general")
         self.keywords = source_config.get("keywords", [])
+        self.require_keywords = source_config.get("require_keywords", [])
         self.max_items = source_config.get("max_items", 10)
 
     async def collect(self) -> list[NewsItem]:
@@ -89,9 +90,17 @@ class RSSCollector(BaseCollector):
                 print(f"[{self.source_name}] Skipped invalid content: {title}")
                 continue
 
-            # Apply keyword filter
-            # Check title and content combination
-            if not self.filter_by_keywords(f"{title} {clean_content}", self.keywords):
+            # Apply the primary OR-list. If a second list is configured, at
+            # least one term from that list must match as well. Six-country
+            # sources do not use require_keywords, so their behaviour is
+            # unchanged.
+            combined_text = f"{title} {clean_content}"
+            if not self.filter_by_keywords(combined_text, self.keywords):
+                continue
+            if not self.filter_by_required_keywords(
+                combined_text,
+                self.require_keywords,
+            ):
                 continue
 
             # Parse publish date

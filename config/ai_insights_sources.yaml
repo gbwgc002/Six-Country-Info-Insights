@@ -1,0 +1,254 @@
+# AI Insights Weekly - AI 洞察资讯周报
+# This pipeline is intentionally independent from config/sources.yaml.
+
+settings:
+  timezone: "Asia/Shanghai"
+  daily_lookback_hours: 48
+  max_raw_items: 80
+  max_daily_items: 8
+  max_weekly_items: 10
+  vendor_weekly_cap: 3
+  existing_context_chars: 12000
+
+rss_sources:
+  # ============================================================
+  # 1. User research, market research, and UX practice
+  # ============================================================
+  nngroup:
+    name: "Nielsen Norman Group"
+    url: "https://www.nngroup.com/feed/rss/"
+    category: "user_research"
+    source_kind: "professional"
+    source_tier: 1
+    keywords: ["AI", "artificial intelligence", "agent", "LLM", "machine learning", "automation", "synthetic"]
+    max_items: 12
+    enabled: true
+
+  measuringu:
+    name: "MeasuringU"
+    url: "https://measuringu.com/feed/"
+    category: "user_research"
+    source_kind: "professional"
+    source_tier: 1
+    keywords: ["AI", "artificial intelligence", "machine learning", "synthetic", "automation", "LLM"]
+    max_items: 10
+    enabled: true
+
+  dovetail:
+    name: "Dovetail"
+    url: "https://dovetail.com/blog/rss.xml"
+    category: "research_tools"
+    source_kind: "vendor"
+    source_tier: 2
+    keywords: ["AI", "artificial intelligence", "automation", "agent", "research", "insight"]
+    max_items: 10
+    enabled: true
+
+  great_question:
+    name: "Great Question"
+    url: "https://greatquestion.co/blog/rss.xml"
+    category: "research_tools"
+    source_kind: "vendor"
+    source_tier: 2
+    keywords: ["AI", "artificial intelligence", "automation", "agent", "research", "MCP"]
+    max_items: 10
+    enabled: true
+
+  ux_collective:
+    name: "UX Collective"
+    url: "https://uxdesign.cc/feed"
+    category: "user_research"
+    source_kind: "professional"
+    source_tier: 2
+    keywords: ["AI", "artificial intelligence", "agent", "LLM", "synthetic user", "research"]
+    max_items: 10
+    enabled: true
+
+  research_industry_ai:
+    name: "Research Industry AI Watch"
+    url: "https://news.google.com/rss/search?q=%28site%3Agreenbook.org%20OR%20site%3Aresearch-live.com%29%20%28AI%20OR%20%22artificial%20intelligence%22%29&hl=en-US&gl=US&ceid=US%3Aen"
+    category: "user_research"
+    source_kind: "professional"
+    source_tier: 2
+    keywords: []
+    max_items: 12
+    enabled: true
+
+  ai_research_tools_watch:
+    name: "AI Research Tools Watch"
+    url: "https://news.google.com/rss/search?q=%28%22AI%20user%20research%22%20OR%20%22AI%20market%20research%22%20OR%20%22synthetic%20users%22%20OR%20%22AI%20interviews%22%29&hl=en-US&gl=US&ceid=US%3Aen"
+    category: "research_tools"
+    source_kind: "news_aggregation"
+    source_tier: 2
+    keywords: []
+    max_items: 15
+    enabled: true
+
+  # ============================================================
+  # 2. Human-AI interaction, multilingual AI, and research papers
+  # ============================================================
+  microsoft_research:
+    name: "Microsoft Research"
+    url: "https://www.microsoft.com/en-us/research/feed/"
+    category: "human_ai"
+    source_kind: "research"
+    source_tier: 1
+    keywords: ["human-AI", "HCI", "user study", "interaction", "agent", "LLM", "language", "speech", "responsible AI"]
+    max_items: 12
+    enabled: true
+
+  google_research:
+    name: "Google Research"
+    url: "https://research.google/blog/rss/"
+    category: "human_ai"
+    source_kind: "research"
+    source_tier: 1
+    keywords: ["human", "interaction", "user", "agent", "language", "speech", "multilingual", "responsible", "LLM"]
+    max_items: 12
+    enabled: true
+
+  stanford_hai:
+    name: "Stanford HAI"
+    url: "https://hai.stanford.edu/news/rss.xml"
+    category: "human_ai"
+    source_kind: "research"
+    source_tier: 1
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  speech_language_ai_watch:
+    name: "Speech & Multilingual AI Watch"
+    url: "https://news.google.com/rss/search?q=%28%22speaker%20diarization%22%20OR%20%22speech%20to%20text%22%20OR%20%22real-time%20translation%22%20OR%20%22low-resource%20language%22%29%20AI&hl=en-US&gl=US&ceid=US%3Aen"
+    category: "speech_language"
+    source_kind: "news_aggregation"
+    source_tier: 2
+    keywords: []
+    max_items: 15
+    enabled: true
+
+arxiv:
+  enabled: true
+  categories:
+    - "cs.HC"
+    - "cs.CL"
+  max_results: 50
+  filter_companies: false
+
+  # ============================================================
+  # 3. Major AI releases and industry developments
+  # ============================================================
+major_ai_sources:
+  # This key is documentation only. The actual feeds remain under rss_sources.
+  enabled: true
+
+# Major AI feeds use a second section only for readability; the entry point
+# merges it with rss_sources before invoking the same stable RSS collector.
+rss_major_sources:
+  openai:
+    name: "OpenAI"
+    url: "https://openai.com/news/rss.xml"
+    category: "major_ai"
+    source_kind: "official"
+    source_tier: 1
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  google_ai:
+    name: "Google AI"
+    url: "https://blog.google/technology/ai/rss/"
+    category: "major_ai"
+    source_kind: "official"
+    source_tier: 1
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  deepmind:
+    name: "Google DeepMind"
+    url: "https://deepmind.google/blog/rss.xml"
+    category: "major_ai"
+    source_kind: "official"
+    source_tier: 1
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  huggingface:
+    name: "Hugging Face"
+    url: "https://huggingface.co/blog/feed.xml"
+    category: "major_ai"
+    source_kind: "official"
+    source_tier: 1
+    keywords: []
+    max_items: 8
+    enabled: true
+
+  techcrunch_ai:
+    name: "TechCrunch AI"
+    url: "https://techcrunch.com/category/artificial-intelligence/feed/"
+    category: "major_ai"
+    source_kind: "media"
+    source_tier: 2
+    keywords: []
+    max_items: 12
+    enabled: true
+
+  mit_technology_review_ai:
+    name: "MIT Technology Review AI"
+    url: "https://www.technologyreview.com/topic/artificial-intelligence/feed/"
+    category: "major_ai"
+    source_kind: "media"
+    source_tier: 1
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  apple_newsroom:
+    name: "Apple Newsroom"
+    url: "https://www.apple.com/newsroom/rss-feed.rss"
+    category: "mobile_ai"
+    source_kind: "official"
+    source_tier: 1
+    keywords: ["AI", "intelligence", "machine learning", "Siri", "neural", "Foundation Models"]
+    max_items: 10
+    enabled: true
+
+  samsung_newsroom:
+    name: "Samsung Newsroom"
+    url: "https://news.samsung.com/global/feed"
+    category: "mobile_ai"
+    source_kind: "official"
+    source_tier: 1
+    keywords: ["Galaxy AI", "artificial intelligence", "AI", "agent", "One UI", "on-device"]
+    max_items: 10
+    enabled: true
+
+  jiqizhixin:
+    name: "机器之心"
+    url: "https://www.jiqizhixin.com/rss"
+    category: "major_ai"
+    source_kind: "media"
+    source_tier: 2
+    keywords: []
+    max_items: 12
+    enabled: true
+
+output:
+  category_names:
+    user_research: "用研与消费者洞察"
+    research_tools: "研究工具与工作流"
+    human_ai: "人机交互与研究方法"
+    speech_language: "语音、多语言与海外研究"
+    mobile_ai: "手机与端侧 AI"
+    major_ai: "本周必须知道的 AI 大事"
+
+publishers:
+  feishu:
+    enabled: true
+    title_format: "AI洞察资讯周报｜{period}"
+
+  feishu_bot:
+    enabled: true
+    chat_id: ""
