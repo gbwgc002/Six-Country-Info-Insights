@@ -30,6 +30,11 @@ from collectors import (
 )
 from processors import GeminiSummarizer, process_items
 from email_sender import send_digest_email, EmailSender, WEASYPRINT_AVAILABLE
+from publishers.feishu_archive import (
+    SIX_COUNTRY,
+    FeishuArchiveError,
+    FeishuArchiveManager,
+)
 from publishers.feishu_publisher import FeishuPublisher
 
 
@@ -166,6 +171,7 @@ async def main_async():
     if feishu_config.get("enabled", False):
         print("\n🚀 Publishing to Feishu...")
         publisher = FeishuPublisher()
+        archive = FeishuArchiveManager(publisher)
         if publisher.is_configured():
             title = feishu_config.get("title_format", "🔍 六国用研洞察 - {date}").format(date=date_str)
 
@@ -182,7 +188,23 @@ async def main_async():
 
                         # Upload PDF to Feishu (same content as email)
                         if pdf_path and Path(pdf_path).exists():
-                            doc_url = await publisher.upload_pdf(pdf_path, title, first_chat_id)
+                            try:
+                                doc_url = await archive.upload_pdf(
+                                    pdf_path,
+                                    title,
+                                    first_chat_id,
+                                    SIX_COUNTRY,
+                                )
+                            except FeishuArchiveError as exc:
+                                print(
+                                    "   ⚠️ Archive upload failed; using the existing "
+                                    f"Feishu upload path: {exc}"
+                                )
+                                doc_url = await publisher.upload_pdf(
+                                    pdf_path,
+                                    title,
+                                    first_chat_id,
+                                )
                             if doc_url:
                                 print(f"   PDF available at: {doc_url}")
                         else:

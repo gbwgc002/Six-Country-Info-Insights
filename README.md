@@ -71,7 +71,10 @@ Optional:
 | `SMTP_USER` / `SMTP_PASSWORD` | Gmail SMTP credentials |
 | `TO_EMAIL` | Email recipient |
 | `FEISHU_ADMIN_OPEN_ID` | Your Feishu Open ID for document admin access |
-| `FEISHU_FOLDER_TOKEN` | Feishu folder to store generated PDFs |
+| `FEISHU_ARCHIVE_ROOT_FOLDER_TOKEN` | Shared Feishu root folder containing the two report folders |
+| `FEISHU_SIX_COUNTRY_FOLDER_NAME` | Six-country report folder name; defaults to `六国洞察报告` |
+| `FEISHU_AI_INSIGHTS_FOLDER_NAME` | AI report folder name; defaults to `AI洞察报告` |
+| `FEISHU_FOLDER_TOKEN` | Legacy fallback upload folder when archive routing is unavailable |
 
 ### 5. Run
 
@@ -120,6 +123,19 @@ main.py                      # Entry point
 ai_insights.py               # AI Insights collect/publish entry point
 .github/workflows/           # CI/CD
 ```
+
+## Feishu report archive
+
+New six-country PDFs are uploaded to `六国洞察报告`. New AI weekly
+documents and PDFs are stored in `AI洞察报告`. When
+`FEISHU_ADMIN_OPEN_ID` is configured and the app has the ownership-transfer
+scope, ownership is transferred to that user while the bot retains
+`full_access`.
+
+Historical migration is isolated in
+`.github/workflows/feishu-archive-migration.yml`. It is manual-only and
+defaults to a read-only dry run. Select `execute=true` only after reviewing
+the candidate list. The migration never sends a Feishu group message.
 
 ## Customisation
 

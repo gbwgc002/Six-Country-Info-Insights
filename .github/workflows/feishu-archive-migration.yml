@@ -1,0 +1,51 @@
+name: Feishu Report Archive Migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      execute:
+        description: "Move files and transfer ownership (false = dry-run only)"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: feishu-report-archive-migration
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Preview or migrate historical reports
+        env:
+          FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
+          FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
+          FEISHU_ADMIN_OPEN_ID: ${{ secrets.FEISHU_ADMIN_OPEN_ID }}
+          FEISHU_ARCHIVE_ROOT_FOLDER_TOKEN: Cwkdf77bjldi8Xd3liac3NHDnPb
+        run: |
+          if [[ "${{ inputs.execute }}" == "true" ]]; then
+            python migrate_feishu_archive.py --execute
+          else
+            python migrate_feishu_archive.py
+          fi
+
