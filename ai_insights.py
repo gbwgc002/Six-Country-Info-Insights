@@ -27,6 +27,11 @@ from processors.ai_insights_summarizer import (
     extract_urls,
 )
 from processors.deduper import deduplicate_items
+from publishers.feishu_archive import (
+    AI_INSIGHTS,
+    FeishuArchiveError,
+    FeishuArchiveManager,
+)
 from publishers.feishu_publisher import FeishuPublisher
 from email_sender import EmailSender, WEASYPRINT_AVAILABLE
 
@@ -158,7 +163,21 @@ def create_summarizer() -> AIInsightsSummarizer:
 async def _find_week_document(
     publisher: FeishuPublisher,
     period: WeekPeriod,
+    archive: FeishuArchiveManager | None = None,
 ) -> dict | None:
+    if archive and archive.is_enabled:
+        try:
+            archived = await archive.find_report_by_title(
+                AI_INSIGHTS,
+                period.title,
+            )
+            if archived:
+                return archived
+        except FeishuArchiveError as exc:
+            print(
+                "Archive folder lookup failed; falling back to the app root: "
+                f"{exc}"
+            )
     return await publisher.find_document_by_title(period.title)
 
 
@@ -166,7 +185,18 @@ async def _create_week_document(
     publisher: FeishuPublisher,
     period: WeekPeriod,
     first_chat_id: str,
+    archive: FeishuArchiveManager | None = None,
 ) -> dict:
+    archive_ready = False
+    if archive and archive.is_enabled:
+        try:
+            await archive.configure_publisher_folder(AI_INSIGHTS)
+            archive_ready = True
+        except FeishuArchiveError as exc:
+            print(
+                "Archive folder setup failed; creating in the existing location: "
+                f"{exc}"
+            )
     document_id = await publisher.create_document(period.title)
     await publisher.set_document_public_permission(document_id, first_chat_id)
     intro = "\n".join(
@@ -183,6 +213,8 @@ async def _create_week_document(
         document_id,
         publisher._markdown_to_blocks(intro),
     )
+    if archive_ready:
+        await archive.archive_created_document(document_id, strict=False)
     return {
         "document_id": document_id,
         "title": period.title,
@@ -284,13 +316,14 @@ async def collect_daily(config: dict, dry_run: bool = False) -> int:
         return 0
 
     publisher = FeishuPublisher()
+    archive = FeishuArchiveManager(publisher)
     document = None
     existing_text = ""
     if not dry_run:
         if not publisher.is_configured():
             print("Feishu credentials are missing.")
             return 1
-        document = await _find_week_document(publisher, period)
+        document = await _find_week_document(publisher, period, archive)
         if document:
             existing_text = await publisher.read_document_text(document["document_id"])
 
@@ -339,6 +372,7 @@ async def collect_daily(config: dict, dry_run: bool = False) -> int:
             publisher,
             period,
             chat_ids[0],
+            archive,
         )
 
     await publisher.write_content(
@@ -365,10 +399,11 @@ async def publish_weekly(config: dict, dry_run: bool = False) -> int:
     print(f"Publishing: {period.title}")
 
     publisher = FeishuPublisher()
+    archive = FeishuArchiveManager(publisher)
     if not publisher.is_configured():
         print("Feishu credentials are missing.")
         return 1
-    document = await _find_week_document(publisher, period)
+    document = await _find_week_document(publisher, period, archive)
     if not document:
         print("No document exists for the previous natural week.")
         return 0
@@ -409,11 +444,23 @@ async def publish_weekly(config: dict, dry_run: bool = False) -> int:
     pdf_path = generate_ai_insights_pdf(digest, period)
     if not pdf_path:
         return 1
-    pdf_url = await publisher.upload_pdf(
-        pdf_path,
-        period.title,
-        chat_ids[0],
-    )
+    try:
+        pdf_url = await archive.upload_pdf(
+            pdf_path,
+            period.title,
+            chat_ids[0],
+            AI_INSIGHTS,
+        )
+    except FeishuArchiveError as exc:
+        print(
+            "Archive upload failed; using the existing Feishu upload path so "
+            f"the weekly push can continue: {exc}"
+        )
+        pdf_url = await publisher.upload_pdf(
+            pdf_path,
+            period.title,
+            chat_ids[0],
+        )
     if not pdf_url:
         print("AI Insights PDF upload failed; no group message was sent.")
         return 1
