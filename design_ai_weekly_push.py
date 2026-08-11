@@ -25,6 +25,7 @@ DESIGN_SITE_URL = (
     "https://ai-intel-news-hub.woodsy-crown-9414.chatgpt.site/"
 )
 DESIGN_SITE_HOST = urlparse(DESIGN_SITE_URL).hostname
+DESIGN_FEED_URL = urljoin(DESIGN_SITE_URL, "data/latest-design.json")
 DEFAULT_ITEM_LIMIT = 8
 MAX_ASSET_BYTES = 8_000_000
 USER_AGENT = "Six-Country-Info-Insights/1.0"
@@ -521,26 +522,247 @@ def select_latest(
     return selected
 
 
-async def fetch_design_headlines(
+def parse_latest_section_html(
+    section_html: str,
     limit: int = DEFAULT_ITEM_LIMIT,
 ) -> list[DesignHeadline]:
-    timeout = aiohttp.ClientTimeout(total=60, connect=15)
-    headers = {"User-Agent": USER_AGENT, "Accept": "text/html,application/json"}
+    """Parse the cards visibly rendered under the site's `最新发布` heading.
+
+    The site is a client-rendered application whose bundle names, minified
+    variables, and data packaging can change on every deployment.  The
+    section's semantic heading and rendered card fields are the stable public
+    contract, so runtime scraping deliberately depends only on those.
+    """
+    soup = BeautifulSoup(section_html or "", "html.parser")
+    articles = soup.select(".latest-intelligence-list article")
+    if not articles:
+        articles = soup.select("article")
+
+    headlines: list[DesignHeadline] = []
+    normalized_titles: list[str] = []
+    for index, article in enumerate(articles, start=1):
+        title_node = article.find("h3")
+        meta_node = article.select_one(".latest-intelligence-meta")
+        stream_node = meta_node.find("span") if meta_node else None
+        time_node = meta_node.find("time") if meta_node else article.find("time")
+        source_node = article.find("b") or article.find("strong")
+        link_node = article.find("a", href=True)
+
+        title = title_node.get_text(" ", strip=True) if title_node else ""
+        stream = (
+            stream_node.get_text(" ", strip=True)
+            if stream_node
+            else "AI设计资讯"
+        )
+        source = (
+            source_node.get_text(" ", strip=True)
+            if source_node
+            else "公开信息源"
+        )
+        published_at = ""
+        if time_node:
+            published_at = (
+                time_node.get("datetime", "")
+                or time_node.get_text(" ", strip=True)
+            )
+        date_match = re.search(
+            r"\d{4}[.-]\d{2}[.-]\d{2}",
+            published_at,
+        )
+        if date_match:
+            published_at = date_match.group(0).replace(".", "-")
+
+        if not title or not published_at:
+            continue
+        title_key = _normalized_title(title)
+        if not title_key or title_key in normalized_titles:
+            continue
+
+        external_url = link_node.get("href", "") if link_node else ""
+        item_id = external_url or f"rendered:{index}:{title_key}"
+        headlines.append(
+            DesignHeadline(
+                id=item_id,
+                title=title,
+                source=source,
+                published_at=published_at,
+                stream=stream,
+            )
+        )
+        normalized_titles.append(title_key)
+        if len(headlines) >= limit:
+            break
+    return headlines
+
+
+def parse_design_feed(
+    payload: object,
+    limit: int = DEFAULT_ITEM_LIMIT,
+) -> list[DesignHeadline]:
+    """Validate the stable JSON feed generated from the page's source data."""
+    if not isinstance(payload, dict):
+        raise ValueError("Design feed must be a JSON object")
+    if payload.get("section") != "最新发布":
+        raise ValueError("Design feed section must be 最新发布")
+    if not str(payload.get("schema_version", "")).startswith("1"):
+        raise ValueError("Unsupported design feed schema version")
+    raw_items = payload.get("items")
+    if not isinstance(raw_items, list):
+        raise ValueError("Design feed items must be an array")
+
+    headlines: list[DesignHeadline] = []
+    seen_titles: set[str] = set()
+    for index, raw_item in enumerate(raw_items, start=1):
+        if not isinstance(raw_item, dict):
+            raise ValueError(f"Design feed item {index} must be an object")
+        title = str(raw_item.get("title", "")).strip()
+        source = str(raw_item.get("source", "")).strip() or "公开信息源"
+        published_at = str(raw_item.get("published_at", "")).strip()
+        stream = str(raw_item.get("stream", "")).strip() or "AI设计资讯"
+        external_url = str(raw_item.get("url", "")).strip()
+        date_match = re.search(r"\d{4}-\d{2}-\d{2}", published_at)
+        if not title or not date_match:
+            raise ValueError(
+                f"Design feed item {index} requires title and ISO published_at"
+            )
+        if external_url:
+            parsed_url = urlparse(external_url)
+            if (
+                parsed_url.scheme != "https"
+                or parsed_url.username
+                or parsed_url.password
+            ):
+                raise ValueError(f"Design feed item {index} has an invalid URL")
+
+        title_key = _normalized_title(title)
+        if not title_key or title_key in seen_titles:
+            continue
+        headlines.append(
+            DesignHeadline(
+                id=str(raw_item.get("id", "")).strip()
+                or external_url
+                or f"feed:{index}:{title_key}",
+                title=title,
+                source=source,
+                published_at=date_match.group(0),
+                stream=stream,
+            )
+        )
+        seen_titles.add(title_key)
+        if len(headlines) >= limit:
+            break
+    return headlines
+
+
+async def fetch_design_feed(
+    limit: int = DEFAULT_ITEM_LIMIT,
+) -> list[DesignHeadline] | None:
+    """Read the optional fixed JSON feed; return None when it is not deployed."""
+    timeout = aiohttp.ClientTimeout(total=30, connect=10)
+    headers = {"User-Agent": USER_AGENT, "Accept": "application/json"}
     async with aiohttp.ClientSession(
         timeout=timeout,
         headers=headers,
         trust_env=True,
     ) as session:
-        home_html = await _fetch_text(session, DESIGN_SITE_URL)
-        main_url = _main_asset_url(home_html)
-        main_js = await _fetch_text(session, main_url)
-        data_url, hot_url = _fallback_asset_urls(main_js)
-        data_js, hot_js = await asyncio.gather(
-            _fetch_text(session, data_url),
-            _fetch_text(session, hot_url),
+        async with session.get(DESIGN_FEED_URL, allow_redirects=True) as response:
+            if response.status == 404:
+                return None
+            if response.status != 200:
+                raise RuntimeError(
+                    f"Design feed returned HTTP {response.status}"
+                )
+            content_type = response.headers.get("Content-Type", "")
+            body = await response.read()
+            if len(body) > MAX_ASSET_BYTES:
+                raise RuntimeError("Design feed is too large")
+            if "json" not in content_type.casefold():
+                return None
+            try:
+                payload = json.loads(body.decode("utf-8"))
+            except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                raise RuntimeError("Design feed is not valid UTF-8 JSON") from exc
+    return parse_design_feed(payload, limit)
+
+
+async def fetch_design_headlines(
+    limit: int = DEFAULT_ITEM_LIMIT,
+) -> list[DesignHeadline]:
+    """Prefer the stable feed, then render the visible `最新发布` section."""
+    try:
+        feed_headlines = await fetch_design_feed(limit)
+    except (RuntimeError, ValueError) as exc:
+        print(f"Design JSON feed unavailable; using rendered-page fallback: {exc}")
+    else:
+        if feed_headlines:
+            print(f"Fetched {len(feed_headlines)} headlines from design JSON feed.")
+            return feed_headlines
+        if feed_headlines == []:
+            print("Design JSON feed is empty; verifying the rendered page.")
+
+    try:
+        from playwright.async_api import async_playwright
+    except ImportError as exc:
+        raise RuntimeError(
+            "Playwright is required to render the design site's latest section"
+        ) from exc
+
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch(
+            headless=True,
+            args=["--disable-dev-shm-usage"],
         )
-    items = _parse_news_items(data_js, main_js) + _parse_hot_items(hot_js)
-    latest = select_latest(items, limit)
+        try:
+            context = await browser.new_context(
+                locale="zh-CN",
+                timezone_id="Asia/Shanghai",
+                user_agent=USER_AGENT,
+            )
+            page = await context.new_page()
+            response = await page.goto(
+                DESIGN_SITE_URL,
+                wait_until="domcontentloaded",
+                timeout=60_000,
+            )
+            if response and response.status != 200:
+                raise RuntimeError(
+                    f"Design site returned HTTP {response.status}"
+                )
+
+            heading = page.locator("#latest-intelligence-heading")
+            await heading.wait_for(state="visible", timeout=45_000)
+            section = heading.locator("xpath=ancestor::section[1]")
+            await section.wait_for(state="visible", timeout=10_000)
+            await page.wait_for_function(
+                """() => {
+                    const section = document.querySelector(
+                        'section[aria-labelledby="latest-intelligence-heading"]'
+                    );
+                    return Boolean(section && (
+                        section.querySelector('.latest-intelligence-list article') ||
+                        section.querySelector('.latest-intelligence-loading')
+                    ));
+                }""",
+                timeout=45_000,
+            )
+            latest = parse_latest_section_html(
+                await section.inner_html(),
+                limit,
+            )
+            if not latest:
+                status = section.locator(".latest-intelligence-loading")
+                status_text = (
+                    (await status.first.inner_text()).strip()
+                    if await status.count()
+                    else ""
+                )
+                detail = status_text or "no rendered headline cards"
+                raise RuntimeError(
+                    f"The design site's 最新发布 section is empty: {detail}"
+                )
+        finally:
+            await browser.close()
+
     if not latest:
         raise RuntimeError("The design site returned no usable latest headlines")
     return latest
@@ -904,11 +1126,31 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="scrape and print design headlines without reading or sending Feishu data",
     )
+    parser.add_argument(
+        "--check-design-feed",
+        action="store_true",
+        help="exit successfully only when the fixed design JSON feed has items",
+    )
     return parser.parse_args()
+
+
+async def check_design_feed() -> int:
+    try:
+        headlines = await fetch_design_feed()
+    except (RuntimeError, ValueError) as exc:
+        print(f"Design JSON feed is not ready: {exc}")
+        return 1
+    if not headlines:
+        print(f"Design JSON feed is not ready at {DESIGN_FEED_URL}")
+        return 1
+    print(f"Design JSON feed is ready with {len(headlines)} headlines.")
+    return 0
 
 
 def main() -> None:
     args = parse_args()
+    if args.check_design_feed:
+        raise SystemExit(asyncio.run(check_design_feed()))
     raise SystemExit(asyncio.run(publish_combined(args.chat_id, args.dry_run)))
 
 
