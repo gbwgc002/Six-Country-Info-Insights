@@ -1021,8 +1021,8 @@ def build_combined_card(
             {
                 "tag": "action",
                 "actions": [
-                    _button("查看AI设计完整周报", DESIGN_SITE_URL, "primary"),
-                    _button("查看AI洞察完整周报", ai_report_url, "default"),
+                    _button("查看AI×交互与设计完整周报", DESIGN_SITE_URL, "primary"),
+                    _button("查看AI×用户研究与市场洞察完整周报", ai_report_url, "default"),
                 ],
             },
             {
