@@ -5,11 +5,13 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import hashlib
 import json
 import os
 import re
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 from typing import Iterable
 from urllib.parse import urljoin, urlparse
 from zoneinfo import ZoneInfo
@@ -25,10 +27,12 @@ DESIGN_SITE_URL = (
     "https://ai-intel-news-hub.woodsy-crown-9414.chatgpt.site/"
 )
 DESIGN_SITE_HOST = urlparse(DESIGN_SITE_URL).hostname
-DESIGN_FEED_URL = urljoin(DESIGN_SITE_URL, "data/latest-design.json")
+DESIGN_FEED_URL = urljoin(DESIGN_SITE_URL, "api/rankings/latest.json")
 DEFAULT_ITEM_LIMIT = 8
 MAX_ASSET_BYTES = 8_000_000
 USER_AGENT = "Six-Country-Info-Insights/1.0"
+DEFAULT_ALERT_CHAT_ID = "oc_d4411bf497444ec7d818d18b3738773d"
+DEFAULT_STATE_PATH = ".cache/ai-design-feed/last-success.json"
 AI_INSIGHT_CATEGORY_LIMIT = 2
 AI_INSIGHT_CATEGORIES = (
     ("用研与消费者洞察", ("用研与消费者洞察",)),
@@ -67,6 +71,31 @@ class DesignHeadline:
     source: str
     published_at: str
     stream: str
+
+
+@dataclass(frozen=True)
+class DesignFeed:
+    updated_at: datetime
+    headlines: tuple[DesignHeadline, ...]
+
+    @property
+    def updated_at_iso(self) -> str:
+        return self.updated_at.astimezone(timezone.utc).isoformat().replace(
+            "+00:00", "Z"
+        )
+
+    @property
+    def signature(self) -> str:
+        payload = {
+            "updated_at": self.updated_at_iso,
+            "titles": [item.title for item in self.headlines],
+        }
+        encoded = json.dumps(
+            payload,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        return hashlib.sha256(encoded).hexdigest()
 
 
 def get_previous_week(
@@ -598,17 +627,21 @@ def parse_latest_section_html(
 def parse_design_feed(
     payload: object,
     limit: int = DEFAULT_ITEM_LIMIT,
-) -> list[DesignHeadline]:
-    """Validate the stable JSON feed generated from the page's source data."""
+) -> DesignFeed:
+    """Validate the fixed machine-readable `最新发布` JSON feed."""
     if not isinstance(payload, dict):
         raise ValueError("Design feed must be a JSON object")
     if payload.get("section") != "最新发布":
         raise ValueError("Design feed section must be 最新发布")
-    if not str(payload.get("schema_version", "")).startswith("1"):
+    if payload.get("schema_version") != 3:
         raise ValueError("Unsupported design feed schema version")
+    updated_at = _parse_iso_datetime(str(payload.get("updated_at", "")))
     raw_items = payload.get("items")
     if not isinstance(raw_items, list):
         raise ValueError("Design feed items must be an array")
+    declared_count = payload.get("item_count")
+    if declared_count is not None and declared_count != len(raw_items):
+        raise ValueError("Design feed item_count does not match items")
 
     headlines: list[DesignHeadline] = []
     seen_titles: set[str] = set()
@@ -616,7 +649,7 @@ def parse_design_feed(
         if not isinstance(raw_item, dict):
             raise ValueError(f"Design feed item {index} must be an object")
         title = str(raw_item.get("title", "")).strip()
-        source = str(raw_item.get("source", "")).strip() or "公开信息源"
+        source = str(raw_item.get("source_name", "")).strip() or "公开信息源"
         published_at = str(raw_item.get("published_at", "")).strip()
         stream = str(raw_item.get("stream", "")).strip() or "AI设计资讯"
         external_url = str(raw_item.get("url", "")).strip()
@@ -651,13 +684,83 @@ def parse_design_feed(
         seen_titles.add(title_key)
         if len(headlines) >= limit:
             break
-    return headlines
+    if not headlines:
+        raise ValueError("Design feed contains no usable titles")
+    return DesignFeed(updated_at=updated_at, headlines=tuple(headlines))
+
+
+def _parse_iso_datetime(value: str) -> datetime:
+    candidate = (value or "").strip().replace("Z", "+00:00")
+    try:
+        parsed = datetime.fromisoformat(candidate)
+    except ValueError as exc:
+        raise ValueError("Design feed updated_at must be an ISO timestamp") from exc
+    if parsed.tzinfo is None:
+        raise ValueError("Design feed updated_at must include a timezone")
+    return parsed
+
+
+def design_feed_problem(
+    feed: DesignFeed,
+    state_path: str | Path,
+    now: datetime | None = None,
+    timezone_name: str = "Asia/Shanghai",
+) -> str:
+    """Return an alert reason when the feed is stale or already pushed."""
+    zone = ZoneInfo(timezone_name)
+    current = now or datetime.now(tz=zone)
+    if current.tzinfo is None:
+        current = current.replace(tzinfo=zone)
+    current = current.astimezone(zone)
+    updated = feed.updated_at.astimezone(zone)
+    if updated > current + timedelta(minutes=10):
+        return f"JSON更新时间异常，晚于当前时间：{updated:%Y-%m-%d %H:%M}"
+    if updated.date() != current.date():
+        return (
+            "JSON并非今天更新："
+            f"更新时间为{updated:%Y-%m-%d %H:%M}，"
+            f"当前日期为{current:%Y-%m-%d}"
+        )
+
+    previous = load_feed_state(state_path)
+    if previous.get("signature") == feed.signature:
+        return (
+            "JSON日期和标题内容与上次成功推送完全相同："
+            f"{updated:%Y-%m-%d %H:%M}"
+        )
+    return ""
+
+
+def load_feed_state(state_path: str | Path) -> dict:
+    path = Path(state_path)
+    if not path.is_file():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def save_feed_state(state_path: str | Path, feed: DesignFeed) -> None:
+    path = Path(state_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "signature": feed.signature,
+        "updated_at": feed.updated_at_iso,
+        "titles": [item.title for item in feed.headlines],
+        "saved_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+    }
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
 
 async def fetch_design_feed(
     limit: int = DEFAULT_ITEM_LIMIT,
-) -> list[DesignHeadline] | None:
-    """Read the optional fixed JSON feed; return None when it is not deployed."""
+) -> DesignFeed:
+    """Read the fixed JSON feed; failures must alert instead of scraping HTML."""
     timeout = aiohttp.ClientTimeout(total=30, connect=10)
     headers = {"User-Agent": USER_AGENT, "Accept": "application/json"}
     async with aiohttp.ClientSession(
@@ -666,8 +769,6 @@ async def fetch_design_feed(
         trust_env=True,
     ) as session:
         async with session.get(DESIGN_FEED_URL, allow_redirects=True) as response:
-            if response.status == 404:
-                return None
             if response.status != 200:
                 raise RuntimeError(
                     f"Design feed returned HTTP {response.status}"
@@ -677,7 +778,7 @@ async def fetch_design_feed(
             if len(body) > MAX_ASSET_BYTES:
                 raise RuntimeError("Design feed is too large")
             if "json" not in content_type.casefold():
-                return None
+                raise RuntimeError("Design feed response is not JSON")
             try:
                 payload = json.loads(body.decode("utf-8"))
             except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -687,85 +788,8 @@ async def fetch_design_feed(
 
 async def fetch_design_headlines(
     limit: int = DEFAULT_ITEM_LIMIT,
-) -> list[DesignHeadline]:
-    """Prefer the stable feed, then render the visible `最新发布` section."""
-    try:
-        feed_headlines = await fetch_design_feed(limit)
-    except (RuntimeError, ValueError) as exc:
-        print(f"Design JSON feed unavailable; using rendered-page fallback: {exc}")
-    else:
-        if feed_headlines:
-            print(f"Fetched {len(feed_headlines)} headlines from design JSON feed.")
-            return feed_headlines
-        if feed_headlines == []:
-            print("Design JSON feed is empty; verifying the rendered page.")
-
-    try:
-        from playwright.async_api import async_playwright
-    except ImportError as exc:
-        raise RuntimeError(
-            "Playwright is required to render the design site's latest section"
-        ) from exc
-
-    async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch(
-            headless=True,
-            args=["--disable-dev-shm-usage"],
-        )
-        try:
-            context = await browser.new_context(
-                locale="zh-CN",
-                timezone_id="Asia/Shanghai",
-                user_agent=USER_AGENT,
-            )
-            page = await context.new_page()
-            response = await page.goto(
-                DESIGN_SITE_URL,
-                wait_until="domcontentloaded",
-                timeout=60_000,
-            )
-            if response and response.status != 200:
-                raise RuntimeError(
-                    f"Design site returned HTTP {response.status}"
-                )
-
-            heading = page.locator("#latest-intelligence-heading")
-            await heading.wait_for(state="visible", timeout=45_000)
-            section = heading.locator("xpath=ancestor::section[1]")
-            await section.wait_for(state="visible", timeout=10_000)
-            await page.wait_for_function(
-                """() => {
-                    const section = document.querySelector(
-                        'section[aria-labelledby="latest-intelligence-heading"]'
-                    );
-                    return Boolean(section && (
-                        section.querySelector('.latest-intelligence-list article') ||
-                        section.querySelector('.latest-intelligence-loading')
-                    ));
-                }""",
-                timeout=45_000,
-            )
-            latest = parse_latest_section_html(
-                await section.inner_html(),
-                limit,
-            )
-            if not latest:
-                status = section.locator(".latest-intelligence-loading")
-                status_text = (
-                    (await status.first.inner_text()).strip()
-                    if await status.count()
-                    else ""
-                )
-                detail = status_text or "no rendered headline cards"
-                raise RuntimeError(
-                    f"The design site's 最新发布 section is empty: {detail}"
-                )
-        finally:
-            await browser.close()
-
-    if not latest:
-        raise RuntimeError("The design site returned no usable latest headlines")
-    return latest
+) -> DesignFeed:
+    return await fetch_design_feed(limit)
 
 
 def _clean_document_line(raw_line: str) -> str:
@@ -1014,6 +1038,43 @@ def build_combined_card(
     }
 
 
+def build_alert_card(reason: str, now: datetime | None = None) -> dict:
+    current = now or datetime.now(tz=ZoneInfo("Asia/Shanghai"))
+    if current.tzinfo is None:
+        current = current.replace(tzinfo=ZoneInfo("Asia/Shanghai"))
+    current = current.astimezone(ZoneInfo("Asia/Shanghai"))
+    return {
+        "config": {"wide_screen_mode": True},
+        "header": {
+            "template": "red",
+            "title": {
+                "tag": "plain_text",
+                "content": "AI×设计与用户研究周报｜异常提醒",
+            },
+        },
+        "elements": [
+            {
+                "tag": "div",
+                "text": {
+                    "tag": "lark_md",
+                    "content": (
+                        "**本次未向正式群推送组合周报。**\n\n"
+                        f"**原因：** {_safe_card_text(reason, 500)}\n\n"
+                        f"**检查时间：** {current:%Y-%m-%d %H:%M}（北京时间）"
+                    ),
+                },
+            },
+            {
+                "tag": "action",
+                "actions": [
+                    _button("查看设计资讯JSON", DESIGN_FEED_URL, "primary"),
+                    _button("查看设计资讯网站", DESIGN_SITE_URL, "default"),
+                ],
+            },
+        ],
+    }
+
+
 async def _find_ai_document(publisher, period: WeekPeriod) -> dict | None:
     from publishers.feishu_archive import (
         AI_INSIGHTS,
@@ -1055,23 +1116,33 @@ async def _send_card(publisher, chat_id: str, card: dict) -> None:
             f"HTTP {response.status}, code={data.get('code')}, "
             f"msg={data.get('msg', '')}"
         )
-    print(f"Combined AI design + insights card sent to {chat_id}")
+    print(f"Feishu card sent to {chat_id}")
 
 
-async def publish_combined(chat_id: str, dry_run: bool = False) -> int:
+async def publish_combined(
+    chat_id: str,
+    alert_chat_id: str = DEFAULT_ALERT_CHAT_ID,
+    state_path: str | Path = DEFAULT_STATE_PATH,
+    dry_run: bool = False,
+    upstream_conclusion: str = "",
+) -> int:
     if not re.fullmatch(r"oc_[A-Za-z0-9]+", chat_id or ""):
         print("AI_DESIGN_FEISHU_CHAT_ID is missing or invalid.")
         return 1
+    if not re.fullmatch(r"oc_[A-Za-z0-9]+", alert_chat_id or ""):
+        print("AI_DESIGN_ALERT_CHAT_ID is missing or invalid.")
+        return 1
 
     period = get_previous_week()
-    design_headlines = await fetch_design_headlines()
-    print(f"Fetched {len(design_headlines)} design-site latest headlines.")
-
     if dry_run:
+        feed = await fetch_design_headlines()
+        problem = design_feed_problem(feed, state_path)
         print(f"\n{period.card_title}")
-        for index, item in enumerate(design_headlines, start=1):
-            print(f"{index}. {item.title} · {item.source} · {item.published_at}")
-        return 0
+        print(f"Feed updated at: {feed.updated_at_iso}")
+        print(f"Feed status: {problem or 'ready'}")
+        for index, item in enumerate(feed.headlines, start=1):
+            print(f"{index}. {item.title}")
+        return 0 if not problem else 1
 
     from publishers.feishu_publisher import FeishuPublisher
 
@@ -1079,38 +1150,74 @@ async def publish_combined(chat_id: str, dry_run: bool = False) -> int:
     if not publisher.is_configured():
         print("Feishu credentials are missing.")
         return 1
-    document = await _find_ai_document(publisher, period)
-    if not document:
-        print(f"AI insight document does not exist: {period.ai_report_title}")
-        return 1
-    document_text = await publisher.read_document_text(document["document_id"])
-    ai_categories = extract_ai_category_titles(document_text)
-    ai_pdf_url = extract_ai_pdf_url(document_text)
-    ai_report_url = ai_pdf_url or document["url"]
-    if not ai_categories:
-        print("The AI insight weekly document contains no categorized titles.")
+
+    async def alert(reason: str) -> int:
+        print(f"Combined weekly push blocked: {reason}")
+        try:
+            await _send_card(publisher, alert_chat_id, build_alert_card(reason))
+        except Exception as exc:  # alerting must never hide the root cause
+            print(f"Feishu alert send failed: {exc}")
         return 1
 
-    token_match = re.search(r"/file/([A-Za-z0-9_-]+)", ai_pdf_url)
-    if token_match:
-        await publisher.set_file_permission(token_match.group(1), chat_id)
-    else:
-        await publisher.set_document_public_permission(
-            document["document_id"],
-            chat_id,
-        )
-        print(
-            "AI insight final PDF is not ready; the combined card links to "
-            "the existing weekly document."
+    if upstream_conclusion and upstream_conclusion != "success":
+        return await alert(
+            f"上游AI洞察周报任务状态为 {upstream_conclusion}，组合周报未执行"
         )
 
-    card = build_combined_card(
-        period,
-        design_headlines,
-        ai_categories,
-        ai_report_url,
+    try:
+        feed = await fetch_design_headlines()
+    except Exception as exc:
+        return await alert(f"设计资讯JSON读取或解析失败：{exc}")
+
+    print(
+        f"Fetched {len(feed.headlines)} design headlines; "
+        f"feed updated at {feed.updated_at_iso}."
     )
-    await _send_card(publisher, chat_id, card)
+    problem = design_feed_problem(feed, state_path)
+    if problem:
+        return await alert(problem)
+
+    try:
+        document = await _find_ai_document(publisher, period)
+        if not document:
+            raise RuntimeError(
+                f"未找到AI洞察周报文档：{period.ai_report_title}"
+            )
+        document_text = await publisher.read_document_text(document["document_id"])
+        ai_categories = extract_ai_category_titles(document_text)
+        ai_pdf_url = extract_ai_pdf_url(document_text)
+        ai_report_url = ai_pdf_url or document["url"]
+        if not ai_categories:
+            raise RuntimeError("AI洞察周报中没有可用的分类资讯标题")
+
+        token_match = re.search(r"/file/([A-Za-z0-9_-]+)", ai_pdf_url)
+        if token_match:
+            await publisher.set_file_permission(token_match.group(1), chat_id)
+        else:
+            await publisher.set_document_public_permission(
+                document["document_id"],
+                chat_id,
+            )
+            print(
+                "AI insight final PDF is not ready; the combined card links to "
+                "the existing weekly document."
+            )
+
+        card = build_combined_card(
+            period,
+            list(feed.headlines),
+            ai_categories,
+            ai_report_url,
+        )
+        await _send_card(publisher, chat_id, card)
+    except Exception as exc:
+        return await alert(f"组合周报生成或飞书推送失败：{exc}")
+
+    try:
+        save_feed_state(state_path, feed)
+    except OSError as exc:
+        return await alert(f"周报已推送，但去重状态保存失败：{exc}")
+    print(f"Saved successful design-feed state to {state_path}")
     return 0
 
 
@@ -1131,19 +1238,41 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="exit successfully only when the fixed design JSON feed has items",
     )
+    parser.add_argument(
+        "--alert-chat-id",
+        default=os.environ.get(
+            "AI_DESIGN_ALERT_CHAT_ID",
+            DEFAULT_ALERT_CHAT_ID,
+        ).strip(),
+        help="Feishu test group used for data and push alerts",
+    )
+    parser.add_argument(
+        "--state-path",
+        default=os.environ.get("AI_DESIGN_STATE_PATH", DEFAULT_STATE_PATH).strip(),
+        help="cached state file used to prevent duplicate pushes",
+    )
+    parser.add_argument(
+        "--upstream-conclusion",
+        default=os.environ.get("AI_INSIGHTS_UPSTREAM_CONCLUSION", "").strip(),
+        help="conclusion of the upstream AI Insights workflow_run event",
+    )
     return parser.parse_args()
 
 
 async def check_design_feed() -> int:
     try:
-        headlines = await fetch_design_feed()
+        feed = await fetch_design_feed()
     except (RuntimeError, ValueError) as exc:
         print(f"Design JSON feed is not ready: {exc}")
         return 1
-    if not headlines:
-        print(f"Design JSON feed is not ready at {DESIGN_FEED_URL}")
+    problem = design_feed_problem(feed, Path("/tmp/nonexistent-design-feed-state"))
+    if problem:
+        print(f"Design JSON feed is not ready: {problem}")
         return 1
-    print(f"Design JSON feed is ready with {len(headlines)} headlines.")
+    print(
+        f"Design JSON feed is ready with {len(feed.headlines)} headlines; "
+        f"updated_at={feed.updated_at_iso}."
+    )
     return 0
 
 
@@ -1151,7 +1280,17 @@ def main() -> None:
     args = parse_args()
     if args.check_design_feed:
         raise SystemExit(asyncio.run(check_design_feed()))
-    raise SystemExit(asyncio.run(publish_combined(args.chat_id, args.dry_run)))
+    raise SystemExit(
+        asyncio.run(
+            publish_combined(
+                args.chat_id,
+                alert_chat_id=args.alert_chat_id,
+                state_path=args.state_path,
+                dry_run=args.dry_run,
+                upstream_conclusion=args.upstream_conclusion,
+            )
+        )
+    )
 
 
 if __name__ == "__main__":
