@@ -13,6 +13,8 @@ from design_ai_weekly_push import (
     extract_ai_category_titles,
     extract_ai_pdf_url,
     get_previous_week,
+    parse_latest_section_html,
+    parse_design_feed,
     select_latest,
 )
 
@@ -82,6 +84,102 @@ class SiteParserTests(unittest.TestCase):
         ]
         selected = select_latest(items, limit=8)
         self.assertEqual([item.id for item in selected], ["2", "3"])
+
+    def test_latest_section_is_parsed_by_semantic_rendered_structure(self):
+        section_html = """
+        <section aria-labelledby="latest-intelligence-heading">
+          <h2 id="latest-intelligence-heading">最新发布</h2>
+          <div class="latest-intelligence-list">
+            <article>
+              <div class="latest-intelligence-meta">
+                <span>官方与机构动态</span>
+                <time datetime="2026-08-11T08:00:00+08:00">发布 2026.08.11</time>
+              </div>
+              <h3>新设计标题一</h3><b>Design Lab</b>
+              <a href="https://example.com/one">阅读原始来源</a>
+            </article>
+            <article>
+              <div class="latest-intelligence-meta">
+                <span>创作者观点</span><time>发布 2026.08.10</time>
+              </div>
+              <h3>新设计标题二</h3><strong>Researcher</strong>
+              <button>查看证据详情</button>
+            </article>
+          </div>
+        </section>
+        """
+        items = parse_latest_section_html(section_html, limit=8)
+        self.assertEqual(
+            [item.title for item in items],
+            ["新设计标题一", "新设计标题二"],
+        )
+        self.assertEqual(items[0].published_at, "2026-08-11")
+        self.assertEqual(items[1].source, "Researcher")
+
+    def test_latest_section_ignores_other_sections_and_malformed_cards(self):
+        section_html = """
+        <div class="latest-intelligence-list">
+          <article><h3>缺少发布日期</h3><b>Source</b></article>
+          <article>
+            <div class="latest-intelligence-meta">
+              <span>官方与机构动态</span><time>发布 2026-08-11</time>
+            </div>
+            <h3>保留标题</h3><b>Source</b>
+          </article>
+          <article>
+            <div class="latest-intelligence-meta">
+              <span>官方与机构动态</span><time>发布 2026-08-10</time>
+            </div>
+            <h3>保留标题！</h3><b>Duplicate</b>
+          </article>
+        </div>
+        <div class="cited-evidence-list">
+          <article><h3>别的栏目标题</h3><time>2026-08-11</time></article>
+        </div>
+        """
+        items = parse_latest_section_html(section_html, limit=8)
+        self.assertEqual([item.title for item in items], ["保留标题"])
+
+    def test_fixed_json_feed_matches_latest_section_contract(self):
+        payload = {
+            "schema_version": "1.0",
+            "generated_at": "2026-08-11T16:30:00+08:00",
+            "section": "最新发布",
+            "items": [
+                {
+                    "id": "design-1",
+                    "title": "设计系统进入 Agent 时代",
+                    "source": "Design Lab",
+                    "published_at": "2026-08-11T08:00:00+08:00",
+                    "url": "https://example.com/design-1",
+                    "stream": "官方与机构动态",
+                },
+                {
+                    "id": "design-2",
+                    "title": "用户研究工作流的新变化",
+                    "source": "Researcher",
+                    "published_at": "2026-08-10",
+                    "url": "",
+                    "stream": "创作者观点",
+                },
+            ],
+        }
+        items = parse_design_feed(payload)
+        self.assertEqual(
+            [item.title for item in items],
+            ["设计系统进入 Agent 时代", "用户研究工作流的新变化"],
+        )
+        self.assertEqual(items[0].published_at, "2026-08-11")
+
+    def test_json_feed_rejects_the_wrong_section(self):
+        with self.assertRaises(ValueError):
+            parse_design_feed(
+                {
+                    "schema_version": "1.0",
+                    "section": "机会洞察引用的证据",
+                    "items": [],
+                }
+            )
 
 
 class InsightExtractionTests(unittest.TestCase):
