@@ -2,11 +2,13 @@ import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import AsyncMock, patch
 from zoneinfo import ZoneInfo
 
 from design_ai_weekly_push import (
     DESIGN_FEED_URL,
     DESIGN_SITE_URL,
+    DEFAULT_ALERT_CHAT_ID,
     DesignFeed,
     DesignHeadline,
     WeekPeriod,
@@ -21,6 +23,7 @@ from design_ai_weekly_push import (
     get_previous_week,
     parse_latest_section_html,
     parse_design_feed,
+    publish_combined,
     save_feed_state,
     select_latest,
 )
@@ -369,6 +372,35 @@ class CardTests(unittest.TestCase):
         self.assertIn("JSON并非今天更新", content)
         actions = card["elements"][1]["actions"]
         self.assertEqual(actions[0]["multi_url"]["url"], DESIGN_FEED_URL)
+
+
+class RecipientSafetyTests(unittest.IsolatedAsyncioTestCase):
+    async def test_missing_formal_group_uses_alert_group(self):
+        class FakePublisher:
+            def is_configured(self):
+                return True
+
+        with patch(
+            "publishers.feishu_publisher.FeishuPublisher",
+            return_value=FakePublisher(),
+        ), patch(
+            "design_ai_weekly_push._send_card",
+            new=AsyncMock(),
+        ) as send_card:
+            result = await publish_combined(
+                "",
+                alert_chat_id="oc_" + "testgroup123",
+            )
+
+        self.assertEqual(DEFAULT_ALERT_CHAT_ID, "")
+        self.assertEqual(result, 1)
+        send_card.assert_awaited_once()
+        alert_card = send_card.await_args.args[2]
+        self.assertEqual(alert_card["header"]["template"], "red")
+        alert_content = alert_card["elements"][0]["text"]["content"].replace(
+            "\\_", "_"
+        )
+        self.assertIn("FEISHU_GROUP_SWYONGHUTIYANBU_ID", alert_content)
 
 
 if __name__ == "__main__":

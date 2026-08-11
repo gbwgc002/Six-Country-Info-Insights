@@ -31,7 +31,7 @@ DESIGN_FEED_URL = urljoin(DESIGN_SITE_URL, "api/rankings/latest.json")
 DEFAULT_ITEM_LIMIT = 8
 MAX_ASSET_BYTES = 8_000_000
 USER_AGENT = "Six-Country-Info-Insights/1.0"
-DEFAULT_ALERT_CHAT_ID = "oc_d4411bf497444ec7d818d18b3738773d"
+DEFAULT_ALERT_CHAT_ID = ""
 DEFAULT_STATE_PATH = ".cache/ai-design-feed/last-success.json"
 AI_INSIGHT_CATEGORY_LIMIT = 2
 AI_INSIGHT_CATEGORIES = (
@@ -1116,7 +1116,7 @@ async def _send_card(publisher, chat_id: str, card: dict) -> None:
             f"HTTP {response.status}, code={data.get('code')}, "
             f"msg={data.get('msg', '')}"
         )
-    print(f"Feishu card sent to {chat_id}")
+    print("Feishu card sent")
 
 
 async def publish_combined(
@@ -1126,13 +1126,6 @@ async def publish_combined(
     dry_run: bool = False,
     upstream_conclusion: str = "",
 ) -> int:
-    if not re.fullmatch(r"oc_[A-Za-z0-9]+", chat_id or ""):
-        print("AI_DESIGN_FEISHU_CHAT_ID is missing or invalid.")
-        return 1
-    if not re.fullmatch(r"oc_[A-Za-z0-9]+", alert_chat_id or ""):
-        print("AI_DESIGN_ALERT_CHAT_ID is missing or invalid.")
-        return 1
-
     period = get_previous_week()
     if dry_run:
         feed = await fetch_design_headlines()
@@ -1143,6 +1136,10 @@ async def publish_combined(
         for index, item in enumerate(feed.headlines, start=1):
             print(f"{index}. {item.title}")
         return 0 if not problem else 1
+
+    if not re.fullmatch(r"oc_[A-Za-z0-9]+", alert_chat_id or ""):
+        print("AI_DESIGN_ALERT_CHAT_ID is missing or invalid; alert cannot be sent.")
+        return 1
 
     from publishers.feishu_publisher import FeishuPublisher
 
@@ -1158,6 +1155,11 @@ async def publish_combined(
         except Exception as exc:  # alerting must never hide the root cause
             print(f"Feishu alert send failed: {exc}")
         return 1
+
+    if not re.fullmatch(r"oc_[A-Za-z0-9]+", chat_id or ""):
+        return await alert(
+            "正式群配置缺失或格式无效：FEISHU_GROUP_SWYONGHUTIYANBU_ID"
+        )
 
     if upstream_conclusion and upstream_conclusion != "success":
         return await alert(

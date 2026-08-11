@@ -52,5 +52,5 @@ jobs:
           FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
           FEISHU_ADMIN_OPEN_ID: ${{ secrets.FEISHU_ADMIN_OPEN_ID }}
-          FEISHU_BOT_CHAT_ID: ${{ secrets.FEISHU_BOT_CHAT_ID }}
+          FEISHU_BOT_CHAT_ID: ${{ secrets.FEISHU_GROUP_RUANJIANYONGYAN_ID }}
         run: python ai_insights.py publish

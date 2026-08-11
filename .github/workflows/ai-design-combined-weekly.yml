@@ -7,11 +7,6 @@ on:
     types:
       - completed
   workflow_dispatch:
-    inputs:
-      chat_id:
-        description: Target Feishu chat ID (defaults to repository variable or test group)
-        required: false
-        type: string
 
 permissions:
   contents: read
@@ -58,12 +53,8 @@ jobs:
         env:
           FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
-          AI_DESIGN_FEISHU_CHAT_ID: >-
-            ${{ inputs.chat_id || vars.AI_DESIGN_FEISHU_CHAT_ID ||
-                'oc_d4411bf497444ec7d818d18b3738773d' }}
-          AI_DESIGN_ALERT_CHAT_ID: >-
-            ${{ vars.AI_DESIGN_ALERT_CHAT_ID ||
-                'oc_d4411bf497444ec7d818d18b3738773d' }}
+          AI_DESIGN_FEISHU_CHAT_ID: ${{ secrets.FEISHU_GROUP_SWYONGHUTIYANBU_ID }}
+          AI_DESIGN_ALERT_CHAT_ID: ${{ secrets.FEISHU_GROUP_AI2DZUOYECESHIQUN_ID }}
           AI_DESIGN_STATE_PATH: .cache/ai-design-feed/last-success.json
           AI_INSIGHTS_UPSTREAM_CONCLUSION: >-
             ${{ github.event_name == 'workflow_run' &&

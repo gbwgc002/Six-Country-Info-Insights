@@ -723,9 +723,11 @@ class FeishuPublisher:
             async with session.post(url, json=payload, headers=headers) as response:
                 data = await response.json()
                 if data.get("code") != 0:
-                    print(f"Feishu Send Message Error: {data.get('msg')} (code {data.get('code')})")
-                else:
-                    print(f"✅ Feishu message sent to {receive_id}")
+                    raise RuntimeError(
+                        "Feishu Send Message Error: "
+                        f"{data.get('msg')} (code {data.get('code')})"
+                    )
+                print("✅ Feishu message sent")
 
     def _build_card_content(self, title: str, highlights: str, categories: dict, category_names: dict, doc_url: str = None) -> str:
         """Construct Feishu Interactive Card JSON content.
@@ -816,62 +818,129 @@ class FeishuPublisher:
              print("Feishu publisher not configured.")
              return
 
-        print(f"Sending Feishu card to {chat_id}...")
+        print("Sending Feishu card...")
         card_content = self._build_card_content(title, highlights, categories, category_names, doc_url)
         await self._send_message(chat_id, "interactive", card_content)
 
-    async def send_ai_insights_card(
+    @staticmethod
+    def _safe_lark_md_line(value: str, limit: int = 260) -> str:
+        compact = re.sub(r"\s+", " ", value or "").strip()[:limit]
+        return re.sub(r"([\\*_~\[\]()#>])", r"\\\1", compact)
+
+    def _build_ai_insights_card(
         self,
-        chat_id: str,
-        title: str,
         highlights: str,
+        categories: dict[str, list[str]],
         doc_url: str,
-    ):
-        """Send the independent weekly AI Insights card."""
+    ) -> str:
+        """Build the weekly user-research and market-insight Feishu card."""
+        judgment_lines = []
+        for line in (highlights or "").splitlines():
+            judgment = line.strip().removeprefix("-").strip()
+            if judgment:
+                judgment_lines.append(
+                    f"- {self._safe_lark_md_line(judgment)}"
+                )
+        safe_highlights = "\n".join(judgment_lines) or "- 本周暂无核心判断"
+
+        category_sections = []
+        for category, titles in (categories or {}).items():
+            safe_titles = [
+                self._safe_lark_md_line(title)
+                for title in titles[:2]
+                if str(title).strip()
+            ]
+            if not safe_titles:
+                continue
+            title_lines = "\n".join(
+                f"{index}. {title}"
+                for index, title in enumerate(safe_titles, start=1)
+            )
+            category_sections.append(
+                f"**{self._safe_lark_md_line(category)}**\n{title_lines}"
+            )
+
         elements = [
             {
                 "tag": "div",
                 "text": {
                     "tag": "lark_md",
-                    "content": f"**本周核心判断**\n\n{highlights}",
+                    "content": f"**核心判断**\n\n{safe_highlights}",
                 },
             },
-            {"tag": "hr"},
-            {
-                "tag": "action",
-                "actions": [
-                    {
-                        "tag": "button",
-                        "text": {
-                            "tag": "plain_text",
-                            "content": "查看完整周报",
-                        },
-                        "type": "primary",
-                        "multi_url": {
-                            "url": doc_url,
-                            "pc_url": doc_url,
-                            "ios_url": doc_url,
-                            "android_url": doc_url,
-                        },
-                    }
-                ],
-            },
-            {
-                "tag": "note",
-                "elements": [
-                    {
-                        "tag": "plain_text",
-                        "content": "AI Insights · User Research & Consumer Insights",
-                    }
-                ],
-            },
         ]
+        if category_sections:
+            elements.extend(
+                [
+                    {"tag": "hr"},
+                    {
+                        "tag": "div",
+                        "text": {
+                            "tag": "lark_md",
+                            "content": "\n\n".join(category_sections),
+                        },
+                    },
+                ]
+            )
+        elements.extend(
+            [
+                {"tag": "hr"},
+                {
+                    "tag": "action",
+                    "actions": [
+                        {
+                            "tag": "button",
+                            "text": {
+                                "tag": "plain_text",
+                                "content": "查看完整周报",
+                            },
+                            "type": "primary",
+                            "multi_url": {
+                                "url": doc_url,
+                                "pc_url": doc_url,
+                                "ios_url": doc_url,
+                                "android_url": doc_url,
+                            },
+                        }
+                    ],
+                },
+                {
+                    "tag": "note",
+                    "elements": [
+                        {
+                            "tag": "plain_text",
+                            "content": (
+                                "AI Insights · User Research & Consumer Insights"
+                            ),
+                        }
+                    ],
+                },
+            ]
+        )
         card = {
             "config": {"wide_screen_mode": True},
             "header": {
                 "template": "blue",
-                "title": {"tag": "plain_text", "content": title},
+                "title": {
+                    "tag": "plain_text",
+                    "content": "AI×用户研究与市场洞察资讯",
+                },
             },
             "elements": elements,
         }
-        await self._send_message(chat_id, "interactive", json.dumps(card))
+        return json.dumps(card, ensure_ascii=False)
+
+    async def send_ai_insights_card(
+        self,
+        chat_id: str,
+        highlights: str,
+        categories: dict[str, list[str]],
+        doc_url: str,
+    ):
+        """Send the independent weekly AI Insights card."""
+        card = self._build_ai_insights_card(
+            highlights=highlights,
+            categories=categories,
+            doc_url=doc_url,
+        )
+        await self._send_message(chat_id, "interactive", card)
