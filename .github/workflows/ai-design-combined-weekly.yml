@@ -1,14 +1,6 @@
 name: AI Design + Insights Weekly Push
 
 on:
-  # Temporary branch-only trigger used to validate the first test-group push.
-  # It is removed from the final PR after the test succeeds.
-  push:
-    branches:
-      - agent/ai-design-combined-push
-    paths:
-      - .github/workflows/ai-design-combined-weekly.yml
-      - design_ai_weekly_push.py
   workflow_run:
     workflows:
       - AI Insights Weekly Publish
