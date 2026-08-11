@@ -56,7 +56,7 @@ class WeekPeriod:
 
     @property
     def card_title(self) -> str:
-        return f"AI设计 × AI洞察周报｜{self.label}"
+        return f"AI×设计与用户研究资讯周报｜{self.label}"
 
 
 @dataclass(frozen=True)
@@ -760,7 +760,7 @@ def build_combined_card(
                 "tag": "div",
                 "text": {
                     "tag": "lark_md",
-                    "content": f"**🎨 AI设计资讯**\n\n{design_lines}",
+                    "content": f"**🎨 AI×交互与设计资讯**\n\n{design_lines}",
                 },
             },
             {"tag": "hr"},
@@ -768,7 +768,7 @@ def build_combined_card(
                 "tag": "div",
                 "text": {
                     "tag": "lark_md",
-                    "content": f"**🔍 AI洞察资讯**\n\n{insight_lines}",
+                    "content": f"**🔍 AI×用户研究与市场洞察资讯**\n\n{insight_lines}",
                 },
             },
             {"tag": "hr"},
