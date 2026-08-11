@@ -570,6 +570,31 @@ def extract_ai_pdf_url(document_text: str) -> str:
     return url
 
 
+def extract_ai_candidate_titles(
+    document_text: str,
+    limit: int = 3,
+) -> list[str]:
+    """Use source-linked weekly candidates when final judgments are absent."""
+    titles: list[str] = []
+    seen: set[str] = set()
+    for raw_line in (document_text or "").splitlines():
+        line = raw_line.strip()
+        if not line or "AI洞察PDF" in line or "查看完整周报" in line:
+            continue
+        match = re.match(r"^(.+?)\s*\(https?://[^\s)]+\)\s*$", line)
+        if not match:
+            continue
+        title = match.group(1).strip()
+        normalized = _normalized_title(title)
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        titles.append(title)
+        if len(titles) >= limit:
+            break
+    return titles
+
+
 def _safe_card_text(value: str, limit: int = 180) -> str:
     compact = re.sub(r"\s+", " ", value or "").strip()[:limit]
     return re.sub(r"([\\*_~\[\]()#>])", r"\\\1", compact)
@@ -722,15 +747,26 @@ async def publish_combined(chat_id: str, dry_run: bool = False) -> int:
         print(f"AI insight document does not exist: {period.ai_report_title}")
         return 1
     document_text = await publisher.read_document_text(document["document_id"])
-    ai_highlights = extract_ai_highlights(document_text)
-    ai_report_url = extract_ai_pdf_url(document_text)
-    if not ai_highlights or not ai_report_url:
-        print("The AI insight weekly PDF or core judgments are not ready yet.")
+    final_highlights = extract_ai_highlights(document_text)
+    ai_highlights = final_highlights or extract_ai_candidate_titles(document_text)
+    ai_pdf_url = extract_ai_pdf_url(document_text)
+    ai_report_url = ai_pdf_url or document["url"]
+    if not ai_highlights:
+        print("The AI insight weekly document contains no usable highlights.")
         return 1
 
-    token_match = re.search(r"/file/([A-Za-z0-9_-]+)", ai_report_url)
+    token_match = re.search(r"/file/([A-Za-z0-9_-]+)", ai_pdf_url)
     if token_match:
         await publisher.set_file_permission(token_match.group(1), chat_id)
+    else:
+        await publisher.set_document_public_permission(
+            document["document_id"],
+            chat_id,
+        )
+        print(
+            "AI insight final PDF is not ready; the combined card links to "
+            "the existing weekly document."
+        )
 
     card = build_combined_card(
         period,
