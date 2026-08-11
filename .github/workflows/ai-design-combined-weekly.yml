@@ -1,9 +1,6 @@
 name: AI Design + Insights Weekly Push
 
 on:
-  push:
-    branches:
-      - agent/ai-design-combined-push
   workflow_run:
     workflows:
       - AI Insights Weekly Publish
@@ -69,9 +66,8 @@ jobs:
                 'oc_d4411bf497444ec7d818d18b3738773d' }}
           AI_DESIGN_STATE_PATH: .cache/ai-design-feed/last-success.json
           AI_INSIGHTS_UPSTREAM_CONCLUSION: >-
-            ${{ github.event_name == 'push' && '模拟异常测试' ||
-                (github.event_name == 'workflow_run' &&
-                 github.event.workflow_run.conclusion || '') }}
+            ${{ github.event_name == 'workflow_run' &&
+                github.event.workflow_run.conclusion || '' }}
         run: python design_ai_weekly_push.py
 
       - name: Save last successful design-feed state
