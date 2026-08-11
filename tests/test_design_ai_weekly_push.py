@@ -1,20 +1,27 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, timezone
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from zoneinfo import ZoneInfo
 
 from design_ai_weekly_push import (
+    DESIGN_FEED_URL,
     DESIGN_SITE_URL,
+    DesignFeed,
     DesignHeadline,
     WeekPeriod,
     _fallback_asset_urls,
     _parse_hot_items,
     _parse_news_items,
+    build_alert_card,
     build_combined_card,
+    design_feed_problem,
     extract_ai_category_titles,
     extract_ai_pdf_url,
     get_previous_week,
     parse_latest_section_html,
     parse_design_feed,
+    save_feed_state,
     select_latest,
 )
 
@@ -140,16 +147,17 @@ class SiteParserTests(unittest.TestCase):
         items = parse_latest_section_html(section_html, limit=8)
         self.assertEqual([item.title for item in items], ["保留标题"])
 
-    def test_fixed_json_feed_matches_latest_section_contract(self):
+    def test_fixed_json_feed_matches_live_contract(self):
         payload = {
-            "schema_version": "1.0",
-            "generated_at": "2026-08-11T16:30:00+08:00",
+            "schema_version": 3,
+            "updated_at": "2026-08-11T06:57:16.454Z",
             "section": "最新发布",
+            "item_count": 2,
             "items": [
                 {
                     "id": "design-1",
                     "title": "设计系统进入 Agent 时代",
-                    "source": "Design Lab",
+                    "source_name": "Design Lab",
                     "published_at": "2026-08-11T08:00:00+08:00",
                     "url": "https://example.com/design-1",
                     "stream": "官方与机构动态",
@@ -157,29 +165,99 @@ class SiteParserTests(unittest.TestCase):
                 {
                     "id": "design-2",
                     "title": "用户研究工作流的新变化",
-                    "source": "Researcher",
+                    "source_name": "Researcher",
                     "published_at": "2026-08-10",
                     "url": "",
                     "stream": "创作者观点",
                 },
             ],
         }
-        items = parse_design_feed(payload)
+        feed = parse_design_feed(payload)
         self.assertEqual(
-            [item.title for item in items],
+            [item.title for item in feed.headlines],
             ["设计系统进入 Agent 时代", "用户研究工作流的新变化"],
         )
-        self.assertEqual(items[0].published_at, "2026-08-11")
+        self.assertEqual(feed.headlines[0].published_at, "2026-08-11")
+        self.assertEqual(feed.updated_at_iso, "2026-08-11T06:57:16.454000Z")
 
     def test_json_feed_rejects_the_wrong_section(self):
         with self.assertRaises(ValueError):
             parse_design_feed(
                 {
-                    "schema_version": "1.0",
+                    "schema_version": 3,
+                    "updated_at": "2026-08-11T06:57:16.454Z",
                     "section": "机会洞察引用的证据",
                     "items": [],
                 }
             )
+
+    def test_json_feed_rejects_empty_items_and_count_mismatch(self):
+        with self.assertRaises(ValueError):
+            parse_design_feed(
+                {
+                    "schema_version": 3,
+                    "updated_at": "2026-08-11T06:57:16.454Z",
+                    "section": "最新发布",
+                    "item_count": 1,
+                    "items": [],
+                }
+            )
+
+
+class FeedFreshnessAndStateTests(unittest.TestCase):
+    @staticmethod
+    def feed(updated_at: str, title: str = "设计标题") -> DesignFeed:
+        return DesignFeed(
+            updated_at=datetime.fromisoformat(updated_at.replace("Z", "+00:00")),
+            headlines=(
+                DesignHeadline("1", title, "A", "2026-08-11", "趋势精选"),
+            ),
+        )
+
+    def test_today_feed_is_ready_without_previous_state(self):
+        feed = self.feed("2026-08-11T06:57:16.454Z")
+        with TemporaryDirectory() as directory:
+            problem = design_feed_problem(
+                feed,
+                Path(directory) / "state.json",
+                now=datetime(2026, 8, 11, 16, 47, tzinfo=ZoneInfo("Asia/Shanghai")),
+            )
+        self.assertEqual(problem, "")
+
+    def test_previous_day_feed_is_stale(self):
+        feed = self.feed("2026-08-10T08:00:00Z")
+        with TemporaryDirectory() as directory:
+            problem = design_feed_problem(
+                feed,
+                Path(directory) / "state.json",
+                now=datetime(2026, 8, 11, 16, 47, tzinfo=ZoneInfo("Asia/Shanghai")),
+            )
+        self.assertIn("并非今天更新", problem)
+
+    def test_same_date_and_titles_are_blocked_as_duplicate(self):
+        feed = self.feed("2026-08-11T06:57:16.454Z")
+        with TemporaryDirectory() as directory:
+            state_path = Path(directory) / "state.json"
+            save_feed_state(state_path, feed)
+            problem = design_feed_problem(
+                feed,
+                state_path,
+                now=datetime(2026, 8, 11, 16, 47, tzinfo=ZoneInfo("Asia/Shanghai")),
+            )
+        self.assertIn("完全相同", problem)
+
+    def test_changed_title_is_not_duplicate(self):
+        original = self.feed("2026-08-11T06:57:16.454Z")
+        changed = self.feed("2026-08-11T06:57:16.454Z", "更新后的设计标题")
+        with TemporaryDirectory() as directory:
+            state_path = Path(directory) / "state.json"
+            save_feed_state(state_path, original)
+            problem = design_feed_problem(
+                changed,
+                state_path,
+                now=datetime(2026, 8, 11, 16, 47, tzinfo=ZoneInfo("Asia/Shanghai")),
+            )
+        self.assertEqual(problem, "")
 
 
 class InsightExtractionTests(unittest.TestCase):
@@ -279,6 +357,18 @@ class CardTests(unittest.TestCase):
             ["查看AI设计完整周报", "查看AI洞察完整周报"],
         )
         self.assertEqual(actions[0]["multi_url"]["url"], DESIGN_SITE_URL)
+
+    def test_alert_card_explains_no_official_push_and_links_json(self):
+        card = build_alert_card(
+            "JSON并非今天更新",
+            now=datetime(2026, 8, 11, 16, 47, tzinfo=ZoneInfo("Asia/Shanghai")),
+        )
+        self.assertEqual(card["header"]["template"], "red")
+        content = card["elements"][0]["text"]["content"]
+        self.assertIn("未向正式群推送", content)
+        self.assertIn("JSON并非今天更新", content)
+        actions = card["elements"][1]["actions"]
+        self.assertEqual(actions[0]["multi_url"]["url"], DESIGN_FEED_URL)
 
 
 if __name__ == "__main__":
