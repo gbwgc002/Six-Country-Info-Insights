@@ -28,6 +28,17 @@ DESIGN_SITE_HOST = urlparse(DESIGN_SITE_URL).hostname
 DEFAULT_ITEM_LIMIT = 8
 MAX_ASSET_BYTES = 8_000_000
 USER_AGENT = "Six-Country-Info-Insights/1.0"
+AI_INSIGHT_CATEGORY_LIMIT = 2
+AI_INSIGHT_CATEGORIES = (
+    ("用研与消费者洞察", ("用研与消费者洞察",)),
+    ("研究工具与工作流", ("研究工具与工作流",)),
+    ("人机交互与研究方法", ("人机交互与研究方法",)),
+    (
+        "语音多语言与海外研究",
+        ("语音、多语言与海外研究", "语音多语言与海外研究"),
+    ),
+    ("手机与端侧 AI", ("手机与端侧 AI", "手机与端侧AI")),
+)
 
 
 @dataclass(frozen=True)
@@ -535,24 +546,143 @@ async def fetch_design_headlines(
     return latest
 
 
-def extract_ai_highlights(document_text: str, limit: int = 3) -> list[str]:
-    lines = [line.strip() for line in (document_text or "").splitlines()]
-    try:
-        start = lines.index("本周核心判断") + 1
-    except ValueError:
-        return []
-    highlights: list[str] = []
-    for line in lines[start:]:
-        if line.startswith("本周") and highlights:
-            break
-        match = re.match(r"^\d+[.、]\s*(.+)$", line)
+def _clean_document_line(raw_line: str) -> str:
+    return re.sub(r"^#{1,6}\s*", "", (raw_line or "").strip()).strip()
+
+
+def _linked_title(line: str) -> str:
+    cleaned = _clean_document_line(line)
+    for pattern in (
+        r"^\[(.+?)\]\(https?://[^\s)]+\)$",
+        r"^(.+?)\s+\(https?://[^\s)]+\)$",
+    ):
+        match = re.match(pattern, cleaned)
         if match:
-            highlights.append(match.group(1).strip())
-            if len(highlights) >= limit:
-                break
-        elif highlights and line and not line.startswith("-"):
+            return match.group(1).strip()
+    return ""
+
+
+def _category_aliases() -> dict[str, str]:
+    return {
+        alias: display_name
+        for display_name, aliases in AI_INSIGHT_CATEGORIES
+        for alias in aliases
+    }
+
+
+def _append_category_title(
+    categories: dict[str, list[str]],
+    category: str,
+    title: str,
+    limit: int,
+) -> None:
+    items = categories[category]
+    normalized = _normalized_title(title)
+    if (
+        not normalized
+        or len(items) >= limit
+        or any(_normalized_title(existing) == normalized for existing in items)
+    ):
+        return
+    items.append(title)
+
+
+def _nonempty_categories(
+    categories: dict[str, list[str]],
+) -> dict[str, list[str]]:
+    return {
+        display_name: categories[display_name]
+        for display_name, _ in AI_INSIGHT_CATEGORIES
+        if categories[display_name]
+    }
+
+
+def _extract_final_ai_category_titles(
+    lines: list[str],
+    limit: int,
+) -> dict[str, list[str]]:
+    categories = {display_name: [] for display_name, _ in AI_INSIGHT_CATEGORIES}
+    aliases = _category_aliases()
+    try:
+        start = lines.index("本周最终精选") + 1
+    except ValueError:
+        return {}
+
+    current_category = ""
+    for line in lines[start:]:
+        if line == "本周给团队的三条建议" or re.fullmatch(
+            r"\d{4}-\d{2}-\d{2}\s+每日收集",
+            line,
+        ):
             break
-    return highlights
+        if line in aliases:
+            current_category = aliases[line]
+            continue
+        if line in {"本周核心判断", "本周必须知道的 AI 大事"}:
+            current_category = ""
+            continue
+        title = _linked_title(line)
+        if current_category and title:
+            _append_category_title(
+                categories,
+                current_category,
+                title,
+                limit,
+            )
+    return _nonempty_categories(categories)
+
+
+def _extract_candidate_ai_category_titles(
+    lines: list[str],
+    limit: int,
+) -> dict[str, list[str]]:
+    """Group daily candidates when the final weekly selection is not ready."""
+    categories = {display_name: [] for display_name, _ in AI_INSIGHT_CATEGORIES}
+    aliases = _category_aliases()
+    pending_title = ""
+
+    for line in lines:
+        title = _linked_title(line)
+        if title:
+            pending_title = title
+            continue
+        if not pending_title:
+            continue
+        matched_category = next(
+            (
+                display_name
+                for alias, display_name in aliases.items()
+                if alias in line
+            ),
+            "",
+        )
+        if matched_category:
+            _append_category_title(
+                categories,
+                matched_category,
+                pending_title,
+                limit,
+            )
+            pending_title = ""
+        elif line in aliases or line.startswith("本周"):
+            pending_title = ""
+    return _nonempty_categories(categories)
+
+
+def extract_ai_category_titles(
+    document_text: str,
+    limit: int = AI_INSIGHT_CATEGORY_LIMIT,
+) -> dict[str, list[str]]:
+    """Extract up to two titles for each requested AI Insights module."""
+    lines = [
+        _clean_document_line(line)
+        for line in (document_text or "").splitlines()
+        if _clean_document_line(line)
+    ]
+    final_categories = _extract_final_ai_category_titles(lines, limit)
+    if final_categories:
+        return final_categories
+    return _extract_candidate_ai_category_titles(lines, limit)
 
 
 def extract_ai_pdf_url(document_text: str) -> str:
@@ -568,31 +698,6 @@ def extract_ai_pdf_url(document_text: str) -> str:
     if parsed.scheme != "https" or parsed.username or parsed.password:
         return ""
     return url
-
-
-def extract_ai_candidate_titles(
-    document_text: str,
-    limit: int = 3,
-) -> list[str]:
-    """Use source-linked weekly candidates when final judgments are absent."""
-    titles: list[str] = []
-    seen: set[str] = set()
-    for raw_line in (document_text or "").splitlines():
-        line = raw_line.strip()
-        if not line or "AI洞察PDF" in line or "查看完整周报" in line:
-            continue
-        match = re.match(r"^(.+?)\s*\(https?://[^\s)]+\)\s*$", line)
-        if not match:
-            continue
-        title = match.group(1).strip()
-        normalized = _normalized_title(title)
-        if not normalized or normalized in seen:
-            continue
-        seen.add(normalized)
-        titles.append(title)
-        if len(titles) >= limit:
-            break
-    return titles
 
 
 def _safe_card_text(value: str, limit: int = 180) -> str:
@@ -617,13 +722,13 @@ def _button(label: str, url: str, button_type: str) -> dict:
 def build_combined_card(
     period: WeekPeriod,
     design_headlines: list[DesignHeadline],
-    ai_highlights: list[str],
+    ai_categories: dict[str, list[str]],
     ai_report_url: str,
 ) -> dict:
     if not design_headlines:
         raise ValueError("AI design headlines are required")
-    if not ai_highlights:
-        raise ValueError("AI insight highlights are required")
+    if not ai_categories:
+        raise ValueError("Categorized AI insight titles are required")
     if not ai_report_url.startswith("https://"):
         raise ValueError("A valid AI insight report URL is required")
 
@@ -631,9 +736,19 @@ def build_combined_card(
         f"{index}. {_safe_card_text(item.title)}"
         for index, item in enumerate(design_headlines, start=1)
     )
-    insight_lines = "\n".join(
-        f"- {_safe_card_text(item)}" for item in ai_highlights
-    )
+    insight_sections = []
+    for category, _ in AI_INSIGHT_CATEGORIES:
+        titles = ai_categories.get(category, [])[:AI_INSIGHT_CATEGORY_LIMIT]
+        if not titles:
+            continue
+        title_lines = "\n".join(
+            f"{index}. {_safe_card_text(title)}"
+            for index, title in enumerate(titles, start=1)
+        )
+        insight_sections.append(
+            f"**{_safe_card_text(category)}**\n{title_lines}"
+        )
+    insight_lines = "\n\n".join(insight_sections)
     return {
         "config": {"wide_screen_mode": True},
         "header": {
@@ -747,12 +862,11 @@ async def publish_combined(chat_id: str, dry_run: bool = False) -> int:
         print(f"AI insight document does not exist: {period.ai_report_title}")
         return 1
     document_text = await publisher.read_document_text(document["document_id"])
-    final_highlights = extract_ai_highlights(document_text)
-    ai_highlights = final_highlights or extract_ai_candidate_titles(document_text)
+    ai_categories = extract_ai_category_titles(document_text)
     ai_pdf_url = extract_ai_pdf_url(document_text)
     ai_report_url = ai_pdf_url or document["url"]
-    if not ai_highlights:
-        print("The AI insight weekly document contains no usable highlights.")
+    if not ai_categories:
+        print("The AI insight weekly document contains no categorized titles.")
         return 1
 
     token_match = re.search(r"/file/([A-Za-z0-9_-]+)", ai_pdf_url)
@@ -771,7 +885,7 @@ async def publish_combined(chat_id: str, dry_run: bool = False) -> int:
     card = build_combined_card(
         period,
         design_headlines,
-        ai_highlights,
+        ai_categories,
         ai_report_url,
     )
     await _send_card(publisher, chat_id, card)
