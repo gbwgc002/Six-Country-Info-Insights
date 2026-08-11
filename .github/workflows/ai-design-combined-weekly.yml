@@ -44,7 +44,22 @@ jobs:
           pip install \
             "aiohttp>=3.13.3" \
             "beautifulsoup4>=4.12.0" \
+            "playwright>=1.58.0" \
             "python-dotenv>=1.0.0"
+
+      - name: Check fixed design JSON feed
+        id: design-feed
+        shell: bash
+        run: |
+          if python design_ai_weekly_push.py --check-design-feed; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install browser for rendered-page fallback
+        if: steps.design-feed.outputs.ready != 'true'
+        run: python -m playwright install --with-deps chromium
 
       - name: Validate isolated crawler and card logic
         run: python -m unittest tests.test_design_ai_weekly_push -v
