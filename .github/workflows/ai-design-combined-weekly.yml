@@ -1,9 +1,6 @@
 name: AI Design + Insights Weekly Push
 
 on:
-  push:
-    branches:
-      - agent/ai-design-combined-push
   workflow_run:
     workflows:
       - AI Insights Weekly Publish
