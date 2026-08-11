@@ -162,10 +162,14 @@ class CardTests(unittest.TestCase):
             },
             "https://feishu.cn/file/report",
         )
+        self.assertEqual(
+            card["header"]["title"]["content"],
+            "AI×设计与用户研究资讯周报｜2026.08.03–08.09",
+        )
         elements = card["elements"]
-        self.assertIn("AI设计资讯", elements[0]["text"]["content"])
+        self.assertIn("AI×交互与设计资讯", elements[0]["text"]["content"])
         insight_content = elements[2]["text"]["content"]
-        self.assertIn("AI洞察资讯", insight_content)
+        self.assertIn("AI×用户研究与市场洞察资讯", insight_content)
         self.assertIn("用研与消费者洞察", insight_content)
         self.assertIn("洞察标题一", insight_content)
         self.assertIn("手机与端侧 AI", insight_content)
