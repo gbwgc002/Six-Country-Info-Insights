@@ -8,6 +8,7 @@ on:
       - agent/ai-design-combined-push
     paths:
       - .github/workflows/ai-design-combined-weekly.yml
+      - design_ai_weekly_push.py
   workflow_run:
     workflows:
       - AI Insights Weekly Publish
