@@ -10,6 +10,7 @@ from design_ai_weekly_push import (
     _parse_hot_items,
     _parse_news_items,
     build_combined_card,
+    extract_ai_candidate_titles,
     extract_ai_highlights,
     extract_ai_pdf_url,
     get_previous_week,
@@ -102,6 +103,18 @@ AI洞察PDF：查看完整周报 (https://feishu.cn/file/file_token_123)
         self.assertEqual(
             extract_ai_highlights(text),
             ["判断一", "判断二", "判断三"],
+        )
+
+    def test_candidate_titles_are_a_safe_prepublication_fallback(self):
+        text = """2026-08-08 每日收集
+候选标题一 (https://example.com/one)
+来源：A
+候选标题二 (https://example.com/two)
+候选标题一 (https://example.com/one)
+"""
+        self.assertEqual(
+            extract_ai_candidate_titles(text),
+            ["候选标题一", "候选标题二"],
         )
 
 
