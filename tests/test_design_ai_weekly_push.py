@@ -354,7 +354,7 @@ class CardTests(unittest.TestCase):
         actions = elements[4]["actions"]
         self.assertEqual(
             [button["text"]["content"] for button in actions],
-            ["查看AI设计完整周报", "查看AI洞察完整周报"],
+            ["查看AI×交互与设计完整周报", "查看AI×用户研究与市场洞察完整周报"],
         )
         self.assertEqual(actions[0]["multi_url"]["url"], DESIGN_SITE_URL)
 
