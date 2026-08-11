@@ -1,0 +1,60 @@
+name: AI Design + Insights Weekly Push
+
+on:
+  # Temporary branch-only trigger used to validate the first test-group push.
+  # It is removed from the final PR after the test succeeds.
+  push:
+    branches:
+      - agent/ai-design-combined-push
+    paths:
+      - .github/workflows/ai-design-combined-weekly.yml
+  workflow_run:
+    workflows:
+      - AI Insights Weekly Publish
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      chat_id:
+        description: Target Feishu chat ID (defaults to the current test group)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-design-combined-weekly-push
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: >-
+      ${{ github.event_name != 'workflow_run' ||
+          github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Push combined AI design and AI insights card
+        env:
+          FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
+          FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
+          AI_DESIGN_FEISHU_CHAT_ID: >-
+            ${{ inputs.chat_id || vars.AI_DESIGN_FEISHU_CHAT_ID ||
+                'oc_d4411bf497444ec7d818d18b3738773d' }}
+        run: python design_ai_weekly_push.py
