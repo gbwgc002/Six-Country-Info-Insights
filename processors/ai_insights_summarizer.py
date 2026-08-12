@@ -24,6 +24,14 @@ CATEGORY_NAMES = {
     "major_ai": "本周必须知道的 AI 大事",
 }
 
+AI_INSIGHT_CARD_CATEGORY_NAMES = {
+    "user_research": "用研与消费者洞察",
+    "research_tools": "研究工具与工作流",
+    "human_ai": "人机交互与研究方法",
+    "speech_language": "语音多语言与海外研究",
+    "mobile_ai": "手机与端侧 AI",
+}
+
 
 def _clean_json_response(text: str) -> str:
     text = text.strip()
@@ -159,6 +167,19 @@ class WeeklyDigest:
         return "\n".join(
             f"- {judgment}" for judgment in self.core_judgments[:3]
         )
+
+    def card_category_titles(self, limit: int = 2) -> dict[str, list[str]]:
+        """Return the five user-research modules for compact Feishu cards."""
+        categories: dict[str, list[str]] = {}
+        for category, display_name in AI_INSIGHT_CARD_CATEGORY_NAMES.items():
+            titles = [
+                item.title
+                for item in self.items
+                if item.category == category and item.title
+            ][:limit]
+            if titles:
+                categories[display_name] = titles
+        return categories
 
     def to_markdown(self) -> str:
         parts = ["## 本周最终精选", "", "## 本周核心判断"]

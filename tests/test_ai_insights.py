@@ -1,6 +1,9 @@
+import json
+import re
 import unittest
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
 import yaml
@@ -168,6 +171,46 @@ class FeishuTests(unittest.TestCase):
         )
 
 
+class FeishuSendFailureTests(unittest.IsolatedAsyncioTestCase):
+    async def test_feishu_business_error_fails_the_workflow(self):
+        class FakeResponse:
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, exc_type, exc, traceback):
+                return False
+
+            async def json(self):
+                return {"code": 999, "msg": "simulated failure"}
+
+        class FakeSession:
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, exc_type, exc, traceback):
+                return False
+
+            def post(self, *args, **kwargs):
+                return FakeResponse()
+
+        publisher = FeishuPublisher()
+
+        async def fake_token():
+            return "test-token"
+
+        publisher._get_tenant_access_token = fake_token
+        with patch(
+            "publishers.feishu_publisher.aiohttp.ClientSession",
+            return_value=FakeSession(),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "simulated failure"):
+                await publisher._send_message(
+                    "oc_" + "testgroup123",
+                    "interactive",
+                    "{}",
+                )
+
+
 class WeeklyReportTests(unittest.TestCase):
     def _digest(self):
         return WeeklyDigest(
@@ -191,11 +234,47 @@ class WeeklyReportTests(unittest.TestCase):
         digest = self._digest()
         markdown = digest.to_markdown()
         categories = digest.to_report_categories()
+        card_categories = digest.card_category_titles()
 
         self.assertIn("## 本周最终精选", markdown)
         self.assertIn("https://example.com/research", markdown)
         self.assertIn("user_research", categories)
         self.assertEqual(categories["user_research"][0].source, "Research Lab")
+        self.assertEqual(
+            card_categories,
+            {"用研与消费者洞察": ["AI 研究平台更新"]},
+        )
+
+    def test_weekly_card_uses_new_title_core_judgments_and_five_modules(self):
+        card = json.loads(
+            FeishuPublisher()._build_ai_insights_card(
+                highlights="- 判断一\n- 判断二",
+                categories={
+                    "用研与消费者洞察": ["标题一", "标题二", "标题三"],
+                    "研究工具与工作流": ["工具标题"],
+                    "人机交互与研究方法": [],
+                    "语音多语言与海外研究": ["语音标题"],
+                    "手机与端侧 AI": ["端侧标题"],
+                },
+                doc_url="https://feishu.cn/file/report",
+            )
+        )
+        self.assertEqual(
+            card["header"]["title"]["content"],
+            "AI×用户研究与市场洞察资讯",
+        )
+        contents = "\n".join(
+            element.get("text", {}).get("content", "")
+            for element in card["elements"]
+        )
+        self.assertIn("**核心判断**", contents)
+        self.assertIn("用研与消费者洞察", contents)
+        self.assertIn("标题一", contents)
+        self.assertIn("标题二", contents)
+        self.assertNotIn("标题三", contents)
+        self.assertNotIn("人机交互与研究方法", contents)
+        self.assertIn("语音多语言与海外研究", contents)
+        self.assertIn("手机与端侧 AI", contents)
 
     def test_ai_report_reuses_six_country_template_with_ai_labels(self):
         digest = self._digest()
@@ -244,12 +323,38 @@ class WorkflowTests(unittest.TestCase):
 
         self.assertIn('cron: "30 23 * * *"', daily)
         self.assertIn("python ai_insights.py collect", daily)
-        self.assertIn('cron: "0 9 * * 1"', weekly)
+        self.assertIn('cron: "47 8 * * 1"', weekly)
         self.assertIn("python ai_insights.py publish", weekly)
         self.assertIn("fonts-noto-cjk", weekly)
         self.assertIn("cron: '0 23 * * *'", six_country)
         self.assertIn("python main.py", six_country)
         self.assertIn("GEMINI_MODEL: gemini-3.6-flash", six_country)
+
+    def test_workflows_use_named_group_secrets_without_plaintext_chat_ids(self):
+        workflows = {
+            path.name: path.read_text(encoding="utf-8")
+            for path in (ROOT / ".github" / "workflows").glob("*.yml")
+        }
+        software_group_secret = "secrets.FEISHU_GROUP_RUANJIANYONGYAN_ID"
+        self.assertIn(software_group_secret, workflows["daily-digest.yml"])
+        self.assertIn(software_group_secret, workflows["ai-insights-daily.yml"])
+        self.assertIn(software_group_secret, workflows["ai-insights-weekly.yml"])
+
+        combined = workflows["ai-design-combined-weekly.yml"]
+        self.assertIn(
+            "secrets.FEISHU_GROUP_SWYONGHUTIYANBU_ID",
+            combined,
+        )
+        self.assertIn(
+            "secrets.FEISHU_GROUP_AI2DZUOYECESHIQUN_ID",
+            combined,
+        )
+
+        all_workflows = "\n".join(workflows.values())
+        self.assertNotIn("secrets.FEISHU_BOT_CHAT_ID", all_workflows)
+        self.assertIsNone(
+            re.search(r"oc_[A-Za-z0-9]{10,}", all_workflows)
+        )
 
 
 if __name__ == "__main__":

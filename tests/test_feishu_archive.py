@@ -165,7 +165,7 @@ class MigrationIsolationTests(unittest.TestCase):
 
         self.assertIn('cron: "30 23 * * *"', daily)
         self.assertIn("python ai_insights.py collect", daily)
-        self.assertIn('cron: "0 9 * * 1"', weekly)
+        self.assertIn('cron: "47 8 * * 1"', weekly)
         self.assertIn("python ai_insights.py publish", weekly)
         self.assertIn("cron: '0 23 * * *'", six)
         self.assertIn("python main.py", six)

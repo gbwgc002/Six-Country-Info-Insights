@@ -63,7 +63,7 @@ Required variables:
 | `GOOGLE_SA_JSON` or `GOOGLE_SA_FILE` | Service account credentials |
 | `FEISHU_APP_ID` | Feishu app ID |
 | `FEISHU_APP_SECRET` | Feishu app secret |
-| `FEISHU_BOT_CHAT_ID` | Target Feishu group chat ID(s) |
+| `FEISHU_BOT_CHAT_ID` | Local-run target Feishu group chat ID(s) |
 
 Optional:
 | Variable | Description |
@@ -91,7 +91,8 @@ The independent AI Insights workflows run as follows:
 | Workflow | UTC+8 schedule | Behaviour |
 |---|---:|---|
 | `ai-insights-daily.yml` | Daily 07:30 | Collect, score, deduplicate, and append candidates to the current natural-week Feishu document; no group message |
-| `ai-insights-weekly.yml` | Monday 17:00 | Finalize the previous natural week, generate and upload a styled PDF, then send one PDF-linked card to the existing Feishu group |
+| `ai-insights-weekly.yml` | Monday 16:47 | Finalize the previous natural week, generate and upload a styled PDF, then send one PDF-linked card to 软件用研 |
+| `ai-design-combined-weekly.yml` | After the weekly AI workflow completes | Validate the latest design JSON feed, then send the combined design + user-research card to SW用户体验部; failures alert AI2D作业测试群 |
 
 Both pipelines use `gemini-3.6-flash`. The model can still be overridden with
 the `GEMINI_MODEL` environment variable for manual runs.
@@ -99,7 +100,10 @@ the `GEMINI_MODEL` environment variable for manual runs.
 Add these **Repository Secrets** in GitHub:
 - `GOOGLE_CLOUD_PROJECT`
 - `GOOGLE_SA_JSON`
-- `FEISHU_APP_ID`, `FEISHU_APP_SECRET`, `FEISHU_BOT_CHAT_ID`
+- `FEISHU_APP_ID`, `FEISHU_APP_SECRET`
+- `FEISHU_GROUP_RUANJIANYONGYAN_ID` (软件用研)
+- `FEISHU_GROUP_SWYONGHUTIYANBU_ID` (SW用户体验部)
+- `FEISHU_GROUP_AI2DZUOYECESHIQUN_ID` (AI2D作业测试群)
 - `FEISHU_ADMIN_OPEN_ID` (optional)
 - `SMTP_USER`, `SMTP_PASSWORD`, `TO_EMAIL` (optional, for email)
 

@@ -428,12 +428,15 @@ async def publish_weekly(config: dict, dry_run: bool = False) -> int:
     )
     final_markdown = digest.to_markdown()
     highlights = digest.card_highlights
+    category_titles = digest.card_category_titles(limit=2)
 
     if dry_run:
         print("\nDRY RUN — no document or group message was changed:\n")
         print(final_markdown)
         print("\nCard highlights:\n")
         print(highlights)
+        print("\nCard category titles:\n")
+        print(category_titles)
         return 0
 
     chat_ids = _chat_ids(config)
@@ -476,8 +479,8 @@ async def publish_weekly(config: dict, dry_run: bool = False) -> int:
     for chat_id in chat_ids:
         await publisher.send_ai_insights_card(
             chat_id=chat_id,
-            title=period.title,
             highlights=highlights,
+            categories=category_titles,
             doc_url=pdf_url,
         )
     pdf_marker = f"## PDF版本\n\nAI洞察PDF：[查看完整周报]({pdf_url})"
