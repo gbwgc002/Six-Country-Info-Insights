@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import AsyncMock, patch
@@ -235,7 +235,25 @@ class FeedFreshnessAndStateTests(unittest.TestCase):
                 Path(directory) / "state.json",
                 now=datetime(2026, 8, 11, 16, 47, tzinfo=ZoneInfo("Asia/Shanghai")),
             )
-        self.assertIn("并非今天更新", problem)
+        self.assertIn("日期不符合本次推送要求", problem)
+
+    def test_manual_push_can_accept_an_explicit_previous_feed_date(self):
+        feed = self.feed("2026-08-10T08:00:00Z")
+        with TemporaryDirectory() as directory:
+            problem = design_feed_problem(
+                feed,
+                Path(directory) / "state.json",
+                now=datetime(
+                    2026,
+                    8,
+                    11,
+                    16,
+                    47,
+                    tzinfo=ZoneInfo("Asia/Shanghai"),
+                ),
+                accepted_date=date(2026, 8, 10),
+            )
+        self.assertEqual(problem, "")
 
     def test_same_date_and_titles_are_blocked_as_duplicate(self):
         feed = self.feed("2026-08-11T06:57:16.454Z")
@@ -372,6 +390,20 @@ class CardTests(unittest.TestCase):
         self.assertIn("JSON并非今天更新", content)
         actions = card["elements"][1]["actions"]
         self.assertEqual(actions[0]["multi_url"]["url"], DESIGN_FEED_URL)
+
+
+class WorkflowConfigTests(unittest.TestCase):
+    def test_manual_feed_date_is_only_injected_for_workflow_dispatch(self):
+        workflow = Path(
+            ".github/workflows/ai-design-combined-weekly.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("design_feed_date:", workflow)
+        self.assertIn("AI_DESIGN_ACCEPT_FEED_DATE:", workflow)
+        self.assertIn(
+            "github.event_name == 'workflow_dispatch'",
+            workflow,
+        )
+        self.assertIn("inputs.design_feed_date", workflow)
 
 
 class RecipientSafetyTests(unittest.IsolatedAsyncioTestCase):
