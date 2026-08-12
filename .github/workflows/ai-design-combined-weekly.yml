@@ -7,6 +7,12 @@ on:
     types:
       - completed
   workflow_dispatch:
+    inputs:
+      design_feed_date:
+        description: Optional design JSON date (YYYY-MM-DD) for a manual first/recovery push
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -56,6 +62,9 @@ jobs:
           AI_DESIGN_FEISHU_CHAT_ID: ${{ secrets.FEISHU_GROUP_SWYONGHUTIYANBU_ID }}
           AI_DESIGN_ALERT_CHAT_ID: ${{ secrets.FEISHU_GROUP_AI2DZUOYECESHIQUN_ID }}
           AI_DESIGN_STATE_PATH: .cache/ai-design-feed/last-success.json
+          AI_DESIGN_ACCEPT_FEED_DATE: >-
+            ${{ github.event_name == 'workflow_dispatch' &&
+                inputs.design_feed_date || '' }}
           AI_INSIGHTS_UPSTREAM_CONCLUSION: >-
             ${{ github.event_name == 'workflow_run' &&
                 github.event.workflow_run.conclusion || '' }}
