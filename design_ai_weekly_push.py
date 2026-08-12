@@ -705,8 +705,13 @@ def design_feed_problem(
     state_path: str | Path,
     now: datetime | None = None,
     timezone_name: str = "Asia/Shanghai",
+    accepted_date: date | None = None,
 ) -> str:
-    """Return an alert reason when the feed is stale or already pushed."""
+    """Return an alert reason when the feed is stale or already pushed.
+
+    accepted_date is reserved for an explicit manual first/recovery push.
+    Scheduled runs leave it unset and therefore still require a same-day feed.
+    """
     zone = ZoneInfo(timezone_name)
     current = now or datetime.now(tz=zone)
     if current.tzinfo is None:
@@ -715,11 +720,12 @@ def design_feed_problem(
     updated = feed.updated_at.astimezone(zone)
     if updated > current + timedelta(minutes=10):
         return f"JSON更新时间异常，晚于当前时间：{updated:%Y-%m-%d %H:%M}"
-    if updated.date() != current.date():
+    expected_date = accepted_date or current.date()
+    if updated.date() != expected_date:
         return (
-            "JSON并非今天更新："
+            "JSON日期不符合本次推送要求："
             f"更新时间为{updated:%Y-%m-%d %H:%M}，"
-            f"当前日期为{current:%Y-%m-%d}"
+            f"要求日期为{expected_date:%Y-%m-%d}"
         )
 
     previous = load_feed_state(state_path)
@@ -1125,11 +1131,16 @@ async def publish_combined(
     state_path: str | Path = DEFAULT_STATE_PATH,
     dry_run: bool = False,
     upstream_conclusion: str = "",
+    accepted_feed_date: date | None = None,
 ) -> int:
     period = get_previous_week()
     if dry_run:
         feed = await fetch_design_headlines()
-        problem = design_feed_problem(feed, state_path)
+        problem = design_feed_problem(
+            feed,
+            state_path,
+            accepted_date=accepted_feed_date,
+        )
         print(f"\n{period.card_title}")
         print(f"Feed updated at: {feed.updated_at_iso}")
         print(f"Feed status: {problem or 'ready'}")
@@ -1175,7 +1186,16 @@ async def publish_combined(
         f"Fetched {len(feed.headlines)} design headlines; "
         f"feed updated at {feed.updated_at_iso}."
     )
-    problem = design_feed_problem(feed, state_path)
+    if accepted_feed_date:
+        print(
+            "Manual design-feed date accepted for this run: "
+            f"{accepted_feed_date:%Y-%m-%d}"
+        )
+    problem = design_feed_problem(
+        feed,
+        state_path,
+        accepted_date=accepted_feed_date,
+    )
     if problem:
         return await alert(problem)
 
@@ -1258,6 +1278,17 @@ def parse_args() -> argparse.Namespace:
         default=os.environ.get("AI_INSIGHTS_UPSTREAM_CONCLUSION", "").strip(),
         help="conclusion of the upstream AI Insights workflow_run event",
     )
+    parser.add_argument(
+        "--accept-feed-date",
+        type=date.fromisoformat,
+        default=(
+            os.environ.get("AI_DESIGN_ACCEPT_FEED_DATE", "").strip() or None
+        ),
+        help=(
+            "manual first/recovery push only: accept this YYYY-MM-DD design "
+            "feed date instead of requiring today's date"
+        ),
+    )
     return parser.parse_args()
 
 
@@ -1290,6 +1321,7 @@ def main() -> None:
                 state_path=args.state_path,
                 dry_run=args.dry_run,
                 upstream_conclusion=args.upstream_conclusion,
+                accepted_feed_date=args.accept_feed_date,
             )
         )
     )
