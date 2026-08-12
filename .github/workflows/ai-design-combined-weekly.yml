@@ -1,9 +1,6 @@
 name: AI Design + Insights Weekly Push
 
 on:
-  push:
-    branches:
-      - agent/first-production-push-20260812
   workflow_run:
     workflows:
       - AI Insights Weekly Publish
@@ -66,8 +63,7 @@ jobs:
           AI_DESIGN_ALERT_CHAT_ID: ${{ secrets.FEISHU_GROUP_AI2DZUOYECESHIQUN_ID }}
           AI_DESIGN_STATE_PATH: .cache/ai-design-feed/last-success.json
           AI_DESIGN_ACCEPT_FEED_DATE: >-
-            ${{ github.event_name == 'push' && '2026-08-11' ||
-                github.event_name == 'workflow_dispatch' &&
+            ${{ github.event_name == 'workflow_dispatch' &&
                 inputs.design_feed_date || '' }}
           AI_INSIGHTS_UPSTREAM_CONCLUSION: >-
             ${{ github.event_name == 'workflow_run' &&
