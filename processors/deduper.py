@@ -8,6 +8,102 @@ from typing import Optional
 from collectors.base import NewsItem
 
 
+TARGET_COUNTRIES = (
+    "russia",
+    "india",
+    "indonesia",
+    "nigeria",
+    "kenya",
+    "pakistan",
+)
+
+COUNTRY_ALIASES = {
+    "russia": ("russia", "russian", "moscow", "ruble", "rouble", "俄罗斯", "莫斯科"),
+    "india": (
+        "india", "indian", "delhi", "mumbai", "bengaluru", "bangalore",
+        "chennai", "hyderabad", "kolkata", "upi", "印度", "孟买", "德里",
+    ),
+    "indonesia": (
+        "indonesia", "indonesian", "jakarta", "surabaya", "bandung",
+        "qris", "印尼", "印度尼西亚", "雅加达",
+    ),
+    "nigeria": (
+        "nigeria", "nigerian", "lagos", "abuja", "kano", "naira",
+        "尼日利亚", "拉各斯", "阿布贾",
+    ),
+    "kenya": (
+        "kenya", "kenyan", "nairobi", "mombasa", "m-pesa", "mpesa",
+        "肯尼亚", "内罗毕", "蒙巴萨",
+    ),
+    "pakistan": (
+        "pakistan", "pakistani", "karachi", "islamabad", "lahore",
+        "peshawar", "巴基斯坦", "卡拉奇", "伊斯兰堡", "拉合尔",
+    ),
+}
+
+
+def infer_country(item: NewsItem) -> str | None:
+    """Infer one target country from configured metadata or article text."""
+    configured = (item.country or "").strip().lower()
+    if configured in TARGET_COUNTRIES or configured == "multi":
+        return configured
+
+    text = " ".join(
+        value for value in (item.title, item.summary, item.content) if value
+    ).lower()
+    matches = [
+        country
+        for country, aliases in COUNTRY_ALIASES.items()
+        if any(alias in text for alias in aliases)
+    ]
+    if len(matches) == 1:
+        item.country = matches[0]
+        return matches[0]
+    if len(matches) > 1:
+        item.country = "multi"
+        return "multi"
+    return None
+
+
+def _item_rank_key(item: NewsItem) -> tuple[float, float, float]:
+    published = item.published
+    if published and published.tzinfo is None:
+        published = published.replace(tzinfo=timezone.utc)
+    timestamp = published.timestamp() if published else 0.0
+    return (
+        float(getattr(item, "relevance_score", 0.0) or 0.0),
+        float(getattr(item, "source_priority", 1.0) or 1.0),
+        timestamp,
+    )
+
+
+def balanced_limit(items: list[NewsItem], limit: int | None) -> list[NewsItem]:
+    """Keep at least one item per available target country, then rank the rest."""
+    ranked = sorted(items, key=_item_rank_key, reverse=True)
+    if not limit or len(ranked) <= limit:
+        return ranked
+
+    buckets: dict[str, list[NewsItem]] = defaultdict(list)
+    for item in ranked:
+        buckets[infer_country(item) or "unassigned"].append(item)
+
+    selected: list[NewsItem] = []
+    selected_ids: set[int] = set()
+
+    # One guaranteed slot for every country represented in this category.
+    for country in TARGET_COUNTRIES:
+        if len(selected) >= limit:
+            break
+        if buckets.get(country):
+            item = buckets[country][0]
+            selected.append(item)
+            selected_ids.add(id(item))
+
+    remaining = [item for item in ranked if id(item) not in selected_ids]
+    selected.extend(remaining[: max(0, limit - len(selected))])
+    return selected
+
+
 def deduplicate_items(items: list[NewsItem]) -> list[NewsItem]:
     """Remove duplicate items based on URL and similar titles."""
     seen_urls = set()
@@ -50,12 +146,17 @@ def filter_by_date(
             if pub_date.tzinfo is None:
                 pub_date = pub_date.replace(tzinfo=timezone.utc)
 
-            # Use extended window for categories with timezone-sensitive sources
-            target_cutoff = (
-                extended_cutoff
-                if item.category in ('macro_infra', 'country_news', 'pop_culture')
-                else cutoff
-            )
+            # Low-frequency official/industry sources can define a longer window.
+            if item.freshness_days is not None:
+                target_cutoff = datetime.now(timezone.utc) - timedelta(
+                    days=item.freshness_days
+                )
+            else:
+                target_cutoff = (
+                    extended_cutoff
+                    if item.category in ('macro_infra', 'country_news', 'pop_culture')
+                    else cutoff
+                )
 
             if pub_date >= target_cutoff:
                 filtered.append(item)
@@ -104,7 +205,11 @@ def process_items(
     # Filter by date (strictly recent items)
     items = filter_by_date(items, days=days)
 
-    # Sort by date
+    # Attach country metadata before category quotas are applied.
+    for item in items:
+        infer_country(item)
+
+    # Sort by date before grouping. balanced_limit applies the final composite rank.
     items = sort_items(items, by="published")
 
     # Group by category
@@ -112,6 +217,35 @@ def process_items(
 
     # Limit per category
     for category in grouped:
-        grouped[category] = grouped[category][:max_per_category]
+        grouped[category] = balanced_limit(
+            grouped[category],
+            max_per_category,
+        )
 
     return grouped
+
+
+def finalize_categories(
+    categories: dict[str, list[NewsItem]],
+    max_per_category: int,
+    category_order: list[str] | None = None,
+) -> dict[str, list[NewsItem]]:
+    """Regroup AI-classified items, balance countries, and apply final caps."""
+    regrouped: dict[str, list[NewsItem]] = defaultdict(list)
+    for items in categories.values():
+        for item in items:
+            infer_country(item)
+            regrouped[item.category].append(item)
+
+    ordered_categories = list(category_order or [])
+    ordered_categories.extend(
+        category for category in regrouped if category not in ordered_categories
+    )
+
+    result: dict[str, list[NewsItem]] = {}
+    for category in ordered_categories:
+        items = regrouped.get(category, [])
+        if not items:
+            continue
+        result[category] = balanced_limit(items, max_per_category)
+    return result

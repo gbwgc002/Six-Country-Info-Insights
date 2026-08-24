@@ -9,6 +9,8 @@ from .deduper import (
     sort_items,
     group_by_category,
     process_items,
+    finalize_categories,
+    infer_country,
 )
 
 __all__ = [
@@ -18,4 +20,6 @@ __all__ = [
     "sort_items",
     "group_by_category",
     "process_items",
+    "finalize_categories",
+    "infer_country",
 ]

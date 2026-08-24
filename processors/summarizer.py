@@ -57,6 +57,18 @@ TARGET_COUNTRIES = [
     "Africa", "African", "South Asia", "Southeast Asia",
 ]
 
+VALID_COUNTRY_CODES = {
+    "russia", "india", "indonesia", "nigeria", "kenya", "pakistan", "multi"
+}
+VALID_CATEGORIES = {
+    "macro_infra",
+    "commerce_economy",
+    "digital_ecosystem",
+    "pop_culture",
+    "mobile_market",
+    "country_news",
+}
+
 
 class GeminiSummarizer:
     """Use Gemini (Vertex AI) to summarize, translate and highlight insights."""
@@ -268,11 +280,28 @@ Content: {raw_content.strip()}
    - Lead with the core fact — no vague openers
    - Professional, factual tone
 
+5. **COUNTRY CLASSIFICATION** — Assign exactly one value:
+   - russia, india, indonesia, nigeria, kenya, pakistan
+   - Use multi only when the same event materially covers multiple target countries.
+
+6. **CATEGORY CLASSIFICATION** — Reclassify by the article's actual insight value, not by the feed it came from. Assign exactly one value:
+   - macro_infra: regulation, connectivity, network, electricity, crisis infrastructure
+   - commerce_economy: payments, fintech adoption, e-commerce, purchasing power, consumer prices
+   - digital_ecosystem: apps, startups, platform rules, digital services, productivity tools
+   - pop_culture: digital behaviour, social-media usage, gaming/fandom, Gen Z subcultures
+   - mobile_market: handsets, brands, shipments, pricing, retail channels, components
+   - country_news: only for relevant cross-domain news that cannot fit the five categories above
+
+7. **IMPORTANCE SCORE** — Integer from 1 to 5 for mobile UX/product research actionability.
+
 Return ONLY a valid JSON object:
 {{
     "is_relevant": true or false,
     "title": "Chinese headline with country flag",
-    "summary": "Chinese summary"
+    "summary": "Chinese summary",
+    "country": "india",
+    "category": "commerce_economy",
+    "importance_score": 4
 }}
 """
 
@@ -284,6 +313,20 @@ Return ONLY a valid JSON object:
 
                 if not data.get("is_relevant", True):
                     return item.title, "IRRELEVANT", False
+
+                country = str(data.get("country", "")).strip().lower()
+                if country in VALID_COUNTRY_CODES:
+                    item.country = country
+
+                category = str(data.get("category", "")).strip().lower()
+                if category in VALID_CATEGORIES:
+                    item.category = category
+
+                try:
+                    importance = float(data.get("importance_score", 0.0))
+                    item.relevance_score = min(5.0, max(0.0, importance))
+                except (TypeError, ValueError):
+                    item.relevance_score = 0.0
 
                 json_title = data.get("title", "").strip()
                 title = json_title if json_title else item.title
@@ -373,8 +416,9 @@ News List:
 Task Instructions:
 1. Select exactly 3 items that are most actionable for product/UX teams building for these markets.
 2. Prioritise: infrastructure changes that affect device usage, consumer behaviour shifts, breakout apps or services, and cultural moments that reveal user needs.
-3. Write each highlight as a complete sentence in Simplified Chinese (简体中文).
-4. Each highlight should explain WHY it matters for user research, not just WHAT happened.
+3. When quality allows, cover at least 2 different target countries; do not select three near-duplicate India/Africa/global stories.
+4. Write each highlight as a complete sentence in Simplified Chinese (简体中文).
+5. Each highlight should explain WHY it matters for user research, not just WHAT happened.
 
 Return ONLY a valid JSON object:
 {{

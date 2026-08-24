@@ -14,6 +14,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import yaml
 from dotenv import load_dotenv
@@ -28,7 +29,12 @@ from collectors import (
     collect_all_rss,
     NewsItem,
 )
-from processors import GeminiSummarizer, process_items
+from processors import (
+    GeminiSummarizer,
+    finalize_categories,
+    infer_country,
+    process_items,
+)
 from email_sender import send_digest_email, EmailSender, WEASYPRINT_AVAILABLE
 from publishers.feishu_archive import (
     SIX_COUNTRY,
@@ -36,6 +42,14 @@ from publishers.feishu_archive import (
     FeishuArchiveManager,
 )
 from publishers.feishu_publisher import FeishuPublisher
+
+
+REPORT_TIMEZONE = ZoneInfo("Asia/Shanghai")
+
+
+def report_now() -> datetime:
+    """Use Beijing time for report dates, including the 23:00 UTC schedule."""
+    return datetime.now(REPORT_TIMEZONE)
 
 
 def load_config(config_path: str = "config/sources.yaml") -> dict:
@@ -67,8 +81,9 @@ async def collect_all_sources(config: dict) -> list[NewsItem]:
 
 async def main_async():
     """Main entry point (Async)."""
+    now = report_now()
     print(f"\n{'='*60}")
-    print(f"🔍 六国用研洞察 - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    print(f"🔍 六国用研洞察 - {now.strftime('%Y-%m-%d %H:%M')}")
     print(f"   Russia · India · Indonesia · Nigeria · Kenya · Pakistan")
     print(f"{'='*60}\n")
 
@@ -80,6 +95,11 @@ async def main_async():
     output_config = config.get("output", {})
     category_names = output_config.get("category_names", {})
     max_per_category = output_config.get("max_per_category", 15)
+    pre_ai_max_per_category = output_config.get(
+        "pre_ai_max_per_category",
+        max_per_category * 2,
+    )
+    category_order = output_config.get("category_order", [])
 
     # Collect from all sources
     print("📡 Collecting from sources...")
@@ -92,7 +112,10 @@ async def main_async():
 
     # Process items (dedupe, filter, group)
     print("🔄 Processing items...")
-    categories = process_items(all_items, max_per_category=max_per_category)
+    categories = process_items(
+        all_items,
+        max_per_category=pre_ai_max_per_category,
+    )
     total_items = sum(len(items) for items in categories.values())
     print(f"   After processing: {total_items} items in {len(categories)} categories\n")
 
@@ -122,8 +145,12 @@ async def main_async():
                 valid_items, _ = await summarizer.process_and_filter_items(items)
                 categories[cat_name] = valid_items
 
-            # Remove empty categories after processing
-            categories = {k: v for k, v in categories.items() if v}
+            # Regroup using AI's actual category, balance countries, then cap.
+            categories = finalize_categories(
+                categories,
+                max_per_category=max_per_category,
+                category_order=category_order,
+            )
 
             # Generate highlights
             print("✨ Generating daily highlights...")
@@ -133,6 +160,19 @@ async def main_async():
             print(f"   AI error: {e}\n")
     else:
         print("⚠️  Service account not found (no file or GOOGLE_SA_JSON), skipping AI processing\n")
+
+    # Also enforce final caps if AI was unavailable or failed partway through.
+    categories = finalize_categories(
+        categories,
+        max_per_category=max_per_category,
+        category_order=category_order,
+    )
+    country_counts: dict[str, int] = {}
+    for items in categories.values():
+        for item in items:
+            country = infer_country(item) or "unassigned"
+            country_counts[country] = country_counts.get(country, 0) + 1
+    print(f"🌍 Final country coverage: {country_counts}\n")
 
     # Send email
     to_email = os.environ.get("TO_EMAIL", "")
@@ -144,7 +184,7 @@ async def main_async():
     # Generate PDF for both email and Feishu
     email_sender = EmailSender()
     html_content = email_sender.render_email(categories, category_names, highlights)
-    date_str = datetime.now().strftime("%Y-%m-%d")
+    date_str = now.strftime("%Y-%m-%d")
     pdf_path = None
 
     if WEASYPRINT_AVAILABLE:
@@ -156,7 +196,7 @@ async def main_async():
     # Send email with PDF attachment
     email_success = False
     if to_email:
-        subject = f"🔍 六国用研洞察 - {datetime.now().strftime('%m/%d')}"
+        subject = f"🔍 六国用研洞察 - {now.strftime('%m/%d')}"
         email_success = email_sender.send(to_email, subject, html_content, pdf_path)
 
         if email_success:

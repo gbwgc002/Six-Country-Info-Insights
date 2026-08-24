@@ -23,6 +23,12 @@ class RSSCollector(BaseCollector):
         self.keywords = source_config.get("keywords", [])
         self.require_keywords = source_config.get("require_keywords", [])
         self.max_items = source_config.get("max_items", 10)
+        self.country = source_config.get("country")
+        self.source_priority = float(source_config.get("priority", 1.0))
+        freshness_days = source_config.get("freshness_days")
+        self.freshness_days = (
+            float(freshness_days) if freshness_days is not None else None
+        )
 
     async def collect(self) -> list[NewsItem]:
         """Fetch and parse RSS feed."""
@@ -60,7 +66,17 @@ class RSSCollector(BaseCollector):
         feed = feedparser.parse(content)
         items = []
 
-        for entry in feed.entries[:self.max_items * 2]:  # Fetch extra for filtering
+        # Some search/official feeds are relevance-sorted instead of date-sorted.
+        # Normalising here prevents an old high-ranking entry from crowding out a
+        # new regulator or market update before the downstream date filter runs.
+        entries = list(feed.entries)
+        entries.sort(
+            key=lambda entry: self._parse_date(entry)
+            or datetime.min.replace(tzinfo=timezone.utc),
+            reverse=True,
+        )
+
+        for entry in entries[:self.max_items * 5]:  # Fetch extra for keyword filtering
             title = entry.get("title", "")
 
             # 优先使用 content (通常包含完整文章), 其次是 summary/description
@@ -120,6 +136,9 @@ class RSSCollector(BaseCollector):
                 author=entry.get("author"),
                 tags=[tag.term for tag in entry.get("tags", [])][:5],
                 image_url=image_url,
+                country=self.country,
+                source_priority=self.source_priority,
+                freshness_days=self.freshness_days,
             )
             items.append(item)
 

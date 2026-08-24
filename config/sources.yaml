@@ -15,16 +15,20 @@ rss_sources:
     name: "The Moscow Times"
     url: "https://www.themoscowtimes.com/rss/news"
     category: "country_news"
-    keywords: []
-    max_items: 10
+    country: "russia"
+    priority: 1.4
+    keywords: ["internet", "mobile", "technology", "digital", "sanctions", "payment", "consumer", "telecom", "smartphone", "app", "bank"]
+    max_items: 6
     enabled: true
 
   tass:
     name: "TASS"
     url: "https://tass.com/rss/v2.xml"
     category: "country_news"
-    keywords: []
-    max_items: 10
+    country: "russia"
+    priority: 1.0
+    keywords: ["internet", "mobile", "technology", "digital", "payment", "consumer", "telecom", "smartphone", "app", "bank", "power"]
+    max_items: 5
     enabled: true
 
   # --- 🇮🇳 印度 ---
@@ -32,31 +36,39 @@ rss_sources:
     name: "Times of India"
     url: "https://timesofindia.indiatimes.com/rssfeedstopstories.cms"
     category: "country_news"
-    keywords: []
-    max_items: 10
+    country: "india"
+    priority: 1.2
+    keywords: ["mobile", "digital", "consumer", "e-commerce", "payment", "fintech", "broadband", "internet", "app", "smartphone", "power", "price", "Gen Z", "social media"]
+    max_items: 6
     enabled: true
 
   ndtv:
     name: "NDTV"
     url: "https://feeds.feedburner.com/ndtvnews-top-stories"
     category: "country_news"
-    keywords: []
-    max_items: 10
+    country: "india"
+    priority: 1.3
+    keywords: ["mobile", "digital", "consumer", "e-commerce", "payment", "fintech", "broadband", "internet", "app", "smartphone", "power", "price", "Gen Z", "social media"]
+    max_items: 6
     enabled: true
 
   hindustan_times:
     name: "Hindustan Times"
     url: "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml"
     category: "country_news"
-    keywords: []
-    max_items: 10
+    country: "india"
+    priority: 1.3
+    keywords: ["mobile", "digital", "consumer", "e-commerce", "payment", "fintech", "broadband", "internet", "app", "smartphone", "power", "price", "Gen Z", "social media"]
+    max_items: 6
     enabled: true
 
   # --- 🇮🇩 印尼 ---
   gizmologi:
     name: "Gizmologi"
     url: "https://gizmologi.id/feed/"
-    category: "country_news"
+    category: "digital_ecosystem"
+    country: "indonesia"
+    priority: 2.0
     keywords: []
     max_items: 10
     enabled: true
@@ -64,7 +76,9 @@ rss_sources:
   selular_id:
     name: "Selular.ID"
     url: "https://selular.id/feed/"
-    category: "country_news"
+    category: "digital_ecosystem"
+    country: "indonesia"
+    priority: 2.0
     keywords: []
     max_items: 10
     enabled: true
@@ -74,16 +88,20 @@ rss_sources:
     name: "Punch Nigeria"
     url: "https://punchng.com/feed/"
     category: "country_news"
-    keywords: []
-    max_items: 10
+    country: "nigeria"
+    priority: 1.0
+    keywords: ["mobile", "digital", "consumer", "e-commerce", "payment", "fintech", "broadband", "internet", "app", "smartphone", "power", "price", "inflation", "social media"]
+    max_items: 6
     enabled: true
 
   vanguard_ng:
     name: "Vanguard Nigeria"
     url: "https://www.vanguardngr.com/feed/"
     category: "country_news"
-    keywords: []
-    max_items: 10
+    country: "nigeria"
+    priority: 1.0
+    keywords: ["mobile", "digital", "consumer", "e-commerce", "payment", "fintech", "broadband", "internet", "app", "smartphone", "power", "price", "inflation", "social media"]
+    max_items: 6
     enabled: true
 
   channels_tv:
@@ -92,23 +110,27 @@ rss_sources:
     category: "country_news"
     keywords: []
     max_items: 10
-    enabled: true
+    enabled: false  # 2026-08 health check: feed returned zero items for 7 consecutive runs
 
   # --- 🇰🇪 肯尼亚 ---
   standard_ke:
     name: "The Standard Kenya"
     url: "https://www.standardmedia.co.ke/rss/headlines.php"
     category: "country_news"
-    keywords: []
-    max_items: 10
+    country: "kenya"
+    priority: 1.2
+    keywords: ["mobile", "digital", "M-Pesa", "consumer", "payment", "fintech", "broadband", "internet", "app", "smartphone", "power", "price", "social media"]
+    max_items: 6
     enabled: true
 
   kenyans:
     name: "Kenyans.co.ke"
     url: "https://www.kenyans.co.ke/rss.xml"
     category: "country_news"
-    keywords: []
-    max_items: 10
+    country: "kenya"
+    priority: 1.1
+    keywords: ["mobile", "digital", "M-Pesa", "consumer", "payment", "fintech", "broadband", "internet", "app", "smartphone", "power", "price", "social media"]
+    max_items: 6
     enabled: true
 
   # --- 🇵🇰 巴基斯坦 ---
@@ -116,22 +138,28 @@ rss_sources:
     name: "Express Tribune"
     url: "https://tribune.com.pk/feed/home"
     category: "country_news"
-    keywords: []
-    max_items: 10
+    country: "pakistan"
+    priority: 1.3
+    keywords: ["mobile", "digital", "consumer", "e-commerce", "payment", "fintech", "broadband", "internet", "app", "smartphone", "power", "price", "inflation", "social media"]
+    max_items: 6
     enabled: true
 
   geo_news:
     name: "Geo News"
     url: "https://www.geo.tv/rss/1/0"
     category: "country_news"
-    keywords: []
-    max_items: 10
+    country: "pakistan"
+    priority: 1.1
+    keywords: ["mobile", "digital", "consumer", "e-commerce", "payment", "fintech", "broadband", "internet", "app", "smartphone", "power", "price", "inflation", "social media"]
+    max_items: 6
     enabled: true
 
   propakistani:
     name: "ProPakistani"
     url: "https://propakistani.pk/feed/"
-    category: "country_news"
+    category: "digital_ecosystem"
+    country: "pakistan"
+    priority: 2.2
     keywords: []
     max_items: 10
     enabled: true
@@ -147,6 +175,7 @@ rss_sources:
     category: "macro_infra"
     keywords: ["5G", "Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "emerging market", "spectrum", "telecom", "infrastructure", "broadband", "mobile network"]
     max_items: 10
+    priority: 2.2
     enabled: true
 
   mobile_world_live:
@@ -154,6 +183,63 @@ rss_sources:
     url: "https://www.mobileworldlive.com/feed/"
     category: "macro_infra"
     keywords: ["Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "5G", "spectrum", "mobile operator", "network"]
+    max_items: 10
+    priority: 2.3
+    enabled: true
+
+  # --- 六国通信监管机构：官方源优先，低频信息使用7天窗口 ---
+  trai_official:
+    name: "TRAI India (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Atrai.gov.in%20(telecom%20OR%20mobile%20OR%205G%20OR%20broadband)&hl=en-IN&gl=IN&ceid=IN%3Aen"
+    category: "macro_infra"
+    country: "india"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  komdigi_official:
+    name: "Komdigi Indonesia (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Akomdigi.go.id%20(telecom%20OR%20digital%20OR%20mobile%20OR%20internet)&hl=id&gl=ID&ceid=ID%3Aid"
+    category: "macro_infra"
+    country: "indonesia"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  ncc_official:
+    name: "NCC Nigeria (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Ancc.gov.ng%20(telecom%20OR%20mobile%20OR%20broadband%20OR%20consumer)&hl=en-NG&gl=NG&ceid=NG%3Aen"
+    category: "macro_infra"
+    country: "nigeria"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  ca_kenya_official:
+    name: "Communications Authority Kenya (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Aca.go.ke%20(telecom%20OR%20mobile%20OR%20smartphone%20OR%20digital)&hl=en-KE&gl=KE&ceid=KE%3Aen"
+    category: "macro_infra"
+    country: "kenya"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  pta_official:
+    name: "PTA Pakistan (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Apta.gov.pk%20(telecom%20OR%20mobile%20OR%205G%20OR%20broadband)&hl=en-PK&gl=PK&ceid=PK%3Aen"
+    category: "macro_infra"
+    country: "pakistan"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
     max_items: 10
     enabled: true
 
@@ -163,12 +249,15 @@ rss_sources:
     category: "macro_infra"
     keywords: []
     max_items: 10
+    priority: 1.0
     enabled: true
 
   bbc_russian:
     name: "BBC Russian"
     url: "https://feeds.bbci.co.uk/russian/rss.xml"
     category: "macro_infra"
+    country: "russia"
+    priority: 1.3
     keywords: []
     max_items: 8
     enabled: true
@@ -177,6 +266,8 @@ rss_sources:
     name: "BBC Hindi"
     url: "https://feeds.bbci.co.uk/hindi/rss.xml"
     category: "macro_infra"
+    country: "india"
+    priority: 1.3
     keywords: []
     max_items: 8
     enabled: true
@@ -185,6 +276,8 @@ rss_sources:
     name: "BBC Indonesia"
     url: "https://feeds.bbci.co.uk/indonesia/rss.xml"
     category: "macro_infra"
+    country: "indonesia"
+    priority: 1.3
     keywords: []
     max_items: 8
     enabled: true
@@ -193,6 +286,8 @@ rss_sources:
     name: "BBC Urdu"
     url: "https://feeds.bbci.co.uk/urdu/rss.xml"
     category: "macro_infra"
+    country: "pakistan"
+    priority: 1.3
     keywords: []
     max_items: 8
     enabled: true
@@ -201,6 +296,8 @@ rss_sources:
     name: "BBC Hausa"
     url: "https://feeds.bbci.co.uk/hausa/rss.xml"
     category: "macro_infra"
+    country: "nigeria"
+    priority: 1.2
     keywords: []
     max_items: 8
     enabled: true
@@ -209,6 +306,8 @@ rss_sources:
     name: "BBC Swahili"
     url: "https://feeds.bbci.co.uk/swahili/rss.xml"
     category: "macro_infra"
+    country: "kenya"
+    priority: 1.2
     keywords: []
     max_items: 8
     enabled: true
@@ -240,6 +339,29 @@ rss_sources:
     category: "commerce_economy"
     keywords: []
     max_items: 15
+    priority: 2.4
+    enabled: true
+
+  bank_of_russia:
+    name: "Bank of Russia (Official)"
+    url: "https://www.cbr.ru/rss/RssPress"
+    category: "commerce_economy"
+    country: "russia"
+    priority: 3.0
+    freshness_days: 7
+    keywords: ["digital", "payment", "consumer", "fintech", "bank card", "financial inclusion", "retail", "цифров", "платеж", "банк", "финтех", "потребител", "карт"]
+    max_items: 10
+    enabled: true
+
+  reserve_bank_india:
+    name: "Reserve Bank of India (Official)"
+    url: "https://www.rbi.org.in/pressreleases_rss.xml"
+    category: "commerce_economy"
+    country: "india"
+    priority: 3.0
+    freshness_days: 7
+    keywords: ["payment", "digital", "consumer", "financial inclusion", "UPI", "fintech", "retail", "cyber", "fraud"]
+    max_items: 10
     enabled: true
 
   krasia:
@@ -248,7 +370,7 @@ rss_sources:
     category: "commerce_economy"
     keywords: ["India", "Indonesia", "Pakistan", "Southeast Asia", "South Asia", "e-commerce", "fintech", "payment", "consumer"]
     max_items: 10
-    enabled: true
+    enabled: false  # 2026-08 health check: no usable RSS items for 7 consecutive runs
 
   inc42:
     name: "Inc42"
@@ -256,6 +378,8 @@ rss_sources:
     category: "commerce_economy"
     keywords: ["e-commerce", "fintech", "payment", "consumer", "UPI", "PhonePe", "Paytm", "Flipkart", "funding"]
     max_items: 10
+    country: "india"
+    priority: 2.3
     enabled: true
 
   economic_times:
@@ -264,12 +388,16 @@ rss_sources:
     category: "commerce_economy"
     keywords: ["inflation", "consumer", "e-commerce", "rupee", "GDP", "retail", "spending"]
     max_items: 10
+    country: "india"
+    priority: 1.5
     enabled: true
 
   businessday_ng:
     name: "BusinessDay Nigeria"
     url: "https://businessday.ng/feed/"
     category: "commerce_economy"
+    country: "nigeria"
+    priority: 2.1
     keywords: []
     max_items: 10
     enabled: true
@@ -279,6 +407,18 @@ rss_sources:
     url: "https://www.medianama.com/feed/"
     category: "commerce_economy"
     keywords: []
+    max_items: 10
+    country: "india"
+    priority: 2.2
+    enabled: false  # Media remains valuable, but the current feed is blocked with HTTP 403
+
+  business_daily_kenya:
+    name: "Business Daily Kenya"
+    url: "https://www.businessdailyafrica.com/service/rss/bd/1939132/feed.rss"
+    category: "commerce_economy"
+    country: "kenya"
+    priority: 2.2
+    keywords: ["technology", "digital", "mobile", "M-Pesa", "fintech", "payment", "consumer", "retail", "inflation", "telecom", "internet", "e-commerce", "startup"]
     max_items: 10
     enabled: true
 
@@ -309,7 +449,8 @@ rss_sources:
     category: "digital_ecosystem"
     keywords: []
     max_items: 15
-    enabled: true
+    priority: 2.3
+    enabled: false  # Keep the publication on the repair list; current RSS returns HTTP 403
 
   techpoint_africa:
     name: "TechPoint Africa"
@@ -317,7 +458,8 @@ rss_sources:
     category: "digital_ecosystem"
     keywords: []
     max_items: 10
-    enabled: true
+    priority: 2.2
+    enabled: false  # Keep the publication on the repair list; current RSS returns HTTP 403
 
   disrupt_africa:
     name: "Disrupt Africa"
@@ -325,6 +467,7 @@ rss_sources:
     category: "digital_ecosystem"
     keywords: []
     max_items: 10
+    priority: 2.1
     enabled: true
 
   techeconomy_ng:
@@ -333,7 +476,9 @@ rss_sources:
     category: "digital_ecosystem"
     keywords: []
     max_items: 10
-    enabled: true
+    country: "nigeria"
+    priority: 2.0
+    enabled: false  # Current /feed/ endpoint returns HTTP 404
 
   techweez_ke:
     name: "Techweez Kenya"
@@ -341,7 +486,9 @@ rss_sources:
     category: "digital_ecosystem"
     keywords: []
     max_items: 10
-    enabled: true
+    country: "kenya"
+    priority: 2.2
+    enabled: false  # Publication is active, but GitHub Actions receives HTTP 403
 
   it_news_africa:
     name: "IT News Africa"
@@ -349,6 +496,7 @@ rss_sources:
     category: "digital_ecosystem"
     keywords: []
     max_items: 10
+    priority: 1.6
     enabled: true
 
   indian_express_tech:
@@ -357,6 +505,47 @@ rss_sources:
     category: "digital_ecosystem"
     keywords: ["app", "startup", "Google Play", "fintech", "agritech", "edtech", "download", "India"]
     max_items: 10
+    country: "india"
+    priority: 2.0
+    enabled: false  # Publication is active, but the RSS endpoint returns HTTP 403
+
+  cnews_russia:
+    name: "CNews Russia"
+    url: "https://www.cnews.ru/inc/rss/news.xml"
+    category: "digital_ecosystem"
+    country: "russia"
+    priority: 2.2
+    keywords: ["mobile", "smartphone", "app", "digital", "internet", "telecom", "fintech", "payment", "e-commerce", "AI", "platform"]
+    max_items: 12
+    enabled: true
+
+  antara_tech:
+    name: "ANTARA Tech Indonesia"
+    url: "https://www.antaranews.com/rss/tekno.xml"
+    category: "digital_ecosystem"
+    country: "indonesia"
+    priority: 2.0
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  cio_africa:
+    name: "CIO Africa"
+    url: "https://cioafrica.co/feed/"
+    category: "digital_ecosystem"
+    priority: 1.9
+    keywords: ["Kenya", "Nigeria", "Nairobi", "Lagos", "mobile", "fintech", "digital", "AI", "cyber", "telecom", "startup", "app"]
+    max_items: 12
+    enabled: true
+
+  techjuice_pk:
+    name: "TechJuice Pakistan"
+    url: "https://www.techjuice.pk/feed/"
+    category: "digital_ecosystem"
+    country: "pakistan"
+    priority: 2.1
+    keywords: ["Pakistan", "mobile", "smartphone", "telecom", "digital", "fintech", "payment", "startup", "app", "social media", "AI"]
+    max_items: 12
     enabled: true
 
   # ============================================================
@@ -370,6 +559,7 @@ rss_sources:
     category: "pop_culture"
     keywords: ["Russia", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Africa", "South Asia", "youth", "Gen Z", "culture", "social media", "TikTok", "protest", "festival"]
     max_items: 15
+    priority: 1.5
     enabled: true
 
   vice_world:
@@ -378,7 +568,7 @@ rss_sources:
     category: "pop_culture"
     keywords: ["Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "Gen Z", "youth", "culture", "TikTok", "meme"]
     max_items: 10
-    enabled: true
+    enabled: false  # Current output is dominated by gaming/horoscope/general lifestyle noise
 
   mashable:
     name: "Mashable"
@@ -386,7 +576,7 @@ rss_sources:
     category: "pop_culture"
     keywords: ["Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "trending", "viral", "Gen Z", "TikTok", "social media"]
     max_items: 10
-    enabled: true
+    enabled: false  # Generic global virality had near-zero six-country user-research yield
 
   coda_story:
     name: "Coda Story"
@@ -394,6 +584,7 @@ rss_sources:
     category: "pop_culture"
     keywords: ["Russia", "Africa", "India", "Indonesia", "disinformation", "digital", "social media", "culture"]
     max_items: 8
+    priority: 1.5
     enabled: true
 
   the_diplomat:
@@ -402,6 +593,7 @@ rss_sources:
     category: "pop_culture"
     keywords: ["India", "Indonesia", "Pakistan", "South Asia", "Southeast Asia", "youth", "society", "culture", "digital"]
     max_items: 8
+    priority: 1.4
     enabled: true
 
   dw_africa:
@@ -410,13 +602,16 @@ rss_sources:
     category: "pop_culture"
     keywords: ["culture", "youth", "music", "film", "festival", "Nigeria", "Kenya", "social media"]
     max_items: 8
+    priority: 1.3
     enabled: true
 
   allafrica_nigeria:
     name: "AllAfrica Nigeria"
     url: "https://allafrica.com/tools/headlines/rdf/nigeria/headlines.rdf"
     category: "pop_culture"
-    keywords: []
+    country: "nigeria"
+    priority: 0.9
+    keywords: ["digital", "mobile", "internet", "social media", "youth", "Gen Z", "gaming", "music", "Nollywood", "festival", "online"]
     max_items: 10
     enabled: true
 
@@ -424,7 +619,9 @@ rss_sources:
     name: "AllAfrica Kenya"
     url: "https://allafrica.com/tools/headlines/rdf/kenya/headlines.rdf"
     category: "pop_culture"
-    keywords: []
+    country: "kenya"
+    priority: 0.9
+    keywords: ["digital", "mobile", "internet", "social media", "youth", "Gen Z", "gaming", "music", "festival", "online"]
     max_items: 10
     enabled: true
 
@@ -432,6 +629,8 @@ rss_sources:
     name: "Daily Trust Nigeria"
     url: "https://dailytrust.com/feed/"
     category: "pop_culture"
+    country: "nigeria"
+    priority: 1.2
     keywords: ["culture", "festival", "youth", "Ramadan", "Eid", "music", "Nollywood", "social media", "tradition"]
     max_items: 8
     enabled: true
@@ -446,6 +645,7 @@ rss_sources:
     category: "mobile_market"
     keywords: ["India", "Africa", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "Transsion", "Tecno", "Infinix", "itel", "Samsung", "Xiaomi", "Redmi", "OPPO", "vivo", "realme", "Nokia"]
     max_items: 10
+    priority: 2.0
     enabled: true
 
   gadgets360:
@@ -454,6 +654,8 @@ rss_sources:
     category: "mobile_market"
     keywords: ["smartphone", "phone", "mobile", "Transsion", "Tecno", "Infinix", "itel", "Samsung", "Xiaomi", "Redmi", "OPPO", "vivo", "realme", "Nokia", "review", "launch"]
     max_items: 10
+    country: "india"
+    priority: 2.0
     enabled: true
 
   fonearena:
@@ -462,6 +664,8 @@ rss_sources:
     category: "mobile_market"
     keywords: ["Transsion", "Tecno", "Infinix", "itel", "Samsung", "Xiaomi", "Redmi", "OPPO", "vivo", "realme", "Nokia", "India", "Africa"]
     max_items: 10
+    country: "india"
+    priority: 2.0
     enabled: true
 
   phoneradar:
@@ -470,7 +674,8 @@ rss_sources:
     category: "mobile_market"
     keywords: []
     max_items: 10
-    enabled: true
+    country: "india"
+    enabled: false  # 2026-08 health check: feed returned zero items for 7 consecutive runs
 
   gizmologi_mobile:
     name: "Gizmologi Mobile"
@@ -478,7 +683,7 @@ rss_sources:
     category: "mobile_market"
     keywords: ["smartphone", "phone", "HP", "Tecno", "Infinix", "itel", "Samsung", "Xiaomi", "OPPO", "vivo", "realme"]
     max_items: 8
-    enabled: true
+    enabled: false  # Same URL as gizmologi; fetch once and let AI classify the article
 
   selular_mobile:
     name: "Selular.ID Mobile"
@@ -486,6 +691,26 @@ rss_sources:
     category: "mobile_market"
     keywords: ["smartphone", "phone", "HP", "Tecno", "Infinix", "itel", "Samsung", "Xiaomi", "OPPO", "vivo", "realme"]
     max_items: 8
+    enabled: false  # Same URL as selular_id; fetch once and let AI classify the article
+
+  counterpoint_market:
+    name: "Counterpoint Research"
+    url: "https://news.google.com/rss/search?q=site%3Acounterpointresearch.com%20(smartphone%20OR%20mobile)%20(India%20OR%20Indonesia%20OR%20Nigeria%20OR%20Kenya%20OR%20Pakistan%20OR%20Russia)&hl=en&gl=US&ceid=US%3Aen"
+    category: "mobile_market"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 12
+    enabled: true
+
+  omdia_market:
+    name: "Omdia"
+    url: "https://news.google.com/rss/search?q=site%3Aomdia.tech.informa.com%20(smartphone%20OR%20mobile)%20(Africa%20OR%20India%20OR%20Indonesia%20OR%20Pakistan%20OR%20Russia)&hl=en&gl=US&ceid=US%3Aen"
+    category: "mobile_market"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 12
     enabled: true
 
 # ============================================================
@@ -520,6 +745,8 @@ waytoagi:
 # ============================================================
 output:
   max_per_category: 15
+  # AI过滤前保留更大的、按国家均衡的候选池；最终PDF仍按原15条上限输出
+  pre_ai_max_per_category: 30
 
   category_order:
     - "macro_infra"

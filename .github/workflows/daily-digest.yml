@@ -1,12 +1,28 @@
 name: Six-Country Info Insights
 
 on:
+  # One-time preview trigger used for the source-strategy rollout.
+  push:
+    branches:
+      - main
+
   # 每天北京时间早上7点运行 (UTC 23:00 前一天)
   schedule:
     - cron: '0 23 * * *'
 
   # 手动触发
   workflow_dispatch:
+    inputs:
+      chat_id:
+        description: 'Optional Feishu chat_id; leave empty for the production group'
+        required: false
+        type: string
+        default: ''
+      send_email:
+        description: 'Send the email copy during this manual run'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   send-digest:
@@ -50,13 +66,13 @@ jobs:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           FROM_EMAIL: ${{ secrets.SMTP_USER }}
-          TO_EMAIL: ${{ secrets.TO_EMAIL }}                          
+          TO_EMAIL: ${{ github.event_name == 'workflow_dispatch' && inputs.send_email && secrets.TO_EMAIL || (github.event_name == 'schedule' && secrets.TO_EMAIL || '') }}
 
           # Feishu Configuration
           FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
           FEISHU_ADMIN_OPEN_ID: ${{ secrets.FEISHU_ADMIN_OPEN_ID }}  
-          FEISHU_BOT_CHAT_ID: ${{ secrets.FEISHU_GROUP_RUANJIANYONGYAN_ID }}
+          FEISHU_BOT_CHAT_ID: ${{ github.event_name == 'push' && secrets.FEISHU_GROUP_AI2DZUOYECESHIQUN_ID || (github.event_name == 'workflow_dispatch' && inputs.chat_id || secrets.FEISHU_GROUP_RUANJIANYONGYAN_ID) }}
 
         run: |
           python main.py

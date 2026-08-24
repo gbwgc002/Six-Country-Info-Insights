@@ -25,6 +25,10 @@ class NewsItem:
     is_translated: bool = False  # 是否已翻译成中文
     image_url: Optional[str] = None  # 配图URL
     organization: Optional[str] = None  # 机构/公司标签
+    country: Optional[str] = None  # 归属国家；多国内容使用 "multi"
+    source_priority: float = 1.0  # 来源权威度/专业度，配置驱动
+    relevance_score: float = 0.0  # AI 判断的用研价值分
+    freshness_days: Optional[float] = None  # 官方/行业低频源可使用更长窗口
 
     @property
     def id(self) -> str:
@@ -46,6 +50,10 @@ class NewsItem:
             "is_translated": self.is_translated,
             "image_url": self.image_url,
             "organization": self.organization,
+            "country": self.country,
+            "source_priority": self.source_priority,
+            "relevance_score": self.relevance_score,
+            "freshness_days": self.freshness_days,
         }
 
 
