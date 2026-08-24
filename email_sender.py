@@ -14,6 +14,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 from collectors.base import NewsItem
+from reporting import sanitize_public_text
 
 # Try to import weasyprint for PDF generation
 try:
@@ -70,7 +71,7 @@ class EmailSender:
             **report_context,
         )
 
-        return html
+        return sanitize_public_text(html)
 
     def generate_pdf(self, html_content: str, output_path: str) -> bool:
         """Generate PDF from HTML content."""
@@ -211,6 +212,59 @@ class EmailSender:
                     padding: 10px !important;
                     font-size: 10px !important;
                 }
+                .source-appendix {
+                    break-before: page !important;
+                    page-break-before: always !important;
+                    page-break-inside: avoid !important;
+                    padding: 12px 14px !important;
+                }
+                .source-appendix h2 {
+                    font-size: 17px !important;
+                    margin-bottom: 3px !important;
+                }
+                .appendix-kicker {
+                    font-size: 8px !important;
+                    margin-bottom: 2px !important;
+                }
+                .appendix-lead {
+                    font-size: 8px !important;
+                    margin-bottom: 7px !important;
+                }
+                .appendix-strategy-grid {
+                    gap: 7px !important;
+                    margin-bottom: 7px !important;
+                }
+                .appendix-card {
+                    padding: 6px 7px !important;
+                }
+                .appendix-card h3,
+                .appendix-source-heading {
+                    font-size: 8.5px !important;
+                    margin-bottom: 3px !important;
+                }
+                .appendix-weight,
+                .appendix-rule {
+                    font-size: 7.6px !important;
+                    line-height: 1.3 !important;
+                    margin-bottom: 2px !important;
+                }
+                .appendix-weight strong {
+                    min-width: 42px !important;
+                }
+                .appendix-columns {
+                    gap: 8px !important;
+                }
+                .appendix-source-row {
+                    gap: 4px !important;
+                    padding: 1.5px 0 !important;
+                    font-size: 7.4px !important;
+                    line-height: 1.2 !important;
+                }
+                .appendix-note {
+                    font-size: 7px !important;
+                    line-height: 1.25 !important;
+                    margin-top: 5px !important;
+                }
             ''')
 
             html = HTML(string=html_content)
@@ -234,7 +288,7 @@ class EmailSender:
             return False
 
         msg = MIMEMultipart("mixed")
-        msg["Subject"] = subject
+        msg["Subject"] = sanitize_public_text(subject)
         msg["From"] = self.from_email
         msg["To"] = to_email
 
@@ -242,7 +296,7 @@ class EmailSender:
         alt_part = MIMEMultipart("alternative")
 
         # Attach HTML content
-        html_part = MIMEText(html_content, "html", "utf-8")
+        html_part = MIMEText(sanitize_public_text(html_content), "html", "utf-8")
         alt_part.attach(html_part)
         msg.attach(alt_part)
 

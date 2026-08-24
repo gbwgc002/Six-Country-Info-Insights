@@ -7,6 +7,8 @@ import aiohttp
 from datetime import datetime, timedelta
 from pathlib import Path
 
+from reporting import sanitize_public_text
+
 class FeishuPublisher:
     """Publish content to Feishu (Lark) Cloud Documents."""
 
@@ -716,7 +718,7 @@ class FeishuPublisher:
         payload = {
             "receive_id": receive_id,
             "msg_type": msg_type,
-            "content": content
+            "content": sanitize_public_text(content)
         }
 
         async with aiohttp.ClientSession() as session:
@@ -744,7 +746,9 @@ class FeishuPublisher:
         # Only show highlights - top 3 eye-catching items
         if highlights:
             # Clean HTML tags if present (simple regex)
-            clean_highlights = re.sub(r'<[^>]+>', '', highlights).strip()
+            clean_highlights = sanitize_public_text(
+                re.sub(r'<[^>]+>', '', highlights).strip()
+            )
             elements.append({
                 "tag": "div",
                 "text": {
@@ -795,7 +799,7 @@ class FeishuPublisher:
                 "template": "blue",
                 "title": {
                     "tag": "plain_text",
-                    "content": title
+                    "content": sanitize_public_text(title)
                 }
             },
             "elements": elements
@@ -824,7 +828,9 @@ class FeishuPublisher:
 
     @staticmethod
     def _safe_lark_md_line(value: str, limit: int = 260) -> str:
-        compact = re.sub(r"\s+", " ", value or "").strip()[:limit]
+        compact = re.sub(
+            r"\s+", " ", sanitize_public_text(value)
+        ).strip()[:limit]
         return re.sub(r"([\\*_~\[\]()#>])", r"\\\1", compact)
 
     def _build_ai_insights_card(

@@ -200,7 +200,7 @@ Original Text:
 Task Instructions:
 1. Translate into natural-sounding Simplified Chinese.
 2. Keep proper nouns, brand names and technical terms in their original language (e.g., M-Pesa, Flutterwave, Jumia, TikTok, Google Play, UPI).
-3. Keep country and city names in Chinese (e.g., 尼日利亚, 肯尼亚, 印度, 印尼, 巴基斯坦, 俄罗斯).
+3. Keep country and city names in Chinese (e.g., 尼日利亚, 肯尼亚, 印度, 印尼, 巴基斯坦). For Russia, ALWAYS write EE1 and NEVER write the Chinese label 俄罗斯.
 4. Return ONLY the translated Chinese string — no quotes, no explanations.
 """
         try:
@@ -274,6 +274,7 @@ Content: {raw_content.strip()}
    - Be SPECIFIC: WHO did WHAT in WHERE
    - Keep brand names / proper nouns in original language
    - Target: 20-40 characters
+   - For Russia, write EE1 and never use the Chinese label 俄罗斯
 
 4. **SUMMARY** — Write a concise summary in Simplified Chinese:
    - 60-120 words, covering: what happened, key details, and **why it matters for user research / product insights**
@@ -419,6 +420,7 @@ Task Instructions:
 3. When quality allows, cover at least 2 different target countries; do not select three near-duplicate India/Africa/global stories.
 4. Write each highlight as a complete sentence in Simplified Chinese (简体中文).
 5. Each highlight should explain WHY it matters for user research, not just WHAT happened.
+6. For Russia, write EE1 and never use the Chinese label 俄罗斯.
 
 Return ONLY a valid JSON object:
 {{

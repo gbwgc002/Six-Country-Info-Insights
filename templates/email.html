@@ -358,6 +358,127 @@
             font-weight: 600;
         }
 
+        /* Source and strategy appendix */
+        .source-appendix {
+            background: #ffffff;
+            padding: 26px 24px;
+            color: #1f2937;
+        }
+
+        .appendix-kicker {
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+
+        .source-appendix h2 {
+            margin: 0 0 6px;
+            font-size: 21px;
+            color: #111827;
+        }
+
+        .appendix-lead {
+            margin: 0 0 14px;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .appendix-strategy-grid {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .appendix-card {
+            flex: 1;
+            min-width: 0;
+            background: #f8fafc;
+            border: 1px solid #dbeafe;
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .appendix-card h3,
+        .appendix-source-heading {
+            margin: 0 0 6px;
+            color: #1e3a8a;
+            font-size: 12px;
+        }
+
+        .appendix-weight,
+        .appendix-rule {
+            margin: 0 0 4px;
+            font-size: 9px;
+            line-height: 1.35;
+        }
+
+        .appendix-weight:last-child,
+        .appendix-rule:last-child {
+            margin-bottom: 0;
+        }
+
+        .appendix-weight strong {
+            display: inline-block;
+            min-width: 55px;
+            color: #1d4ed8;
+        }
+
+        .appendix-rule {
+            padding-left: 13px;
+            position: relative;
+        }
+
+        .appendix-rule-number {
+            position: absolute;
+            left: 0;
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        .appendix-columns {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .appendix-column {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .appendix-source-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 6px;
+            border-bottom: 1px dotted #e5e7eb;
+            padding: 2px 0;
+            font-size: 8px;
+            line-height: 1.25;
+        }
+
+        .appendix-source-name {
+            color: #111827;
+            font-weight: 600;
+            min-width: 0;
+        }
+
+        .appendix-source-meta {
+            color: #64748b;
+            text-align: right;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .appendix-note {
+            margin: 8px 0 0;
+            color: #64748b;
+            font-size: 8px;
+            line-height: 1.35;
+        }
+
         /* Footer */
         .footer {
             background: #f9fafb;
@@ -412,6 +533,11 @@
             }
             /* News items */
             .news-item {
+                page-break-inside: avoid;
+            }
+            .source-appendix {
+                break-before: page;
+                page-break-before: always;
                 page-break-inside: avoid;
             }
             /* Internal anchor links */
@@ -567,6 +693,48 @@
                 <a href="https://github.com/gbwgc002/Six-Country-Info-Insights">查看源码</a>
             </p>
         </div>
+
+        {% if source_appendix %}
+        <section class="source-appendix" id="source-appendix">
+            <div class="appendix-kicker">APPENDIX</div>
+            <h2>信息源、权重与过滤逻辑</h2>
+            <p class="appendix-lead">
+                当前启用 {{ source_appendix.enabled_count }} 个 RSS 信息源，停用 {{ source_appendix.disabled_count }} 个异常、重复或低相关来源。W 为来源排序权重。
+            </p>
+
+            <div class="appendix-strategy-grid">
+                <div class="appendix-card">
+                    <h3>权重说明</h3>
+                    {% for rule in source_appendix.weight_rules %}
+                    <p class="appendix-weight"><strong>{{ rule.range }}</strong>{{ rule.meaning }}</p>
+                    {% endfor %}
+                </div>
+                <div class="appendix-card">
+                    <h3>过滤与排序逻辑</h3>
+                    {% for rule in source_appendix.filter_rules %}
+                    <p class="appendix-rule"><span class="appendix-rule-number">{{ loop.index }}.</span>{{ rule }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <h3 class="appendix-source-heading">启用信息源｜名称 · 国家/区域 · 分类 · 权重 · 时效窗口</h3>
+            <div class="appendix-columns">
+                {% for column in source_appendix.columns %}
+                <div class="appendix-column">
+                    {% for source in column %}
+                    <div class="appendix-source-row">
+                        <span class="appendix-source-name">{{ source.name }}</span>
+                        <span class="appendix-source-meta">{{ source.country }} · {{ source.category }} · W{{ source.priority }} · {{ source.freshness_days }}天</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+            <p class="appendix-note">
+                注：权重只影响候选排序，不替代内容判断；若某国当日无合格信息，不为凑数强行入选。来源健康状态与策略参数以本次报告生成时的配置为准。
+            </p>
+        </section>
+        {% endif %}
     </div>
 </body>
 </html>

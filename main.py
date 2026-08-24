@@ -42,6 +42,7 @@ from publishers.feishu_archive import (
     FeishuArchiveManager,
 )
 from publishers.feishu_publisher import FeishuPublisher
+from reporting import build_source_appendix
 
 
 REPORT_TIMEZONE = ZoneInfo("Asia/Shanghai")
@@ -183,7 +184,14 @@ async def main_async():
 
     # Generate PDF for both email and Feishu
     email_sender = EmailSender()
-    html_content = email_sender.render_email(categories, category_names, highlights)
+    source_appendix = build_source_appendix(config)
+    html_content = email_sender.render_email(
+        categories,
+        category_names,
+        highlights,
+        date_label=now.strftime("%Y年%m月%d日"),
+        source_appendix=source_appendix,
+    )
     date_str = now.strftime("%Y-%m-%d")
     pdf_path = None
 
