@@ -1,13 +1,6 @@
 name: Five-Country Weekly Insights
 
 on:
-  # One-time production trigger; removed immediately after this run starts.
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/country-insights-weekly.yml'
-
   # 每周一北京时间07:00发布上一自然周的5国周报
   schedule:
     - cron: '0 23 * * 0'
@@ -72,7 +65,7 @@ jobs:
           import os
           import sys
 
-          country_input = "${{ github.event_name == 'workflow_dispatch' && inputs.country || 'all' }}"
+          country_input = "${{ github.event_name == 'schedule' && 'all' || inputs.country }}"
           countries = (
               ["india", "indonesia", "nigeria", "pakistan", "bangladesh"]
               if country_input == "all"
@@ -104,10 +97,8 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
             python country_report.py --mode publish --countries all --previous-week
-          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            python country_report.py --mode publish --countries "${{ inputs.country }}"
           else
-            python country_report.py --mode publish --countries all
+            python country_report.py --mode publish --countries "${{ inputs.country }}"
           fi
 
       - name: Upload weekly PDFs for QA
