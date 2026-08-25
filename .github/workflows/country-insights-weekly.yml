@@ -33,9 +33,6 @@ concurrency:
 
 jobs:
   publish-weekly-reports:
-    # 正式群ID补齐后将变量 ENABLE_COUNTRY_WEEKLY_REPORTS 设为 true。
-    # 手动测试与首次正式推送不受此开关影响。
-    if: github.event_name == 'workflow_dispatch' || vars.ENABLE_COUNTRY_WEEKLY_REPORTS == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -58,11 +55,11 @@ jobs:
 
       - name: Validate Feishu destinations
         env:
-          FEISHU_CHAT_ID_INDIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_INDIA_ID }}
-          FEISHU_CHAT_ID_INDONESIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_INDONESIA_ID }}
-          FEISHU_CHAT_ID_NIGERIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_NIGERIA_ID }}
-          FEISHU_CHAT_ID_PAKISTAN: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_PAKISTAN_ID }}
-          FEISHU_CHAT_ID_BANGLADESH: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_BANGLADESH_ID }}
+          FEISHU_CHAT_ID_INDIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26YINDU }}
+          FEISHU_CHAT_ID_INDONESIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26YINNI }}
+          FEISHU_CHAT_ID_NIGERIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26NIRI }}
+          FEISHU_CHAT_ID_PAKISTAN: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26BAJISITAN }}
+          FEISHU_CHAT_ID_BANGLADESH: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26MENGJIALA }}
         run: |
           python - <<'PY'
           import os
@@ -92,11 +89,11 @@ jobs:
           FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
           FEISHU_ADMIN_OPEN_ID: ${{ secrets.FEISHU_ADMIN_OPEN_ID }}
-          FEISHU_CHAT_ID_INDIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_INDIA_ID }}
-          FEISHU_CHAT_ID_INDONESIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_INDONESIA_ID }}
-          FEISHU_CHAT_ID_NIGERIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_NIGERIA_ID }}
-          FEISHU_CHAT_ID_PAKISTAN: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_PAKISTAN_ID }}
-          FEISHU_CHAT_ID_BANGLADESH: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_BANGLADESH_ID }}
+          FEISHU_CHAT_ID_INDIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26YINDU }}
+          FEISHU_CHAT_ID_INDONESIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26YINNI }}
+          FEISHU_CHAT_ID_NIGERIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26NIRI }}
+          FEISHU_CHAT_ID_PAKISTAN: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26BAJISITAN }}
+          FEISHU_CHAT_ID_BANGLADESH: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26MENGJIALA }}
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
             python country_report.py --mode publish --countries all --previous-week

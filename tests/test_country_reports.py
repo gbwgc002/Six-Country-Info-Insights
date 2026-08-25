@@ -152,7 +152,16 @@ class CountryPreviewWorkflowTests(unittest.TestCase):
         self.assertNotIn("FEISHU_APP_ID", daily)
         self.assertIn("cron: '0 23 * * 0'", weekly)
         self.assertIn("--previous-week", weekly)
-        self.assertIn("FEISHU_GROUP_INDIA_ID", weekly)
+        self.assertNotIn("ENABLE_COUNTRY_WEEKLY_REPORTS", weekly)
+        expected_group_secrets = {
+            "india": "FEISHU_GROUP_Y26YINDU",
+            "indonesia": "FEISHU_GROUP_Y26YINNI",
+            "nigeria": "FEISHU_GROUP_Y26NIRI",
+            "pakistan": "FEISHU_GROUP_Y26BAJISITAN",
+            "bangladesh": "FEISHU_GROUP_Y26MENGJIALA",
+        }
+        for secret_name in expected_group_secrets.values():
+            self.assertEqual(weekly.count(f"secrets.{secret_name}"), 2)
         self.assertIn("cron: '0 23 * * *'", aggregate)
 
 
