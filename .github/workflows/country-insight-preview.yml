@@ -1,13 +1,6 @@
 name: Country Insight Preview
 
 on:
-  # One-time push trigger for four approved market previews. Removed after the run.
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/country-insight-preview.yml'
-
   workflow_dispatch:
     inputs:
       country:
@@ -53,17 +46,13 @@ jobs:
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
           FEISHU_ADMIN_OPEN_ID: ${{ secrets.FEISHU_ADMIN_OPEN_ID }}
           FEISHU_BOT_CHAT_ID: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
-          FEISHU_CHAT_ID_INDONESIA: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
-          FEISHU_CHAT_ID_NIGERIA: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
-          FEISHU_CHAT_ID_PAKISTAN: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
-          FEISHU_CHAT_ID_BANGLADESH: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
-        run: python country_report.py --countries ${{ github.event_name == 'workflow_dispatch' && inputs.country || 'indonesia nigeria pakistan bangladesh' }}
+        run: python country_report.py --countries "${{ inputs.country }}"
 
       - name: Upload generated PDF for QA
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: country-insight-preview-${{ github.event_name == 'workflow_dispatch' && inputs.country || 'other-four' }}
+          name: country-insight-preview-${{ inputs.country }}
           path: output/pdf/*.pdf
           if-no-files-found: ignore
           retention-days: 7
