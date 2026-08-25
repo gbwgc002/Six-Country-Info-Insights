@@ -74,6 +74,7 @@ Optional:
 | `FEISHU_ARCHIVE_ROOT_FOLDER_TOKEN` | Shared Feishu root folder containing the two report folders |
 | `FEISHU_SIX_COUNTRY_FOLDER_NAME` | Existing combined-report archive folder name; retained for backward compatibility |
 | `FEISHU_AI_INSIGHTS_FOLDER_NAME` | AI report folder name; defaults to `AI洞察报告` |
+| `FEISHU_COUNTRY_FOLDER_NAME_<COUNTRY>` | Optional exact child-folder override for a country report; normally auto-resolved from the country name |
 | `FEISHU_FOLDER_TOKEN` | Legacy fallback upload folder when archive routing is unavailable |
 
 ### 5. Run
@@ -88,9 +89,13 @@ The workflow (`.github/workflows/daily-digest.yml`) runs automatically every day
 
 The manual-only `country-insight-preview.yml` workflow generates one bilingual
 country PDF and sends it to the internal site-management test group. It has no
-schedule and does not alter the daily seven-country workflow. The country
-runner supports India, Indonesia, Nigeria, Pakistan, and Bangladesh, and can
-generate multiple reports from one shared RSS collection pass.
+schedule and does not alter the daily seven-country workflow. The runner supports
+India, Indonesia, Nigeria, Pakistan, and Bangladesh, and can generate multiple
+reports from one shared RSS collection pass. Each country PDF is uploaded
+directly into the matching country child folder under the shared
+archive root, then ownership is transferred to `FEISHU_ADMIN_OPEN_ID` while the
+bot retains full access. Supported child-folder labels include the Chinese or
+English country name, with optional `洞察报告` / `Weekly Insights` suffixes.
 
 The independent AI Insights workflows run as follows:
 

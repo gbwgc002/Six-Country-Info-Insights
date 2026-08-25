@@ -100,6 +100,11 @@ class CountryPreviewWorkflowTests(unittest.TestCase):
         )
         self.assertIn("python country_report.py", workflow)
 
+    def test_country_runner_uses_archive_upload_with_ownership_transfer(self):
+        runner = (ROOT / "country_report.py").read_text()
+        self.assertIn("CountryReportArchiveManager(publisher)", runner)
+        self.assertIn("archive.upload_country_pdf", runner)
+
 
 if __name__ == "__main__":
     unittest.main()

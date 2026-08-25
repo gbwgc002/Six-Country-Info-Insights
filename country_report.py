@@ -25,6 +25,7 @@ from processors import (
     process_items,
 )
 from publishers.feishu_publisher import FeishuPublisher
+from publishers.country_report_archive import CountryReportArchiveManager
 from reporting import (
     CATEGORY_BILINGUAL_NAMES,
     COUNTRY_REPORT_METADATA,
@@ -144,6 +145,7 @@ async def generate_and_publish(countries: list[str]) -> int:
     publisher = FeishuPublisher()
     if not publisher.is_configured():
         raise RuntimeError("Feishu credentials are required for country report delivery")
+    archive = CountryReportArchiveManager(publisher)
 
     now = report_now()
     period_start = (now - timedelta(days=6)).date()
@@ -223,7 +225,12 @@ async def generate_and_publish(countries: list[str]) -> int:
             raise RuntimeError(
                 f"Missing FEISHU_CHAT_ID_{country.upper()} for country delivery"
             )
-        pdf_url = await publisher.upload_pdf(str(pdf_path), title, chat_id)
+        pdf_url = await archive.upload_country_pdf(
+            str(pdf_path),
+            title,
+            chat_id,
+            country,
+        )
         if not pdf_url:
             raise RuntimeError(f"Feishu PDF upload failed for {country}")
         await publisher.send_digest_card(

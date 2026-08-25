@@ -13,6 +13,7 @@ from publishers.feishu_archive import (
     FeishuArchiveError,
     FeishuArchiveManager,
 )
+from publishers.country_report_archive import CountryReportArchiveManager
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,7 +45,7 @@ class FakePublisher:
         self.records.append((token, title))
 
 
-class StubArchive(FeishuArchiveManager):
+class StubArchive(CountryReportArchiveManager):
     def __init__(self, publisher, children=None, owner_id="old-owner"):
         super().__init__(
             publisher,
@@ -98,6 +99,31 @@ class ArchiveRoutingTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(FeishuArchiveError):
             await archive.resolve_report_folders()
 
+    async def test_resolves_country_folder_from_chinese_or_english_alias(self):
+        archive = StubArchive(
+            FakePublisher(),
+            [
+                folder("印度洞察报告", "india-token"),
+                folder("Indonesia Weekly Insights", "indonesia-token"),
+            ],
+        )
+        self.assertEqual(
+            await archive.country_report_folder_token("india"),
+            "india-token",
+        )
+        self.assertEqual(
+            await archive.country_report_folder_token("indonesia"),
+            "indonesia-token",
+        )
+
+    async def test_missing_country_folder_fails_closed(self):
+        archive = StubArchive(
+            FakePublisher(),
+            [folder("肯尼亚", "kenya-token")],
+        )
+        with self.assertRaisesRegex(FeishuArchiveError, "Available child folders"):
+            await archive.country_report_folder_token("india")
+
     async def test_transfer_owner_uses_stay_put_and_retains_bot_access(self):
         archive = StubArchive(FakePublisher())
         self.assertTrue(await archive.transfer_owner("doc-token", "docx", strict=True))
@@ -136,6 +162,27 @@ class ArchiveRoutingTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             publisher.records,
             [("pdf-token", "六国用研洞察 - 2026-08-10")],
+        )
+
+    async def test_country_pdf_routes_and_requires_owner_transfer(self):
+        publisher = FakePublisher()
+        archive = StubArchive(
+            publisher,
+            [folder("印度", "india-token")],
+            owner_id="old-owner",
+        )
+        with tempfile.NamedTemporaryFile(suffix=".pdf") as pdf:
+            url = await archive.upload_country_pdf(
+                pdf.name,
+                "印度洞察周报 / India Weekly Insights - 2026-08-25",
+                "oc_chat",
+                "india",
+            )
+        self.assertEqual(url, "https://feishu.cn/file/pdf-token")
+        self.assertEqual(publisher.upload[2], "india-token")
+        self.assertEqual(publisher.permission_calls, [("pdf-token", "oc_chat")])
+        self.assertTrue(
+            any("transfer_owner" in request[1] for request in archive.requests)
         )
 
     def test_report_classification_is_narrow(self):
