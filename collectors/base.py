@@ -29,6 +29,8 @@ class NewsItem:
     source_priority: float = 1.0  # 来源权威度/专业度，配置驱动
     relevance_score: float = 0.0  # AI 判断的用研价值分
     freshness_days: Optional[float] = None  # 官方/行业低频源可使用更长窗口
+    title_en: Optional[str] = None  # 国家双语报告使用的英文标题
+    summary_en: Optional[str] = None  # 国家双语报告使用的英文摘要
 
     @property
     def id(self) -> str:
@@ -54,6 +56,8 @@ class NewsItem:
             "source_priority": self.source_priority,
             "relevance_score": self.relevance_score,
             "freshness_days": self.freshness_days,
+            "title_en": self.title_en,
+            "summary_en": self.summary_en,
         }
 
 

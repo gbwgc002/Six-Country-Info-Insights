@@ -50,6 +50,14 @@ class CountryBalanceTests(unittest.TestCase):
         self.assertIn("kenya", {item.country for item in selected})
         self.assertEqual(len(selected), 3)
 
+    def test_bangladesh_is_part_of_country_balance(self):
+        india = [make_item(f"india-{index}", "india", relevance_score=5.0) for index in range(4)]
+        bangladesh = make_item("bangladesh-signal", "bangladesh", relevance_score=2.0)
+
+        selected = balanced_limit(india + [bangladesh], limit=2)
+
+        self.assertIn("bangladesh", {item.country for item in selected})
+
     def test_ai_category_is_used_for_final_regrouping(self):
         item = make_item("reclassified", "pakistan", category="mobile_market")
         result = finalize_categories(
@@ -128,6 +136,23 @@ class SourceConfigTests(unittest.TestCase):
             "pta_official",
             "counterpoint_market",
             "omdia_market",
+            "nigeria_nbs_official",
+            "nitda_official",
+            "pulse_nigeria",
+            "mospi_official",
+            "meity_official",
+            "91mobiles_india",
+            "bps_indonesia_official",
+            "apjii_indonesia",
+            "databoks_katadata",
+            "pbs_pakistan_official",
+            "profit_pakistan_today",
+            "phoneworld_pakistan",
+            "btrc_bangladesh_official",
+            "bangladesh_bank_official",
+            "bbs_bangladesh_official",
+            "tbs_bangladesh",
+            "future_startup_bangladesh",
         ):
             self.assertTrue(sources[source_id]["enabled"])
 

@@ -1,9 +1,9 @@
 """
-Gemini-based summarizer for six-country user research insights.
+Gemini-based summarizer for seven-country user research insights.
 Uses Google GenAI SDK (Vertex AI) with service account authentication.
 
 Translates, summarises, filters and highlights news from
-Russia, India, Indonesia, Nigeria, Kenya, Pakistan.
+Russia, India, Indonesia, Nigeria, Kenya, Pakistan, Bangladesh.
 """
 
 import json
@@ -49,16 +49,18 @@ def _clean_json_response(text: str) -> str:
 
 # Target countries for filtering
 TARGET_COUNTRIES = [
-    "Russia", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan",
-    "Russian", "Indian", "Indonesian", "Nigerian", "Kenyan", "Pakistani",
+    "Russia", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Bangladesh",
+    "Russian", "Indian", "Indonesian", "Nigerian", "Kenyan", "Pakistani", "Bangladeshi",
     "Moscow", "Delhi", "Mumbai", "Jakarta", "Lagos", "Abuja", "Nairobi",
     "Karachi", "Islamabad", "Lahore", "Kolkata", "Chennai", "Bangalore",
     "Hyderabad", "Surabaya", "Bandung", "Kano", "Mombasa", "Peshawar",
+    "Dhaka", "Chattogram", "Chittagong",
     "Africa", "African", "South Asia", "Southeast Asia",
 ]
 
 VALID_COUNTRY_CODES = {
-    "russia", "india", "indonesia", "nigeria", "kenya", "pakistan", "multi"
+    "russia", "india", "indonesia", "nigeria", "kenya", "pakistan",
+    "bangladesh", "multi"
 }
 VALID_CATEGORIES = {
     "macro_infra",
@@ -200,7 +202,7 @@ Original Text:
 Task Instructions:
 1. Translate into natural-sounding Simplified Chinese.
 2. Keep proper nouns, brand names and technical terms in their original language (e.g., M-Pesa, Flutterwave, Jumia, TikTok, Google Play, UPI).
-3. Keep country and city names in Chinese (e.g., 尼日利亚, 肯尼亚, 印度, 印尼, 巴基斯坦). For Russia, ALWAYS write EE1 and NEVER write the Chinese label 俄罗斯.
+3. Keep country and city names in Chinese (e.g., 尼日利亚, 肯尼亚, 印度, 印尼, 巴基斯坦, 孟加拉). For Russia, ALWAYS write EE1 and NEVER write the Chinese label 俄罗斯.
 4. Return ONLY the translated Chinese string — no quotes, no explanations.
 """
         try:
@@ -233,8 +235,8 @@ Task Instructions:
         if len(raw_content) > 10000:
             raw_content = raw_content[:10000] + "..."
 
-        prompt = f"""You are a professional Chinese analyst specialising in user-research insights for emerging markets.
-Your job is to evaluate news from six target countries: Russia, India, Indonesia, Nigeria, Kenya, Pakistan.
+        prompt = f"""You are a professional bilingual analyst specialising in user-research insights for emerging markets.
+Your job is to evaluate news from seven target countries: Russia, India, Indonesia, Nigeria, Kenya, Pakistan, Bangladesh.
 
 Title: {item.title}
 Source: {item.source}
@@ -253,7 +255,7 @@ Content: {raw_content.strip()}
 2. **RELEVANCE CHECK** — Is this news genuinely useful for "Mobile UX & Product Desktop Research" (移动端用研与产品洞察)?
    Your goal is to find insights that could inspire new smartphone OS features, hardware designs, app localizations, or digital marketing strategies.
 
-   Return is_relevant=true ONLY IF the news significantly relates to ANY of these dimensions for the target countries (Pakistan, Russia, India, Indonesia, Nigeria, Kenya):
+   Return is_relevant=true ONLY IF the news significantly relates to ANY of these dimensions for the target countries (Pakistan, Russia, India, Indonesia, Nigeria, Kenya, Bangladesh):
 
    - 🏛️ Macro & Digital Survival: government tech/app regulations, data privacy laws, telecom pricing/5G, severe power grid instability, or crisis events that change how people use mobile devices.
    - 💰 Tech-Driven Commerce: inflation driving new digital behavior (e.g., micro-loans, BNPL), local e-commerce shifts, mobile money adoption, or digital tools for local merchants/gig workers.
@@ -268,21 +270,23 @@ Content: {raw_content.strip()}
 
    Return is_relevant=false if it hits any exclusion rules OR if the relevance to mobile/digital UX is too weak.
 
-3. **TITLE REWRITE** — Write an informative Chinese headline:
-   - MUST be in Simplified Chinese (简体中文)
-   - Prefix with country flag emoji: 🇷🇺🇮🇳🇮🇩🇳🇬🇰🇪🇵🇰 (or 🌍 for multi-country)
+3. **BILINGUAL TITLE REWRITE** — Write informative Chinese and English headlines:
+   - The Chinese title MUST be in Simplified Chinese (简体中文)
+   - Prefix both titles with the country flag emoji: 🇷🇺🇮🇳🇮🇩🇳🇬🇰🇪🇵🇰🇧🇩 (or 🌍 for multi-country)
    - Be SPECIFIC: WHO did WHAT in WHERE
    - Keep brand names / proper nouns in original language
    - Target: 20-40 characters
    - For Russia, write EE1 and never use the Chinese label 俄罗斯
+   - The English title must be natural professional English, not a transliteration
 
-4. **SUMMARY** — Write a concise summary in Simplified Chinese:
-   - 60-120 words, covering: what happened, key details, and **why it matters for user research / product insights**
+4. **BILINGUAL SUMMARY** — Write matching Chinese and English summaries:
+   - Chinese: 60-120 Chinese characters; English: 55-100 words
+   - Both must cover what happened, key details, and **why it matters for user research / product insights**
    - Lead with the core fact — no vague openers
    - Professional, factual tone
 
 5. **COUNTRY CLASSIFICATION** — Assign exactly one value:
-   - russia, india, indonesia, nigeria, kenya, pakistan
+   - russia, india, indonesia, nigeria, kenya, pakistan, bangladesh
    - Use multi only when the same event materially covers multiple target countries.
 
 6. **CATEGORY CLASSIFICATION** — Reclassify by the article's actual insight value, not by the feed it came from. Assign exactly one value:
@@ -298,8 +302,10 @@ Content: {raw_content.strip()}
 Return ONLY a valid JSON object:
 {{
     "is_relevant": true or false,
-    "title": "Chinese headline with country flag",
-    "summary": "Chinese summary",
+    "title_zh": "Chinese headline with country flag",
+    "title_en": "English headline with country flag",
+    "summary_zh": "Chinese summary",
+    "summary_en": "English summary",
     "country": "india",
     "category": "commerce_economy",
     "importance_score": 4
@@ -329,10 +335,20 @@ Return ONLY a valid JSON object:
                 except (TypeError, ValueError):
                     item.relevance_score = 0.0
 
-                json_title = data.get("title", "").strip()
+                json_title = (
+                    data.get("title_zh", "") or data.get("title", "")
+                ).strip()
                 title = json_title if json_title else item.title
 
-                summary = data.get("summary", "").strip()
+                summary = (
+                    data.get("summary_zh", "") or data.get("summary", "")
+                ).strip()
+                item.title_en = data.get("title_en", "").strip() or item.title
+                item.summary_en = (
+                    data.get("summary_en", "").strip()
+                    or item.summary
+                    or ""
+                )
                 is_translated = is_english(item.title)
 
                 title = re.sub(r'^AI[:：]\s*(YES|NO|Related).*?[:：]\s*', '', title, flags=re.IGNORECASE).strip()
@@ -382,6 +398,9 @@ Return ONLY a valid JSON object:
             else:
                 summary = item.summary or ""
 
+        item.title_en = item.title_en or item.title
+        item.summary_en = item.summary_en or item.summary or ""
+
         if summary and len(summary) > 300:
             summary = summary[:297] + "..."
 
@@ -407,7 +426,7 @@ Return ONLY a valid JSON object:
 
         all_content = "\n".join(content_parts)
 
-        prompt = f"""You are a senior user-research analyst covering six emerging markets: Russia, India, Indonesia, Nigeria, Kenya, Pakistan.
+        prompt = f"""You are a senior user-research analyst covering seven emerging markets: Russia, India, Indonesia, Nigeria, Kenya, Pakistan, Bangladesh.
 
 Based on the following news list, select the top 3 most important insights for product teams and user researchers today.
 
@@ -457,11 +476,82 @@ Return ONLY a valid JSON object:
                 print(f"JSON Parse Error for highlights: {text_response[:50]}...")
                 return self._format_highlights_html(text_response)
 
-            return "今日六国洞察收集完成，请查看下方详情。"
+            return "今日七国洞察收集完成，请查看下方详情。"
 
         except Exception as e:
             print(f"Highlights error: {e}")
-            return "今日六国洞察收集完成，请查看下方详情。"
+            return "今日七国洞察收集完成，请查看下方详情。"
+
+    async def generate_country_highlights(
+        self,
+        items_by_category: dict[str, list[NewsItem]],
+        category_names: dict[str, str],
+        country_name_zh: str,
+        country_name_en: str,
+    ) -> str:
+        """Generate matching Chinese-English highlights for one country report."""
+        content_parts = []
+        for category, items in items_by_category.items():
+            content_parts.append(f"\n## {category_names.get(category, category)}")
+            for item in items[:5]:
+                content_parts.append(
+                    f"- ZH: {item.title}; EN: {item.title_en or item.title} "
+                    f"({item.source})"
+                )
+
+        news_list = "\n".join(content_parts)
+        prompt = f"""You are a senior bilingual user-research analyst covering {country_name_en}.
+
+Based on the following qualified news list, select the three most actionable weekly insights for mobile product and UX teams.
+
+News List:
+{news_list}
+
+Instructions:
+1. Select exactly three distinct insights when the material supports it.
+2. Explain what happened and why it matters for user research or product decisions.
+3. Return matching Simplified Chinese and professional English versions.
+4. Mention the market as {country_name_zh} in Chinese and {country_name_en} in English.
+
+Return ONLY valid JSON:
+{{
+  "highlights": [
+    {{"zh": "中文核心判断", "en": "English core judgment"}},
+    {{"zh": "中文核心判断", "en": "English core judgment"}},
+    {{"zh": "中文核心判断", "en": "English core judgment"}}
+  ]
+}}
+"""
+        try:
+            data = json.loads(
+                _clean_json_response(await self._call(prompt, json_mode=True))
+            )
+            html_parts = []
+            for index, highlight in enumerate(data.get("highlights", []), 1):
+                zh = str(highlight.get("zh", "")).strip()
+                en = str(highlight.get("en", "")).strip()
+                if not zh and not en:
+                    continue
+                html_parts.append(
+                    '<div class="highlight-item bilingual-highlight">'
+                    f'<span class="highlight-number">{index}</span>'
+                    '<span class="highlight-text">'
+                    f'<span class="highlight-zh">{zh}</span>'
+                    f'<span class="highlight-en">{en}</span>'
+                    '</span></div>'
+                )
+            if html_parts:
+                return "\n".join(html_parts)
+        except Exception as exc:
+            print(f"Country highlights error: {exc}")
+
+        return (
+            '<div class="highlight-item bilingual-highlight">'
+            '<span class="highlight-text">'
+            f'<span class="highlight-zh">本周{country_name_zh}洞察已整理，请查看下方详情。</span>'
+            f'<span class="highlight-en">This week\'s {country_name_en} insights are summarized below.</span>'
+            '</span></div>'
+        )
 
     def _format_highlights_html(self, text: str) -> str:
         """Convert highlight text to HTML format."""

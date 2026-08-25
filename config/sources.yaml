@@ -1,5 +1,5 @@
-# Six-Country Info Insights - 六国用研洞察数据源配置
-# 目标国家: 俄罗斯🇷🇺 印度🇮🇳 印尼🇮🇩 尼日利亚🇳🇬 肯尼亚🇰🇪 巴基斯坦🇵🇰
+# Seven-Country Info Insights - 七国用研洞察数据源配置
+# 目标国家: EE1🇷🇺 印度🇮🇳 印尼🇮🇩 尼日利亚🇳🇬 肯尼亚🇰🇪 巴基斯坦🇵🇰 孟加拉🇧🇩
 
 # ============================================================
 # RSS 数据源
@@ -173,7 +173,7 @@ rss_sources:
     name: "Light Reading"
     url: "https://www.lightreading.com/rss.xml"
     category: "macro_infra"
-    keywords: ["5G", "Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "emerging market", "spectrum", "telecom", "infrastructure", "broadband", "mobile network"]
+    keywords: ["5G", "Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "Bangladesh", "emerging market", "spectrum", "telecom", "infrastructure", "broadband", "mobile network"]
     max_items: 10
     priority: 2.2
     enabled: true
@@ -182,12 +182,12 @@ rss_sources:
     name: "Mobile World Live"
     url: "https://www.mobileworldlive.com/feed/"
     category: "macro_infra"
-    keywords: ["Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "5G", "spectrum", "mobile operator", "network"]
+    keywords: ["Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "Bangladesh", "5G", "spectrum", "mobile operator", "network"]
     max_items: 10
     priority: 2.3
     enabled: true
 
-  # --- 六国通信监管机构：官方源优先，低频信息使用7天窗口 ---
+  # --- 七国通信监管机构：官方源优先，低频信息使用7天窗口 ---
   trai_official:
     name: "TRAI India (Official)"
     url: "https://news.google.com/rss/search?q=site%3Atrai.gov.in%20(telecom%20OR%20mobile%20OR%205G%20OR%20broadband)&hl=en-IN&gl=IN&ceid=IN%3Aen"
@@ -316,7 +316,7 @@ rss_sources:
     name: "Al Jazeera"
     url: "https://www.aljazeera.com/xml/rss/all.xml"
     category: "macro_infra"
-    keywords: ["Russia", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Africa", "South Asia"]
+    keywords: ["Russia", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Bangladesh", "Africa", "South Asia"]
     max_items: 10
     enabled: true
 
@@ -557,7 +557,7 @@ rss_sources:
     name: "Global Voices"
     url: "https://globalvoices.org/feed/"
     category: "pop_culture"
-    keywords: ["Russia", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Africa", "South Asia", "youth", "Gen Z", "culture", "social media", "TikTok", "protest", "festival"]
+    keywords: ["Russia", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Bangladesh", "Africa", "South Asia", "youth", "Gen Z", "culture", "social media", "TikTok", "protest", "festival"]
     max_items: 15
     priority: 1.5
     enabled: true
@@ -566,7 +566,7 @@ rss_sources:
     name: "Vice World"
     url: "https://www.vice.com/en/rss"
     category: "pop_culture"
-    keywords: ["Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "Gen Z", "youth", "culture", "TikTok", "meme"]
+    keywords: ["Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "Bangladesh", "Gen Z", "youth", "culture", "TikTok", "meme"]
     max_items: 10
     enabled: false  # Current output is dominated by gaming/horoscope/general lifestyle noise
 
@@ -574,15 +574,15 @@ rss_sources:
     name: "Mashable"
     url: "https://mashable.com/feeds/rss/all"
     category: "pop_culture"
-    keywords: ["Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "trending", "viral", "Gen Z", "TikTok", "social media"]
+    keywords: ["Africa", "India", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "Bangladesh", "trending", "viral", "Gen Z", "TikTok", "social media"]
     max_items: 10
-    enabled: false  # Generic global virality had near-zero six-country user-research yield
+    enabled: false  # Generic global virality had near-zero seven-country user-research yield
 
   coda_story:
     name: "Coda Story"
     url: "https://www.codastory.com/feed/"
     category: "pop_culture"
-    keywords: ["Russia", "Africa", "India", "Indonesia", "disinformation", "digital", "social media", "culture"]
+    keywords: ["Russia", "Africa", "India", "Indonesia", "Bangladesh", "disinformation", "digital", "social media", "culture"]
     max_items: 8
     priority: 1.5
     enabled: true
@@ -643,7 +643,7 @@ rss_sources:
     name: "GSMArena"
     url: "https://www.gsmarena.com/rss-news-reviews.php3"
     category: "mobile_market"
-    keywords: ["India", "Africa", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "Transsion", "Tecno", "Infinix", "itel", "Samsung", "Xiaomi", "Redmi", "OPPO", "vivo", "realme", "Nokia"]
+    keywords: ["India", "Africa", "Indonesia", "Nigeria", "Kenya", "Pakistan", "Russia", "Bangladesh", "Transsion", "Tecno", "Infinix", "itel", "Samsung", "Xiaomi", "Redmi", "OPPO", "vivo", "realme", "Nokia"]
     max_items: 10
     priority: 2.0
     enabled: true
@@ -695,7 +695,7 @@ rss_sources:
 
   counterpoint_market:
     name: "Counterpoint Research"
-    url: "https://news.google.com/rss/search?q=site%3Acounterpointresearch.com%20(smartphone%20OR%20mobile)%20(India%20OR%20Indonesia%20OR%20Nigeria%20OR%20Kenya%20OR%20Pakistan%20OR%20Russia)&hl=en&gl=US&ceid=US%3Aen"
+    url: "https://news.google.com/rss/search?q=site%3Acounterpointresearch.com%20(smartphone%20OR%20mobile)%20(India%20OR%20Indonesia%20OR%20Nigeria%20OR%20Kenya%20OR%20Pakistan%20OR%20Russia%20OR%20Bangladesh)&hl=en&gl=US&ceid=US%3Aen"
     category: "mobile_market"
     priority: 3.0
     freshness_days: 7
@@ -705,12 +705,234 @@ rss_sources:
 
   omdia_market:
     name: "Omdia"
-    url: "https://news.google.com/rss/search?q=site%3Aomdia.tech.informa.com%20(smartphone%20OR%20mobile)%20(Africa%20OR%20India%20OR%20Indonesia%20OR%20Pakistan%20OR%20Russia)&hl=en&gl=US&ceid=US%3Aen"
+    url: "https://news.google.com/rss/search?q=site%3Aomdia.tech.informa.com%20(smartphone%20OR%20mobile)%20(Africa%20OR%20India%20OR%20Indonesia%20OR%20Pakistan%20OR%20Russia%20OR%20Bangladesh)&hl=en&gl=US&ceid=US%3Aen"
     category: "mobile_market"
     priority: 3.0
     freshness_days: 7
     keywords: []
     max_items: 12
+    enabled: true
+
+  # ============================================================
+  # 2026-08 本地团队首批补充：官方基线、消费者行为与本地手机市场
+  # ============================================================
+
+  # --- 🇳🇬 尼日利亚 ---
+  nigeria_nbs_official:
+    name: "Nigeria NBS (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Anigerianstat.gov.ng%20(CPI%20OR%20GDP%20OR%20inflation%20OR%20employment%20OR%20household)&hl=en-NG&gl=NG&ceid=NG%3Aen"
+    category: "macro_infra"
+    country: "nigeria"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  nitda_official:
+    name: "NITDA Nigeria (Official)"
+    url: "https://nitda.gov.ng/feed/"
+    category: "digital_ecosystem"
+    country: "nigeria"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  pulse_nigeria:
+    name: "Pulse Nigeria"
+    url: "https://news.google.com/rss/search?q=site%3Apulse.ng%20(technology%20OR%20mobile%20OR%20digital%20OR%20consumer%20OR%20youth%20OR%20AI)&hl=en-NG&gl=NG&ceid=NG%3Aen"
+    category: "pop_culture"
+    country: "nigeria"
+    priority: 1.6
+    keywords: []
+    max_items: 8
+    enabled: true
+
+  # --- 🇮🇳 印度 ---
+  mospi_official:
+    name: "MoSPI India (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Amospi.gov.in%20(CPI%20OR%20employment%20OR%20consumption%20OR%20digital%20OR%20household)&hl=en-IN&gl=IN&ceid=IN%3Aen"
+    category: "macro_infra"
+    country: "india"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  meity_official:
+    name: "MeitY India (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Ameity.gov.in%20(AI%20OR%20digital%20OR%20cybersecurity%20OR%20platform%20OR%20app)&hl=en-IN&gl=IN&ceid=IN%3Aen"
+    category: "digital_ecosystem"
+    country: "india"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  91mobiles_india:
+    name: "91Mobiles India"
+    url: "https://news.google.com/rss/search?q=site%3A91mobiles.com%2Fhub%20(launch%20OR%20price%20OR%20smartphone%20OR%20mobile%20OR%20chipset)&hl=en-IN&gl=IN&ceid=IN%3Aen"
+    category: "mobile_market"
+    country: "india"
+    priority: 2.2
+    keywords: []
+    max_items: 12
+    enabled: true
+
+  # --- 🇮🇩 印度尼西亚 ---
+  bps_indonesia_official:
+    name: "BPS Indonesia (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Abps.go.id%20(inflasi%20OR%20konsumsi%20OR%20internet%20OR%20digital%20OR%20keuangan)&hl=id&gl=ID&ceid=ID%3Aid"
+    category: "macro_infra"
+    country: "indonesia"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  apjii_indonesia:
+    name: "APJII Indonesia"
+    url: "https://news.google.com/rss/search?q=site%3Aapjii.or.id%20(internet%20OR%20digital%20OR%20pengguna%20OR%20penetrasi%20OR%20survei)&hl=id&gl=ID&ceid=ID%3Aid"
+    category: "digital_ecosystem"
+    country: "indonesia"
+    priority: 2.7
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  databoks_katadata:
+    name: "Databoks Katadata"
+    url: "https://databoks.katadata.co.id/rss"
+    category: "pop_culture"
+    country: "indonesia"
+    priority: 2.4
+    keywords: ["internet", "digital", "smartphone", "media sosial", "belanja", "game", "konsumen", "aplikasi", "keamanan", "fintech"]
+    max_items: 12
+    enabled: true
+
+  # --- 🇵🇰 巴基斯坦 ---
+  pbs_pakistan_official:
+    name: "PBS Pakistan (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Apbs.gov.pk%20(CPI%20OR%20inflation%20OR%20household%20OR%20employment%20OR%20digital)&hl=en-PK&gl=PK&ceid=PK%3Aen"
+    category: "macro_infra"
+    country: "pakistan"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  profit_pakistan_today:
+    name: "Profit by Pakistan Today"
+    url: "https://news.google.com/rss/search?q=site%3Aprofit.pakistantoday.com.pk%20(mobile%20OR%205G%20OR%20digital%20OR%20consumer%20OR%20fintech%20OR%20smartphone)&hl=en-PK&gl=PK&ceid=PK%3Aen"
+    category: "commerce_economy"
+    country: "pakistan"
+    priority: 2.3
+    keywords: []
+    max_items: 12
+    enabled: true
+
+  phoneworld_pakistan:
+    name: "PhoneWorld Pakistan"
+    url: "https://www.phoneworld.com.pk/feed/"
+    category: "mobile_market"
+    country: "pakistan"
+    priority: 2.2
+    keywords: []
+    max_items: 12
+    enabled: true
+
+  # --- 🇧🇩 孟加拉：七国新增市场 ---
+  btrc_bangladesh_official:
+    name: "BTRC Bangladesh (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Abtrc.gov.bd%20(telecom%20OR%20mobile%20OR%205G%20OR%20internet%20OR%20handset)&hl=en-BD&gl=BD&ceid=BD%3Aen"
+    category: "macro_infra"
+    country: "bangladesh"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  bangladesh_bank_official:
+    name: "Bangladesh Bank (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Abb.org.bd%20(mobile%20financial%20services%20OR%20digital%20payment%20OR%20inflation%20OR%20consumer)&hl=en-BD&gl=BD&ceid=BD%3Aen"
+    category: "commerce_economy"
+    country: "bangladesh"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  bbs_bangladesh_official:
+    name: "Bangladesh Bureau of Statistics (Official)"
+    url: "https://news.google.com/rss/search?q=site%3Abbs.gov.bd%20(CPI%20OR%20inflation%20OR%20household%20OR%20employment%20OR%20digital)&hl=en-BD&gl=BD&ceid=BD%3Aen"
+    category: "macro_infra"
+    country: "bangladesh"
+    priority: 3.0
+    freshness_days: 7
+    keywords: []
+    max_items: 10
+    enabled: true
+
+  tbs_bangladesh:
+    name: "The Business Standard Bangladesh"
+    url: "https://www.tbsnews.net/rss.xml"
+    category: "country_news"
+    country: "bangladesh"
+    priority: 2.2
+    keywords: ["smartphone", "mobile", "digital", "consumer", "fintech", "e-commerce", "payment", "internet", "technology", "AI", "price", "inflation", "youth", "social media"]
+    max_items: 12
+    enabled: true
+
+  future_startup_bangladesh:
+    name: "Future Startup Bangladesh"
+    url: "https://futurestartup.com/feed/"
+    category: "digital_ecosystem"
+    country: "bangladesh"
+    priority: 2.3
+    keywords: []
+    max_items: 12
+    enabled: true
+
+  datareportal_bangladesh:
+    name: "DataReportal Bangladesh"
+    url: "https://news.google.com/rss/search?q=site%3Adatareportal.com%20Bangladesh%20(digital%20OR%20internet%20OR%20social%20OR%20mobile)&hl=en&gl=US&ceid=US%3Aen"
+    category: "pop_culture"
+    country: "bangladesh"
+    priority: 2.7
+    freshness_days: 7
+    keywords: []
+    max_items: 8
+    enabled: true
+
+  lightcastle_bangladesh:
+    name: "LightCastle Partners Bangladesh"
+    url: "https://news.google.com/rss/search?q=site%3Alightcastlepartners.com%20(Bangladesh%20consumer%20OR%20digital%20OR%20mobile%20OR%20startup)&hl=en-BD&gl=BD&ceid=BD%3Aen"
+    category: "commerce_economy"
+    country: "bangladesh"
+    priority: 2.4
+    freshness_days: 7
+    keywords: []
+    max_items: 8
+    enabled: true
+
+  cpd_bangladesh:
+    name: "CPD Bangladesh"
+    url: "https://news.google.com/rss/search?q=site%3Acpd.org.bd%20(Bangladesh%20inflation%20OR%20consumer%20OR%20digital%20OR%20employment)&hl=en-BD&gl=BD&ceid=BD%3Aen"
+    category: "macro_infra"
+    country: "bangladesh"
+    priority: 2.7
+    freshness_days: 7
+    keywords: []
+    max_items: 8
     enabled: true
 
 # ============================================================
@@ -748,6 +970,10 @@ output:
   # AI过滤前保留更大的、按国家均衡的候选池；最终PDF仍按原15条上限输出
   pre_ai_max_per_category: 30
 
+  # 国家周报使用7天窗口；每类控制在8条，避免单国PDF因双语内容过长
+  country_report_max_per_category: 8
+  country_report_pre_ai_max_per_category: 24
+
   category_order:
     - "macro_infra"
     - "commerce_economy"
@@ -770,9 +996,9 @@ output:
 publishers:
   feishu:
     enabled: true
-    title_format: "🔍 六国用研洞察 - {date}"
+    title_format: "🔍 七国用研洞察 - {date}"
 
   feishu_bot:
     enabled: true
     chat_id: ""
-    title_format: "🔍 六国用研洞察 - {date}"
+    title_format: "🔍 七国用研洞察 - {date}"

@@ -11,6 +11,7 @@ from .deduper import (
     process_items,
     finalize_categories,
     infer_country,
+    item_matches_country,
 )
 
 __all__ = [
@@ -22,4 +23,5 @@ __all__ = [
     "process_items",
     "finalize_categories",
     "infer_country",
+    "item_matches_country",
 ]

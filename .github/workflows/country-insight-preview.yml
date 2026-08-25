@@ -1,0 +1,58 @@
+name: Country Insight Preview
+
+on:
+  workflow_dispatch:
+    inputs:
+      country:
+        description: Country report to send to the internal site-management test group
+        required: true
+        type: choice
+        default: india
+        options:
+          - india
+          - indonesia
+          - nigeria
+          - pakistan
+          - bangladesh
+
+jobs:
+  send-country-preview:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install PDF dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
+          sudo apt-get install -y fonts-noto-cjk fonts-wqy-zenhei fonts-wqy-microhei
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate and send bilingual country report
+        env:
+          GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+          GEMINI_MODEL: gemini-3.6-flash
+          FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
+          FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
+          FEISHU_ADMIN_OPEN_ID: ${{ secrets.FEISHU_ADMIN_OPEN_ID }}
+          FEISHU_BOT_CHAT_ID: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
+        run: python country_report.py --countries "${{ inputs.country }}"
+
+      - name: Upload generated PDF for QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: country-insight-preview-${{ inputs.country }}
+          path: output/pdf/*.pdf
+          if-no-files-found: ignore
+          retention-days: 7

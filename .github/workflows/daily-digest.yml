@@ -1,4 +1,4 @@
-name: Six-Country Info Insights
+name: Seven-Country Info Insights
 
 on:
   # 每天北京时间早上7点运行 (UTC 23:00 前一天)
@@ -46,7 +46,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Six-Country Info Insights
+      - name: Run Seven-Country Info Insights
         env:
           # Google Cloud project ID
           GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }} 

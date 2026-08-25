@@ -296,17 +296,18 @@ class WeeklyReportTests(unittest.TestCase):
         self.assertIn("本周给团队的三条建议", report_html)
         self.assertIn("AI 研究平台更新", report_html)
 
-    def test_six_country_template_defaults_are_unchanged(self):
+    def test_seven_country_template_defaults_are_current(self):
         report_html = EmailSender().render_email(
             categories={},
             category_names={},
         )
-        self.assertIn("<h1>🔍 六国用研洞察</h1>", report_html)
+        self.assertIn("<h1>🔍 七国用研洞察</h1>", report_html)
         self.assertIn("⚡ 今日要点", (ROOT / "templates" / "email.html").read_text())
         self.assertIn(
-            "🇷🇺 Russia · 🇮🇳 India · 🇮🇩 Indonesia",
+            "🇷🇺 EE1 · 🇮🇳 India · 🇮🇩 Indonesia",
             report_html,
         )
+        self.assertIn("🇧🇩 Bangladesh", report_html)
 
 
 class WorkflowTests(unittest.TestCase):

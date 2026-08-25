@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ report_title | default('六国用研洞察') }} - {{ date }}</title>
+    <title>{{ report_title | default('七国用研洞察') }} - {{ date }}</title>
     <style>
         /* Reset and base styles */
         body {
@@ -95,6 +95,24 @@
             line-height: 1.6;
         }
 
+        .bilingual-highlight .highlight-text {
+            display: inline-block;
+            vertical-align: top;
+            max-width: calc(100% - 42px);
+        }
+
+        .highlight-zh,
+        .highlight-en {
+            display: block;
+        }
+
+        .highlight-en {
+            margin-top: 4px;
+            color: #64748b;
+            font-size: 0.92em;
+            line-height: 1.55;
+        }
+
         /* Category sections */
         .category {
             padding: 28px 24px;
@@ -174,6 +192,19 @@
             color: #4f46e5;
         }
 
+        .news-title-en {
+            margin: -4px 0 9px;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.45;
+        }
+
+        .news-title-en a {
+            color: #475569;
+            text-decoration: none;
+        }
+
         .news-meta {
             font-size: 13px;
             color: #6b7280;
@@ -194,6 +225,22 @@
             color: #4b5563;
             margin: 12px 0 0 0;
             line-height: 1.7;
+        }
+
+        .news-summary-en {
+            margin-top: 7px;
+            padding-top: 7px;
+            border-top: 1px dashed #e2e8f0;
+            color: #64748b;
+            font-size: 12.5px;
+            line-height: 1.6;
+        }
+
+        .toc-item-en {
+            display: block;
+            margin-top: 1px;
+            color: #64748b;
+            font-size: 0.88em;
         }
 
         /* 翻译标记 */
@@ -430,6 +477,14 @@
             position: relative;
         }
 
+        .appendix-en {
+            display: block;
+            margin-top: 2px;
+            color: #64748b;
+            font-size: 0.92em;
+            line-height: 1.25;
+        }
+
         .appendix-rule-number {
             position: absolute;
             left: 0;
@@ -577,9 +632,9 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>{{ report_icon | default('🔍') }} {{ report_title | default('六国用研洞察') }}</h1>
-            <div class="date">{{ date }} · {{ item_count }} 条洞察</div>
-            <div class="subtitle" style="opacity:0.85;font-size:12px;margin-top:4px;">{{ report_subtitle | default('🇷🇺 Russia · 🇮🇳 India · 🇮🇩 Indonesia · 🇳🇬 Nigeria · 🇰🇪 Kenya · 🇵🇰 Pakistan') }}</div>
+            <h1>{{ report_icon | default('🔍') }} {{ report_title | default('七国用研洞察') }}</h1>
+            <div class="date">{{ date }} · {{ item_count }} 条洞察{% if bilingual %} / insights{% endif %}</div>
+            <div class="subtitle" style="opacity:0.85;font-size:12px;margin-top:4px;">{{ report_subtitle | default('🇷🇺 EE1 · 🇮🇳 India · 🇮🇩 Indonesia · 🇳🇬 Nigeria · 🇰🇪 Kenya · 🇵🇰 Pakistan · 🇧🇩 Bangladesh') }}</div>
         </div>
 
         <!-- Highlights -->
@@ -608,6 +663,9 @@
                         {% for item in items %}
                         <li class="toc-item-link">
                             <a href="#item-{{ category_id }}-{{ loop.index }}">{{ item.title }}</a>
+                            {% if bilingual and item.title_en %}
+                            <span class="toc-item-en">{{ item.title_en }}</span>
+                            {% endif %}
                         </li>
                         {% endfor %}
                     </ul>
@@ -636,8 +694,11 @@
                             <span class="paper-org-tag">{{ item.organization }}</span>
                             {% endif %}
                             <a href="{{ item.url }}" target="_blank">{{ item.title }}</a>
-                            {% if item.is_translated %}<span class="translated">已翻译</span>{% endif %}
+                            {% if item.is_translated and not bilingual %}<span class="translated">已翻译</span>{% endif %}
                         </h3>
+                        {% if bilingual and item.title_en %}
+                        <p class="news-title-en"><a href="{{ item.url }}" target="_blank">{{ item.title_en }}</a></p>
+                        {% endif %}
                         <div class="news-meta">
                             <span class="news-source">{{ item.source }}</span>
                             {% if item.published %}
@@ -652,6 +713,9 @@
                         {% endif %}
                         {% if item.summary %}
                         <p class="news-summary">{{ item.summary }}</p>
+                        {% endif %}
+                        {% if bilingual and item.summary_en %}
+                        <p class="news-summary news-summary-en">{{ item.summary_en }}</p>
                         {% endif %}
                         {% if item.tags %}
                         <div class="tags">
@@ -688,8 +752,8 @@
         <!-- Footer -->
         <div class="footer">
             <p>
-                由 <strong>{{ footer_title | default('六国用研洞察 (Six-Country Info Insights)') }}</strong> 自动生成<br>
-                {{ footer_description | default('数据来源：40+ RSS feeds covering Russia, India, Indonesia, Nigeria, Kenya, Pakistan') }}<br>
+                由 <strong>{{ footer_title | default('七国用研洞察 (Seven-Country Info Insights)') }}</strong> 自动生成{% if bilingual %} / Automatically generated{% endif %}<br>
+                {{ footer_description | default('数据来源：RSS feeds covering EE1, India, Indonesia, Nigeria, Kenya, Pakistan and Bangladesh') }}<br>
                 <a href="https://github.com/gbwgc002/Six-Country-Info-Insights">查看源码</a>
             </p>
         </div>
@@ -697,27 +761,28 @@
         {% if source_appendix %}
         <section class="source-appendix" id="source-appendix">
             <div class="appendix-kicker">APPENDIX</div>
-            <h2>信息源、权重与过滤逻辑</h2>
+            <h2>信息源、权重与过滤逻辑{% if bilingual %} / Sources, Weights & Filtering{% endif %}</h2>
             <p class="appendix-lead">
                 当前启用 {{ source_appendix.enabled_count }} 个 RSS 信息源，停用 {{ source_appendix.disabled_count }} 个异常、重复或低相关来源。W 为来源排序权重。
+                {% if bilingual %}<span class="appendix-en">{{ source_appendix.enabled_count }} RSS sources are enabled; {{ source_appendix.disabled_count }} unavailable, duplicate or low-relevance sources are disabled. W denotes source-ranking weight.</span>{% endif %}
             </p>
 
             <div class="appendix-strategy-grid">
                 <div class="appendix-card">
-                    <h3>权重说明</h3>
+                    <h3>权重说明{% if bilingual %} / Weighting{% endif %}</h3>
                     {% for rule in source_appendix.weight_rules %}
-                    <p class="appendix-weight"><strong>{{ rule.range }}</strong>{{ rule.meaning }}</p>
+                    <p class="appendix-weight"><strong>{{ rule.range }}</strong>{{ rule.meaning }}{% if bilingual %}<span class="appendix-en">{{ rule.meaning_en }}</span>{% endif %}</p>
                     {% endfor %}
                 </div>
                 <div class="appendix-card">
-                    <h3>过滤与排序逻辑</h3>
+                    <h3>过滤与排序逻辑{% if bilingual %} / Filtering & Ranking{% endif %}</h3>
                     {% for rule in source_appendix.filter_rules %}
-                    <p class="appendix-rule"><span class="appendix-rule-number">{{ loop.index }}.</span>{{ rule }}</p>
+                    <p class="appendix-rule"><span class="appendix-rule-number">{{ loop.index }}.</span>{{ rule }}{% if bilingual %}<span class="appendix-en">{{ source_appendix.filter_rules_en[loop.index0] }}</span>{% endif %}</p>
                     {% endfor %}
                 </div>
             </div>
 
-            <h3 class="appendix-source-heading">启用信息源｜名称 · 国家/区域 · 分类 · 权重 · 时效窗口</h3>
+            <h3 class="appendix-source-heading">启用信息源｜名称 · 国家/区域 · 分类 · 权重 · 时效窗口{% if bilingual %} / Enabled Sources · Market · Category · Weight · Freshness{% endif %}</h3>
             <div class="appendix-columns">
                 {% for column in source_appendix.columns %}
                 <div class="appendix-column">
@@ -732,6 +797,7 @@
             </div>
             <p class="appendix-note">
                 注：权重只影响候选排序，不替代内容判断；若某国当日无合格信息，不为凑数强行入选。来源健康状态与策略参数以本次报告生成时的配置为准。
+                {% if bilingual %}<span class="appendix-en">Weights affect candidate ranking but never replace content review. No item is forced into the report when qualified information is unavailable.</span>{% endif %}
             </p>
         </section>
         {% endif %}

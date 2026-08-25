@@ -1,12 +1,12 @@
-# Six-Country Info Insights (六国用研洞察)
+# Seven-Country Info Insights (七国用研洞察)
 
-Automated daily intelligence digest covering **Russia, India, Indonesia, Nigeria, Kenya, and Pakistan** — designed to fuel user-research and product-insight workflows.
+Automated daily intelligence digest covering **EE1, India, Indonesia, Nigeria, Kenya, Pakistan, and Bangladesh** — designed to fuel user-research and product-insight workflows.
 
-Collects 40+ RSS sources across six dimensions, uses **Google Gemini AI** to summarise, translate to Chinese, filter irrelevant/unsafe content, and delivers a structured digest via **Feishu bot** and/or **email**.
+Collects 70+ enabled RSS sources across six dimensions, uses **Google Gemini AI** to summarise, translate, filter irrelevant/unsafe content, and delivers a structured digest via **Feishu bot** and/or **email**.
 
 The repository also contains an independent **AI Insights Weekly** pipeline
 for user-research and consumer-insight teams. It does not change the
-six-country source list, processing prompt, delivery format, or schedule.
+seven-country source list, processing prompt, delivery format, or schedule.
 
 ## Coverage Dimensions
 
@@ -72,7 +72,7 @@ Optional:
 | `TO_EMAIL` | Email recipient |
 | `FEISHU_ADMIN_OPEN_ID` | Your Feishu Open ID for document admin access |
 | `FEISHU_ARCHIVE_ROOT_FOLDER_TOKEN` | Shared Feishu root folder containing the two report folders |
-| `FEISHU_SIX_COUNTRY_FOLDER_NAME` | Six-country report folder name; defaults to `六国洞察报告` |
+| `FEISHU_SIX_COUNTRY_FOLDER_NAME` | Existing combined-report archive folder name; retained for backward compatibility |
 | `FEISHU_AI_INSIGHTS_FOLDER_NAME` | AI report folder name; defaults to `AI洞察报告` |
 | `FEISHU_FOLDER_TOKEN` | Legacy fallback upload folder when archive routing is unavailable |
 
@@ -85,6 +85,12 @@ python main.py
 ## GitHub Actions
 
 The workflow (`.github/workflows/daily-digest.yml`) runs automatically every day at **07:00 Beijing time**.
+
+The manual-only `country-insight-preview.yml` workflow generates one bilingual
+country PDF and sends it to the internal site-management test group. It has no
+schedule and does not alter the daily seven-country workflow. The country
+runner supports India, Indonesia, Nigeria, Pakistan, and Bangladesh, and can
+generate multiple reports from one shared RSS collection pass.
 
 The independent AI Insights workflows run as follows:
 
@@ -110,7 +116,7 @@ Add these **Repository Secrets** in GitHub:
 ## Project Structure
 
 ```
-config/sources.yaml          # RSS source configuration (6 dimensions)
+config/sources.yaml          # RSS source configuration (7 countries, 6 dimensions)
 config/ai_insights_sources.yaml # Independent AI Insights sources and thresholds
 collectors/
   base.py                    # NewsItem dataclass + BaseCollector
@@ -123,14 +129,16 @@ publishers/
 templates/
   email.html                 # Shared Jinja2 email/PDF visual template
 email_sender.py              # SMTP email sender + PDF generation
-main.py                      # Entry point
+main.py                      # Seven-country daily entry point
+country_report.py            # Shared-pool bilingual country report runner
 ai_insights.py               # AI Insights collect/publish entry point
 .github/workflows/           # CI/CD
 ```
 
 ## Feishu report archive
 
-New six-country PDFs are uploaded to `六国洞察报告`. New AI weekly
+New seven-country PDFs keep using the existing report archive folder for
+backward compatibility. New AI weekly
 documents and PDFs are stored in `AI洞察报告`. When
 `FEISHU_ADMIN_OPEN_ID` is configured and the app has the ownership-transfer
 scope, ownership is transferred to that user while the bot retains

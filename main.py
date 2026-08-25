@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Six-Country Info Insights (六国用研洞察)
+Seven-Country Info Insights (七国用研洞察)
 
 Collects user-research insights from Russia, India, Indonesia,
-Nigeria, Kenya, and Pakistan — covering macro environment, commerce,
+Nigeria, Kenya, Pakistan, and Bangladesh — covering macro environment, commerce,
 digital ecosystems, pop culture, and mobile markets.
 
 Summarises with Gemini AI and pushes via Feishu bot / email.
@@ -84,8 +84,8 @@ async def main_async():
     """Main entry point (Async)."""
     now = report_now()
     print(f"\n{'='*60}")
-    print(f"🔍 六国用研洞察 - {now.strftime('%Y-%m-%d %H:%M')}")
-    print(f"   Russia · India · Indonesia · Nigeria · Kenya · Pakistan")
+    print(f"🔍 七国用研洞察 - {now.strftime('%Y-%m-%d %H:%M')}")
+    print(f"   EE1 · India · Indonesia · Nigeria · Kenya · Pakistan · Bangladesh")
     print(f"{'='*60}\n")
 
     # Load config
@@ -198,13 +198,13 @@ async def main_async():
     if WEASYPRINT_AVAILABLE:
         pdf_dir = Path(__file__).parent / "output"
         pdf_dir.mkdir(exist_ok=True)
-        pdf_path = str(pdf_dir / f"Six_Country_Insights_{date_str}.pdf")
+        pdf_path = str(pdf_dir / f"Seven_Country_Insights_{date_str}.pdf")
         email_sender.generate_pdf(html_content, pdf_path)
 
     # Send email with PDF attachment
     email_success = False
     if to_email:
-        subject = f"🔍 六国用研洞察 - {now.strftime('%m/%d')}"
+        subject = f"🔍 七国用研洞察 - {now.strftime('%m/%d')}"
         email_success = email_sender.send(to_email, subject, html_content, pdf_path)
 
         if email_success:
@@ -221,7 +221,7 @@ async def main_async():
         publisher = FeishuPublisher()
         archive = FeishuArchiveManager(publisher)
         if publisher.is_configured():
-            title = feishu_config.get("title_format", "🔍 六国用研洞察 - {date}").format(date=date_str)
+            title = feishu_config.get("title_format", "🔍 七国用研洞察 - {date}").format(date=date_str)
 
             # Publish to Feishu Bot (Push)
             bot_config = publishers_config.get("feishu_bot", {})

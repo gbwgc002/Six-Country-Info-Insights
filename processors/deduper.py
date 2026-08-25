@@ -15,6 +15,7 @@ TARGET_COUNTRIES = (
     "nigeria",
     "kenya",
     "pakistan",
+    "bangladesh",
 )
 
 COUNTRY_ALIASES = {
@@ -38,6 +39,10 @@ COUNTRY_ALIASES = {
     "pakistan": (
         "pakistan", "pakistani", "karachi", "islamabad", "lahore",
         "peshawar", "巴基斯坦", "卡拉奇", "伊斯兰堡", "拉合尔",
+    ),
+    "bangladesh": (
+        "bangladesh", "bangladeshi", "dhaka", "chattogram", "chittagong",
+        "taka", "btrc", "孟加拉", "达卡", "吉大港",
     ),
 }
 
@@ -63,6 +68,24 @@ def infer_country(item: NewsItem) -> str | None:
         item.country = "multi"
         return "multi"
     return None
+
+
+def item_matches_country(item: NewsItem, country: str) -> bool:
+    """Return whether an item should enter one country's candidate pool."""
+    country = country.strip().lower()
+    if country not in TARGET_COUNTRIES:
+        return False
+
+    configured = (item.country or "").strip().lower()
+    if configured == country:
+        return True
+    if configured and configured not in {"multi"}:
+        return False
+
+    text = " ".join(
+        value for value in (item.title, item.summary, item.content) if value
+    ).lower()
+    return any(alias in text for alias in COUNTRY_ALIASES[country])
 
 
 def _item_rank_key(item: NewsItem) -> tuple[float, float, float]:
@@ -136,7 +159,7 @@ def filter_by_date(
     # Allow longer window for papers (ArXiv often has delays)
     # and china sources (WayToAGI etc. use Beijing time, midnight+08:00
     # easily falls outside a strict 24h UTC window)
-    extended_cutoff = datetime.now(timezone.utc) - timedelta(days=2.0)
+    extended_cutoff = datetime.now(timezone.utc) - timedelta(days=max(days, 2.0))
 
     filtered = []
     for item in items:

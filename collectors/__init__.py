@@ -5,7 +5,7 @@ Collectors package - news/insight collection modules.
 from .base import NewsItem, BaseCollector
 from .rss_collector import RSSCollector, collect_all_rss
 
-# Legacy collectors kept in repo but disabled for the six-country insights use case.
+# Legacy collectors kept in repo but disabled for the seven-country insights use case.
 # Import them lazily only if someone explicitly needs them.
 try:
     from .arxiv_collector import ArxivCollector, collect_arxiv
