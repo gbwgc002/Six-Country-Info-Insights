@@ -1,13 +1,20 @@
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from tempfile import TemporaryDirectory
+from zoneinfo import ZoneInfo
 
 import yaml
 
 from collectors.base import NewsItem
-from country_report import DAILY_COUNTRY_REPORTS, _country_items
+from country_candidate_store import items_for_period, merge_and_save
+from country_report import (
+    COUNTRY_REPORTS,
+    _country_items,
+    get_report_period,
+)
 from email_sender import EmailSender
-from processors.deduper import TARGET_COUNTRIES, filter_by_date
+from processors.deduper import TARGET_COUNTRIES
 from reporting import (
     CATEGORY_BILINGUAL_NAMES,
     build_source_appendix,
@@ -18,10 +25,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class SevenCountryCoverageTests(unittest.TestCase):
-    def test_bangladesh_is_a_target_and_daily_market(self):
+    def test_bangladesh_is_a_target_and_country_report_market(self):
         self.assertIn("bangladesh", TARGET_COUNTRIES)
         self.assertEqual(
-            DAILY_COUNTRY_REPORTS,
+            COUNTRY_REPORTS,
             ("india", "indonesia", "nigeria", "pakistan", "bangladesh"),
         )
 
@@ -41,24 +48,34 @@ class SevenCountryCoverageTests(unittest.TestCase):
         selected = _country_items([india, pakistan], "india")
         self.assertEqual(selected, [india])
 
-    def test_daily_window_applies_to_fast_moving_category(self):
-        recent = NewsItem(
-            title="Recent youth mobile trend",
-            url="https://example.com/daily-recent",
-            source="Local",
-            category="mobile_market",
-            country="india",
-            published=datetime.now(timezone.utc) - timedelta(hours=12),
-        )
-        stale = NewsItem(
-            title="Stale youth mobile trend",
-            url="https://example.com/daily-stale",
-            source="Local",
-            category="mobile_market",
-            country="india",
-            published=datetime.now(timezone.utc) - timedelta(hours=25),
-        )
-        self.assertEqual(filter_by_date([recent, stale], days=1), [recent])
+    def test_report_period_supports_rolling_preview_and_previous_natural_week(self):
+        current = datetime(2026, 8, 25, 8, tzinfo=ZoneInfo("Asia/Shanghai"))
+        rolling = get_report_period(current)
+        previous = get_report_period(current, previous_week=True)
+        self.assertEqual((rolling.start.isoformat(), rolling.end.isoformat()), ("2026-08-19", "2026-08-25"))
+        self.assertEqual((previous.start.isoformat(), previous.end.isoformat()), ("2026-08-17", "2026-08-23"))
+
+    def test_daily_candidate_store_deduplicates_and_selects_week(self):
+        with TemporaryDirectory() as directory:
+            store_path = Path(directory) / "candidates.json"
+            collected = datetime(2026, 8, 25, 0, tzinfo=timezone.utc)
+            item = NewsItem(
+                title="India mobile wallets expand",
+                url="https://example.com/weekly",
+                source="Local",
+                category="digital_ecosystem",
+                country="india",
+                published=datetime(2026, 8, 24, 12, tzinfo=timezone.utc),
+            )
+            merge_and_save([item, item], path=store_path, collected_at=collected)
+            selected = items_for_period(
+                start=collected.date() - timedelta(days=1),
+                end=collected.date(),
+                path=store_path,
+                timezone_info=timezone.utc,
+            )
+            self.assertEqual(len(selected), 1)
+            self.assertEqual(selected[0].url, item.url)
 
 
 class BilingualReportTests(unittest.TestCase):
@@ -93,6 +110,8 @@ class BilingualReportTests(unittest.TestCase):
         self.assertLessEqual(country_codes, {"india", "multi"})
         self.assertIn("india", country_codes)
         self.assertIn("multi", country_codes)
+        self.assertNotIn("七国", " ".join(appendix["filter_rules"]))
+        self.assertIn("本国", " ".join(appendix["filter_rules"]))
 
 
 class CountryPreviewWorkflowTests(unittest.TestCase):
@@ -113,13 +132,28 @@ class CountryPreviewWorkflowTests(unittest.TestCase):
         self.assertIn("CountryReportArchiveManager(publisher)", runner)
         self.assertIn("archive.upload_country_pdf", runner)
 
-    def test_country_runner_uses_daily_titles_and_window(self):
+    def test_country_runner_uses_weekly_titles_and_window(self):
         runner = (ROOT / "country_report.py").read_text()
-        self.assertIn("洞察日报", runner)
-        self.assertIn("Daily Insights", runner)
-        self.assertIn("days=1.0", runner)
-        self.assertIn("report_days=1", runner)
-        self.assertNotIn("Weekly Insights", runner)
+        self.assertIn("洞察周报", runner)
+        self.assertIn("Weekly Insights", runner)
+        self.assertIn("report_days=7", runner)
+        self.assertNotIn("洞察日报", runner)
+
+    def test_daily_collection_and_weekly_publish_are_isolated(self):
+        daily = (
+            ROOT / ".github" / "workflows" / "country-insights-daily-collect.yml"
+        ).read_text()
+        weekly = (
+            ROOT / ".github" / "workflows" / "country-insights-weekly.yml"
+        ).read_text()
+        aggregate = (ROOT / ".github" / "workflows" / "daily-digest.yml").read_text()
+        self.assertIn("cron: '30 23 * * *'", daily)
+        self.assertIn("--mode collect", daily)
+        self.assertNotIn("FEISHU_APP_ID", daily)
+        self.assertIn("cron: '0 23 * * 0'", weekly)
+        self.assertIn("--previous-week", weekly)
+        self.assertIn("FEISHU_GROUP_INDIA_ID", weekly)
+        self.assertIn("cron: '0 23 * * *'", aggregate)
 
 
 if __name__ == "__main__":

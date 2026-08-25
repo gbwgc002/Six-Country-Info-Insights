@@ -219,14 +219,16 @@ def group_by_category(
 def process_items(
     items: list[NewsItem],
     max_per_category: int = 5,
-    days: float = 1.0  # Reduced to 1.0 (24 hours) for strict daily filtering
+    days: float = 1.0,  # Reduced to 1.0 (24 hours) for strict daily filtering
+    apply_date_filter: bool = True,
 ) -> dict[str, list[NewsItem]]:
     """Full processing pipeline: dedupe, filter, sort, group."""
     # Deduplicate
     items = deduplicate_items(items)
 
     # Filter by date (strictly recent items)
-    items = filter_by_date(items, days=days)
+    if apply_date_filter:
+        items = filter_by_date(items, days=days)
 
     # Attach country metadata before category quotas are applied.
     for item in items:

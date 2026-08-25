@@ -92,6 +92,7 @@ def build_source_appendix(
     country_code: str | None = None,
     report_days: int = 1,
     max_per_category: int = 15,
+    pre_ai_max_per_category: int = 30,
 ) -> dict:
     """Build the compact, auditable source appendix used by the PDF report."""
     configured_sources = config.get("rss_sources", {})
@@ -163,9 +164,17 @@ def build_source_appendix(
                 if report_days >= 7
                 else "源级过滤：仅采集启用 RSS，并执行来源关键词；常规源保留 1 天，低频官方/行业源保留 7 天。"
             ),
-            "去重与候选池：按链接、标题及语义去重；AI 处理前每类最多保留 30 条，并优先保障七国候选覆盖。",
+            (
+                f"去重与候选池：按链接、标题及语义去重；AI 处理前每类最多保留 {pre_ai_max_per_category} 条，并仅保留与本国直接相关的候选。"
+                if country_code
+                else f"去重与候选池：按链接、标题及语义去重；AI 处理前每类最多保留 {pre_ai_max_per_category} 条，并优先保障七国候选覆盖。"
+            ),
             "AI 复核：过滤低质、不安全及弱相关内容，按文章实际价值重分类，并给出 1-5 分用研重要性。",
-            f"最终排序：依次参考重要性、来源权重与时效；每类对有合格内容的国家优先保留 1 条，最终每类最多 {max_per_category} 条。",
+            (
+                f"最终排序：依次参考重要性、来源权重与时效；再次核验本国相关性，最终每类最多 {max_per_category} 条。"
+                if country_code
+                else f"最终排序：依次参考重要性、来源权重与时效；每类对有合格内容的国家优先保留 1 条，最终每类最多 {max_per_category} 条。"
+            ),
         ],
         "filter_rules_en": [
             (
@@ -173,8 +182,16 @@ def build_source_appendix(
                 if report_days >= 7
                 else "Source filtering: collect enabled feeds only, apply source keywords, use a 1-day window for regular feeds and 7 days for low-frequency official or industry feeds."
             ),
-            "Deduplication and candidate pool: deduplicate by URL, title and semantics; retain up to 30 pre-AI candidates per category while protecting seven-country coverage.",
+            (
+                f"Deduplication and candidate pool: deduplicate by URL, title and semantics; retain up to {pre_ai_max_per_category} pre-AI candidates per category and keep only material directly relevant to this country."
+                if country_code
+                else f"Deduplication and candidate pool: deduplicate by URL, title and semantics; retain up to {pre_ai_max_per_category} pre-AI candidates per category while protecting seven-country coverage."
+            ),
             "AI review: remove low-quality, unsafe and weakly relevant content, reclassify by actual insight value, and assign a 1-5 research-importance score.",
-            f"Final ranking: combine importance, source weight and recency; reserve coverage for countries with qualified items and cap each category at {max_per_category}.",
+            (
+                f"Final ranking: combine importance, source weight and recency; revalidate country relevance and cap each category at {max_per_category}."
+                if country_code
+                else f"Final ranking: combine importance, source weight and recency; reserve coverage for countries with qualified items and cap each category at {max_per_category}."
+            ),
         ],
     }

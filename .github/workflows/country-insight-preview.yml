@@ -1,14 +1,15 @@
-name: Country Insight Preview
+name: Country Weekly Insight Preview
 
 on:
   workflow_dispatch:
     inputs:
       country:
-        description: Country report to send to the internal site-management test group
+        description: Weekly report(s) to send to the internal site-management test group
         required: true
         type: choice
-        default: india
+        default: all
         options:
+          - all
           - india
           - indonesia
           - nigeria
@@ -37,7 +38,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Generate and send bilingual country report
+      - name: Generate and send bilingual country weekly report
         env:
           GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
@@ -45,14 +46,18 @@ jobs:
           FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
           FEISHU_ADMIN_OPEN_ID: ${{ secrets.FEISHU_ADMIN_OPEN_ID }}
-          FEISHU_BOT_CHAT_ID: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
-        run: python country_report.py --countries "${{ inputs.country }}"
+          FEISHU_CHAT_ID_INDIA: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
+          FEISHU_CHAT_ID_INDONESIA: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
+          FEISHU_CHAT_ID_NIGERIA: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
+          FEISHU_CHAT_ID_PAKISTAN: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
+          FEISHU_CHAT_ID_BANGLADESH: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
+        run: python country_report.py --mode publish --countries "${{ inputs.country }}"
 
       - name: Upload generated PDF for QA
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: country-insight-preview-${{ inputs.country }}
+          name: country-weekly-insight-preview-${{ inputs.country }}
           path: output/pdf/*.pdf
           if-no-files-found: ignore
           retention-days: 7

@@ -1,0 +1,114 @@
+name: Five-Country Weekly Insights
+
+on:
+  # 每周一北京时间07:00发布上一自然周的5国周报
+  schedule:
+    - cron: '0 23 * * 0'
+  workflow_dispatch:
+    inputs:
+      destination:
+        description: Send to the internal test group or official country groups
+        required: true
+        type: choice
+        default: test
+        options:
+          - test
+          - production
+      country:
+        description: Country report(s) to publish
+        required: true
+        type: choice
+        default: all
+        options:
+          - all
+          - india
+          - indonesia
+          - nigeria
+          - pakistan
+          - bangladesh
+
+concurrency:
+  group: country-insights-weekly-publish
+  cancel-in-progress: false
+
+jobs:
+  publish-weekly-reports:
+    # 正式群ID补齐后将变量 ENABLE_COUNTRY_WEEKLY_REPORTS 设为 true。
+    # 手动测试与首次正式推送不受此开关影响。
+    if: github.event_name == 'workflow_dispatch' || vars.ENABLE_COUNTRY_WEEKLY_REPORTS == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install PDF dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
+          sudo apt-get install -y fonts-noto-cjk fonts-wqy-zenhei fonts-wqy-microhei
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate Feishu destinations
+        env:
+          FEISHU_CHAT_ID_INDIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_INDIA_ID }}
+          FEISHU_CHAT_ID_INDONESIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_INDONESIA_ID }}
+          FEISHU_CHAT_ID_NIGERIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_NIGERIA_ID }}
+          FEISHU_CHAT_ID_PAKISTAN: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_PAKISTAN_ID }}
+          FEISHU_CHAT_ID_BANGLADESH: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_BANGLADESH_ID }}
+        run: |
+          python - <<'PY'
+          import os
+          import sys
+
+          country_input = "${{ github.event_name == 'schedule' && 'all' || inputs.country }}"
+          countries = (
+              ["india", "indonesia", "nigeria", "pakistan", "bangladesh"]
+              if country_input == "all"
+              else [country_input]
+          )
+          missing = [
+              country
+              for country in countries
+              if not os.environ.get(f"FEISHU_CHAT_ID_{country.upper()}", "").strip()
+          ]
+          if missing:
+              print("Missing Feishu group IDs: " + ", ".join(missing))
+              sys.exit(1)
+          PY
+
+      - name: Generate, archive and send bilingual weekly PDFs
+        env:
+          GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+          GEMINI_MODEL: gemini-3.6-flash
+          FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
+          FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
+          FEISHU_ADMIN_OPEN_ID: ${{ secrets.FEISHU_ADMIN_OPEN_ID }}
+          FEISHU_CHAT_ID_INDIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_INDIA_ID }}
+          FEISHU_CHAT_ID_INDONESIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_INDONESIA_ID }}
+          FEISHU_CHAT_ID_NIGERIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_NIGERIA_ID }}
+          FEISHU_CHAT_ID_PAKISTAN: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_PAKISTAN_ID }}
+          FEISHU_CHAT_ID_BANGLADESH: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_BANGLADESH_ID }}
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            python country_report.py --mode publish --countries all --previous-week
+          else
+            python country_report.py --mode publish --countries "${{ inputs.country }}"
+          fi
+
+      - name: Upload weekly PDFs for QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: country-weekly-insights-${{ github.run_id }}
+          path: output/pdf/*.pdf
+          if-no-files-found: ignore
+          retention-days: 14

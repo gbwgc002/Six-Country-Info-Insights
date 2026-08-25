@@ -1,0 +1,50 @@
+name: Country Insights Daily Collection
+
+on:
+  # 每天北京时间07:30收集候选资讯；不生成PDF、不发送群消息
+  schedule:
+    - cron: '30 23 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: country-insights-candidate-pool
+  cancel-in-progress: false
+
+jobs:
+  collect-candidates:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Collect one shared five-country candidate pool
+        run: python country_report.py --mode collect --countries all
+
+      - name: Persist the refreshed candidate pool
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/country_insights/candidates.json
+          if git diff --cached --quiet; then
+            echo "Candidate pool is unchanged."
+            exit 0
+          fi
+          git commit -m "Update country insight candidate pool [skip ci]"
+          git push

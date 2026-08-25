@@ -87,15 +87,25 @@ python main.py
 
 The workflow (`.github/workflows/daily-digest.yml`) runs automatically every day at **07:00 Beijing time**.
 
-The manual-only `country-insight-preview.yml` workflow generates one bilingual
-country PDF and sends it to the internal site-management test group. It has no
-schedule and does not alter the daily seven-country workflow. The runner supports
-India, Indonesia, Nigeria, Pakistan, and Bangladesh, and can generate multiple
-reports from one shared RSS collection pass. Each country PDF is uploaded
-directly into the matching country child folder under the shared
-archive root, then ownership is transferred to `FEISHU_ADMIN_OPEN_ID` while the
-bot retains full access. Supported child-folder labels include the Chinese or
-English country name, with optional `洞察报告` / `Daily Insights` suffixes.
+The five country-specific reports are independent from the daily seven-country
+digest. Their workflows run as follows:
+
+| Workflow | UTC+8 schedule | Behaviour |
+|---|---:|---|
+| `country-insights-daily-collect.yml` | Daily 07:30 | Collect one shared India, Indonesia, Nigeria, Pakistan, and Bangladesh candidate pool; no PDF and no group message |
+| `country-insights-weekly.yml` | Monday 07:00 | Finalize the previous Monday-Sunday period, generate five bilingual PDFs, archive them, and send each report to its country group |
+
+The manual dispatch supports either the internal site-management test group or
+the five production country groups. All requested countries share one collection
+pass before their independent AI review and ranking. Each country PDF is uploaded
+directly into the matching country child folder under the shared archive root,
+then ownership is transferred to `FEISHU_ADMIN_OPEN_ID` while the bot retains
+full access. Supported child-folder labels include the Chinese or English country
+name, with optional `洞察报告` / `Weekly Insights` suffixes.
+
+The scheduled weekly workflow remains disabled until the repository variable
+`ENABLE_COUNTRY_WEEKLY_REPORTS` is set to `true`, so production delivery cannot
+start before all five country-group secrets are configured.
 
 The independent AI Insights workflows run as follows:
 
@@ -115,6 +125,10 @@ Add these **Repository Secrets** in GitHub:
 - `FEISHU_GROUP_RUANJIANYONGYAN_ID` (软件用研)
 - `FEISHU_GROUP_SWYONGHUTIYANBU_ID` (SW用户体验部)
 - `FEISHU_GROUP_AI2DZUOYECESHIQUN_ID` (AI2D作业测试群)
+- `FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU` (country-report test group)
+- `FEISHU_GROUP_INDIA_ID`, `FEISHU_GROUP_INDONESIA_ID`
+- `FEISHU_GROUP_NIGERIA_ID`, `FEISHU_GROUP_PAKISTAN_ID`
+- `FEISHU_GROUP_BANGLADESH_ID`
 - `FEISHU_ADMIN_OPEN_ID` (optional)
 - `SMTP_USER`, `SMTP_PASSWORD`, `TO_EMAIL` (optional, for email)
 
@@ -135,7 +149,8 @@ templates/
   email.html                 # Shared Jinja2 email/PDF visual template
 email_sender.py              # SMTP email sender + PDF generation
 main.py                      # Seven-country daily entry point
-country_report.py            # Shared-pool bilingual country report runner
+country_candidate_store.py   # Persistent daily pool for five-country weekly reports
+country_report.py            # Shared-pool bilingual country weekly report runner
 ai_insights.py               # AI Insights collect/publish entry point
 .github/workflows/           # CI/CD
 ```
