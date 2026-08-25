@@ -1,6 +1,13 @@
 name: Country Weekly Insight Preview
 
 on:
+  # One-time test trigger; removed immediately after this run starts.
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/country-insight-preview.yml'
+
   workflow_dispatch:
     inputs:
       country:
@@ -51,13 +58,13 @@ jobs:
           FEISHU_CHAT_ID_NIGERIA: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
           FEISHU_CHAT_ID_PAKISTAN: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
           FEISHU_CHAT_ID_BANGLADESH: ${{ secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU }}
-        run: python country_report.py --mode publish --countries "${{ inputs.country }}"
+        run: python country_report.py --mode publish --countries "${{ github.event_name == 'workflow_dispatch' && inputs.country || 'all' }}"
 
       - name: Upload generated PDF for QA
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: country-weekly-insight-preview-${{ inputs.country }}
+          name: country-weekly-insight-preview-${{ github.event_name == 'workflow_dispatch' && inputs.country || 'all' }}
           path: output/pdf/*.pdf
           if-no-files-found: ignore
           retention-days: 7
