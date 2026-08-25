@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate bilingual weekly insight PDFs for one or more target countries.
+"""Generate bilingual daily insight PDFs for one or more target countries.
 
 All requested countries share one RSS collection pass. Each country then gets
 its own candidate pool, AI review, ranking, PDF and Feishu destination.
@@ -12,7 +12,6 @@ import asyncio
 import copy
 import os
 import sys
-from datetime import timedelta
 from pathlib import Path
 
 from email_sender import EmailSender, WEASYPRINT_AVAILABLE
@@ -33,7 +32,7 @@ from reporting import (
 )
 
 
-WEEKLY_COUNTRY_REPORTS = (
+DAILY_COUNTRY_REPORTS = (
     "india",
     "indonesia",
     "nigeria",
@@ -61,18 +60,18 @@ def _country_items(all_items, country: str):
     return [item for item in all_items if item_matches_country(item, country)]
 
 
-def _weekly_collection_config(config: dict, countries: list[str]) -> dict:
-    """Keep requested-country and shared sources, with a deeper weekly feed read."""
-    weekly_config = copy.deepcopy(config)
+def _daily_collection_config(config: dict, countries: list[str]) -> dict:
+    """Keep requested-country and shared sources for one daily collection pass."""
+    daily_config = copy.deepcopy(config)
     requested = set(countries)
-    for source in weekly_config.get("rss_sources", {}).values():
+    for source in daily_config.get("rss_sources", {}).values():
         source_country = str(source.get("country") or "multi").lower()
         if source_country not in requested and source_country != "multi":
             source["enabled"] = False
             continue
         if source.get("enabled", True):
             source["max_items"] = max(int(source.get("max_items", 10)), 20)
-    return weekly_config
+    return daily_config
 
 
 async def _prepare_country_categories(
@@ -95,7 +94,7 @@ async def _prepare_country_categories(
     categories = process_items(
         candidates,
         max_per_category=pre_ai_max,
-        days=7.0,
+        days=1.0,
     )
     categories = await summarizer.semantic_deduplicate(categories)
 
@@ -130,9 +129,9 @@ async def generate_and_publish(countries: list[str]) -> int:
     config_path = Path(__file__).parent / "config" / "sources.yaml"
     config = load_config(str(config_path))
 
-    print("📡 Collecting one shared weekly source pool...")
+    print("📡 Collecting one shared daily source pool...")
     all_items = await collect_all_sources(
-        _weekly_collection_config(config, countries)
+        _daily_collection_config(config, countries)
     )
     if not all_items:
         raise RuntimeError("No source items were collected")
@@ -148,11 +147,10 @@ async def generate_and_publish(countries: list[str]) -> int:
     archive = CountryReportArchiveManager(publisher)
 
     now = report_now()
-    period_start = (now - timedelta(days=6)).date()
     period_end = now.date()
     date_label = (
-        f"{period_start.strftime('%Y年%m月%d日')} 至 {period_end.strftime('%Y年%m月%d日')}"
-        f" / {period_start.strftime('%b %d')} - {period_end.strftime('%b %d, %Y')}"
+        f"{period_end.strftime('%Y年%m月%d日')} / "
+        f"{period_end.strftime('%b %d, %Y')}"
     )
     output_dir = Path(__file__).parent / "output" / "pdf"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -179,7 +177,7 @@ async def generate_and_publish(countries: list[str]) -> int:
             f"{metadata['zh']}用研洞察 / {metadata['en']} User Research Insights"
         )
         title = (
-            f"🔍 {metadata['zh']}洞察周报 / {metadata['en']} Weekly Insights - "
+            f"🔍 {metadata['zh']}洞察日报 / {metadata['en']} Daily Insights - "
             f"{period_end.isoformat()}"
         )
         html = renderer.render_email(
@@ -191,8 +189,8 @@ async def generate_and_publish(countries: list[str]) -> int:
             report_subtitle=(
                 f"{metadata['flag']} {metadata['en']} · 中英双语 / Chinese-English Bilingual"
             ),
-            highlights_title="⚡ 本周要点 / Weekly Highlights",
-            toc_title="📑 本周目录 / Contents",
+            highlights_title="⚡ 今日要点 / Daily Highlights",
+            toc_title="📑 今日目录 / Contents",
             footer_title=(
                 f"{metadata['zh']}用研洞察 ({metadata['en']} User Research Insights)"
             ),
@@ -203,7 +201,7 @@ async def generate_and_publish(countries: list[str]) -> int:
             source_appendix=build_source_appendix(
                 config,
                 country,
-                report_days=7,
+                report_days=1,
                 max_per_category=int(
                     config.get("output", {}).get(
                         "country_report_max_per_category",
@@ -215,7 +213,7 @@ async def generate_and_publish(countries: list[str]) -> int:
         )
         pdf_path = output_dir / (
             f"{metadata['en']}_Insights_Bilingual_"
-            f"{period_start.isoformat()}_{period_end.isoformat()}.pdf"
+            f"{period_end.isoformat()}.pdf"
         )
         if not renderer.generate_pdf(html, str(pdf_path)):
             raise RuntimeError(f"PDF generation failed for {country}")
@@ -252,7 +250,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--countries",
         nargs="+",
-        choices=WEEKLY_COUNTRY_REPORTS,
+        choices=DAILY_COUNTRY_REPORTS,
         default=["india"],
         help="One or more country codes. All share one collection pass.",
     )

@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 
 from collectors.base import NewsItem
-from country_report import WEEKLY_COUNTRY_REPORTS, _country_items
+from country_report import DAILY_COUNTRY_REPORTS, _country_items
 from email_sender import EmailSender
 from processors.deduper import TARGET_COUNTRIES, filter_by_date
 from reporting import (
@@ -18,10 +18,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class SevenCountryCoverageTests(unittest.TestCase):
-    def test_bangladesh_is_a_target_and_weekly_market(self):
+    def test_bangladesh_is_a_target_and_daily_market(self):
         self.assertIn("bangladesh", TARGET_COUNTRIES)
         self.assertEqual(
-            WEEKLY_COUNTRY_REPORTS,
+            DAILY_COUNTRY_REPORTS,
             ("india", "indonesia", "nigeria", "pakistan", "bangladesh"),
         )
 
@@ -41,16 +41,24 @@ class SevenCountryCoverageTests(unittest.TestCase):
         selected = _country_items([india, pakistan], "india")
         self.assertEqual(selected, [india])
 
-    def test_weekly_window_applies_to_every_category(self):
-        item = NewsItem(
-            title="Five-day-old youth mobile trend",
-            url="https://example.com/weekly",
+    def test_daily_window_applies_to_fast_moving_category(self):
+        recent = NewsItem(
+            title="Recent youth mobile trend",
+            url="https://example.com/daily-recent",
             source="Local",
-            category="pop_culture",
+            category="mobile_market",
             country="india",
-            published=datetime.now(timezone.utc) - timedelta(days=5),
+            published=datetime.now(timezone.utc) - timedelta(hours=12),
         )
-        self.assertEqual(filter_by_date([item], days=7), [item])
+        stale = NewsItem(
+            title="Stale youth mobile trend",
+            url="https://example.com/daily-stale",
+            source="Local",
+            category="mobile_market",
+            country="india",
+            published=datetime.now(timezone.utc) - timedelta(hours=25),
+        )
+        self.assertEqual(filter_by_date([recent, stale], days=1), [recent])
 
 
 class BilingualReportTests(unittest.TestCase):
@@ -104,6 +112,14 @@ class CountryPreviewWorkflowTests(unittest.TestCase):
         runner = (ROOT / "country_report.py").read_text()
         self.assertIn("CountryReportArchiveManager(publisher)", runner)
         self.assertIn("archive.upload_country_pdf", runner)
+
+    def test_country_runner_uses_daily_titles_and_window(self):
+        runner = (ROOT / "country_report.py").read_text()
+        self.assertIn("洞察日报", runner)
+        self.assertIn("Daily Insights", runner)
+        self.assertIn("days=1.0", runner)
+        self.assertIn("report_days=1", runner)
+        self.assertNotIn("Weekly Insights", runner)
 
 
 if __name__ == "__main__":

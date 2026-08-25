@@ -95,7 +95,7 @@ reports from one shared RSS collection pass. Each country PDF is uploaded
 directly into the matching country child folder under the shared
 archive root, then ownership is transferred to `FEISHU_ADMIN_OPEN_ID` while the
 bot retains full access. Supported child-folder labels include the Chinese or
-English country name, with optional `洞察报告` / `Weekly Insights` suffixes.
+English country name, with optional `洞察报告` / `Daily Insights` suffixes.
 
 The independent AI Insights workflows run as follows:
 

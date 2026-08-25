@@ -28,6 +28,7 @@ COUNTRY_REPORT_FOLDER_SUFFIXES = (
     "报告",
     "Insights",
     "InsightsReport",
+    "DailyInsights",
     "WeeklyInsights",
     "Report",
 )
