@@ -85,7 +85,7 @@ python main.py
 
 ## GitHub Actions
 
-The workflow (`.github/workflows/daily-digest.yml`) runs automatically every day at **07:00 Beijing time**.
+The workflow (`.github/workflows/daily-digest.yml`) runs automatically every day at **06:25 Beijing time**.
 
 The five country-specific reports are independent from the daily seven-country
 digest. Their workflows run as follows:
@@ -93,7 +93,7 @@ digest. Their workflows run as follows:
 | Workflow | UTC+8 schedule | Behaviour |
 |---|---:|---|
 | `country-insights-daily-collect.yml` | Daily 07:30 | Collect one shared India, Indonesia, Nigeria, Pakistan, and Bangladesh candidate pool; no PDF and no group message |
-| `country-insights-weekly.yml` | Monday 07:00 | Finalize the previous Monday-Sunday period, generate five bilingual PDFs, archive them, and send each report to its country group |
+| `country-insights-weekly.yml` | Monday 06:25 | Finalize the previous Monday-Sunday period, generate five bilingual PDFs, archive them, and send each report to its country group |
 
 The manual dispatch supports either the internal site-management test group or
 the five production country groups. All requested countries share one collection

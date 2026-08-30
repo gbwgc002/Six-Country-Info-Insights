@@ -327,7 +327,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('cron: "47 8 * * 1"', weekly)
         self.assertIn("python ai_insights.py publish", weekly)
         self.assertIn("fonts-noto-cjk", weekly)
-        self.assertIn("cron: '0 23 * * *'", six_country)
+        self.assertIn("cron: '25 22 * * *'", six_country)
         self.assertIn("python main.py", six_country)
         self.assertIn("GEMINI_MODEL: gemini-3.6-flash", six_country)
 

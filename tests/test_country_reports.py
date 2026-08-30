@@ -150,7 +150,7 @@ class CountryPreviewWorkflowTests(unittest.TestCase):
         self.assertIn("cron: '30 23 * * *'", daily)
         self.assertIn("--mode collect", daily)
         self.assertNotIn("FEISHU_APP_ID", daily)
-        self.assertIn("cron: '0 23 * * 0'", weekly)
+        self.assertIn("cron: '25 22 * * 0'", weekly)
         self.assertIn("--previous-week", weekly)
         self.assertNotIn("ENABLE_COUNTRY_WEEKLY_REPORTS", weekly)
         expected_group_secrets = {
@@ -162,7 +162,7 @@ class CountryPreviewWorkflowTests(unittest.TestCase):
         }
         for secret_name in expected_group_secrets.values():
             self.assertEqual(weekly.count(f"secrets.{secret_name}"), 2)
-        self.assertIn("cron: '0 23 * * *'", aggregate)
+        self.assertIn("cron: '25 22 * * *'", aggregate)
 
 
 if __name__ == "__main__":

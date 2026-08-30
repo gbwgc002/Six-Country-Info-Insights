@@ -214,7 +214,7 @@ class MigrationIsolationTests(unittest.TestCase):
         self.assertIn("python ai_insights.py collect", daily)
         self.assertIn('cron: "47 8 * * 1"', weekly)
         self.assertIn("python ai_insights.py publish", weekly)
-        self.assertIn("cron: '0 23 * * *'", six)
+        self.assertIn("cron: '25 22 * * *'", six)
         self.assertIn("python main.py", six)
         self.assertIn("workflow_dispatch:", migration)
         self.assertNotIn("schedule:", migration)
