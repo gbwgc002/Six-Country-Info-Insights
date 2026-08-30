@@ -55,11 +55,16 @@ jobs:
 
       - name: Validate Feishu destinations
         env:
-          FEISHU_CHAT_ID_INDIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26YINDU }}
-          FEISHU_CHAT_ID_INDONESIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26YINNI }}
-          FEISHU_CHAT_ID_NIGERIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26NIRI }}
-          FEISHU_CHAT_ID_PAKISTAN: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26BAJISITAN }}
-          FEISHU_CHAT_ID_BANGLADESH: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26MENGJIALA }}
+          FEISHU_CHAT_ID_INDIA: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || (github.event_name != 'workflow_dispatch' || inputs.destination == 'production') && secrets.FEISHU_GROUP_Y26YINDU || '' }}
+          FEISHU_CHAT_ID_INDONESIA: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || (github.event_name != 'workflow_dispatch' || inputs.destination == 'production') && secrets.FEISHU_GROUP_Y26YINNI || '' }}
+          FEISHU_CHAT_ID_NIGERIA: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || (github.event_name != 'workflow_dispatch' || inputs.destination == 'production') && secrets.FEISHU_GROUP_Y26NIRI || '' }}
+          FEISHU_CHAT_ID_PAKISTAN: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || (github.event_name != 'workflow_dispatch' || inputs.destination == 'production') && secrets.FEISHU_GROUP_Y26BAJISITAN || '' }}
+          FEISHU_CHAT_ID_BANGLADESH: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || (github.event_name != 'workflow_dispatch' || inputs.destination == 'production') && secrets.FEISHU_GROUP_Y26MENGJIALA || '' }}
         run: |
           python - <<'PY'
           import os
@@ -89,17 +94,36 @@ jobs:
           FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
           FEISHU_ADMIN_OPEN_ID: ${{ secrets.FEISHU_ADMIN_OPEN_ID }}
-          FEISHU_CHAT_ID_INDIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26YINDU }}
-          FEISHU_CHAT_ID_INDONESIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26YINNI }}
-          FEISHU_CHAT_ID_NIGERIA: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26NIRI }}
-          FEISHU_CHAT_ID_PAKISTAN: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26BAJISITAN }}
-          FEISHU_CHAT_ID_BANGLADESH: ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || secrets.FEISHU_GROUP_Y26MENGJIALA }}
+          FEISHU_CHAT_ID_INDIA: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || (github.event_name != 'workflow_dispatch' || inputs.destination == 'production') && secrets.FEISHU_GROUP_Y26YINDU || '' }}
+          FEISHU_CHAT_ID_INDONESIA: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || (github.event_name != 'workflow_dispatch' || inputs.destination == 'production') && secrets.FEISHU_GROUP_Y26YINNI || '' }}
+          FEISHU_CHAT_ID_NIGERIA: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || (github.event_name != 'workflow_dispatch' || inputs.destination == 'production') && secrets.FEISHU_GROUP_Y26NIRI || '' }}
+          FEISHU_CHAT_ID_PAKISTAN: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || (github.event_name != 'workflow_dispatch' || inputs.destination == 'production') && secrets.FEISHU_GROUP_Y26BAJISITAN || '' }}
+          FEISHU_CHAT_ID_BANGLADESH: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.destination == 'test' && secrets.FEISHU_GROUP_ZHANDIANGUANLIYONGYANNEIBU || (github.event_name != 'workflow_dispatch' || inputs.destination == 'production') && secrets.FEISHU_GROUP_Y26MENGJIALA || '' }}
+          REQUIRE_FEISHU_DELIVERY: ${{ github.event_name == 'schedule' }}
+          MONITOR_DESTINATION_TIER: >-
+            ${{ github.event_name == 'schedule' && 'production' || inputs.destination }}
+          MONITOR_RECEIPT_PATH: output/monitor/receipt.json
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
             python country_report.py --mode publish --countries all --previous-week
           else
             python country_report.py --mode publish --countries "${{ inputs.country }}"
           fi
+
+      - name: Upload sanitized monitor receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: push-monitor-receipt-${{ github.run_attempt }}
+          path: output/monitor/receipt.json
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 30
 
       - name: Upload weekly PDFs for QA
         if: always()

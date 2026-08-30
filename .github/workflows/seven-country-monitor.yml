@@ -1,8 +1,16 @@
-name: Seven-Country Delivery Monitor
+name: Production Push Delivery Monitor
+
+# Migration note: this replaces the seven-country-monitor-receipt artifact and
+# seven-country-runs.json feed. Legacy selector was:
+# workflows: ["Seven-Country Info Insights"]
 
 on:
   workflow_run:
-    workflows: ["Seven-Country Info Insights"]
+    workflows:
+      - Seven-Country Info Insights
+      - AI Insights Weekly Publish
+      - AI Design + Insights Weekly Push
+      - Five-Country Weekly Insights
     types: [completed]
 
 permissions:
@@ -10,14 +18,17 @@ permissions:
   contents: write
 
 concurrency:
-  group: seven-country-monitor-data
+  group: production-push-monitor-data
   cancel-in-progress: false
 
 jobs:
   aggregate:
     if: >-
       github.event.workflow_run.head_branch == github.event.repository.default_branch &&
-      github.event.workflow_run.event == 'schedule'
+      (github.event.workflow_run.event == 'schedule' ||
+       github.event.workflow_run.event == 'workflow_dispatch' ||
+       (github.event.workflow_run.name == 'AI Design + Insights Weekly Push' &&
+        github.event.workflow_run.event == 'workflow_run'))
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -31,14 +42,14 @@ jobs:
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
-          name: seven-country-monitor-receipt-${{ github.event.workflow_run.run_attempt }}
-          path: ${{ runner.temp }}/seven-country-receipt
+          name: push-monitor-receipt-${{ github.event.workflow_run.run_attempt }}
+          path: ${{ runner.temp }}/push-monitor-receipt
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
 
       - name: Aggregate and publish monitor data
         env:
-          RECEIPT_PATH: ${{ runner.temp }}/seven-country-receipt/receipt.json
+          RECEIPT_PATH: ${{ runner.temp }}/push-monitor-receipt/receipt.json
           AGGREGATOR_PATH: ${{ runner.temp }}/aggregate_monitor_receipt.py
         run: |
           cp scripts/aggregate_monitor_receipt.py "$AGGREGATOR_PATH"
@@ -54,17 +65,20 @@ jobs:
           fi
 
           mkdir -p data
+          if [ ! -f push-monitor-runs.json ] && [ -f seven-country-runs.json ]; then
+            cp seven-country-runs.json push-monitor-runs.json
+          fi
           python "$AGGREGATOR_PATH" \
             --receipt "$RECEIPT_PATH" \
             --workflow-run "$GITHUB_EVENT_PATH" \
-            --output seven-country-runs.json
+            --output push-monitor-runs.json
           touch .nojekyll
 
-          git add seven-country-runs.json .nojekyll
+          git add push-monitor-runs.json .nojekyll
           if git diff --cached --quiet; then
             exit 0
           fi
-          git commit -m "Update seven-country delivery monitor"
+          git commit -m "Update production push delivery monitor"
 
           for attempt in 1 2 3; do
             if git push origin HEAD:monitor-data; then
@@ -79,14 +93,17 @@ jobs:
             # overwriting a record published by another writer.
             git fetch origin monitor-data
             git switch --force-create monitor-data origin/monitor-data
+            if [ ! -f push-monitor-runs.json ] && [ -f seven-country-runs.json ]; then
+              cp seven-country-runs.json push-monitor-runs.json
+            fi
             python "$AGGREGATOR_PATH" \
               --receipt "$RECEIPT_PATH" \
               --workflow-run "$GITHUB_EVENT_PATH" \
-              --output seven-country-runs.json
+              --output push-monitor-runs.json
             touch .nojekyll
-            git add seven-country-runs.json .nojekyll
+            git add push-monitor-runs.json .nojekyll
             if git diff --cached --quiet; then
               exit 0
             fi
-            git commit -m "Update seven-country delivery monitor"
+            git commit -m "Update production push delivery monitor"
           done

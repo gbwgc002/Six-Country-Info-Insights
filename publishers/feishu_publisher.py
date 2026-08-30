@@ -1085,4 +1085,4 @@ class FeishuPublisher:
             categories=categories,
             doc_url=doc_url,
         )
-        await self._send_message(chat_id, "interactive", card)
+        return await self._send_message(chat_id, "interactive", card)

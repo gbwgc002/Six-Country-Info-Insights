@@ -53,4 +53,17 @@ jobs:
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
           FEISHU_ADMIN_OPEN_ID: ${{ secrets.FEISHU_ADMIN_OPEN_ID }}
           FEISHU_BOT_CHAT_ID: ${{ secrets.FEISHU_GROUP_RUANJIANYONGYAN_ID }}
+          REQUIRE_FEISHU_DELIVERY: ${{ github.event_name == 'schedule' }}
+          MONITOR_DESTINATION_TIER: production
+          MONITOR_RECEIPT_PATH: output/monitor/receipt.json
         run: python ai_insights.py publish
+
+      - name: Upload sanitized monitor receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: push-monitor-receipt-${{ github.run_attempt }}
+          path: output/monitor/receipt.json
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 30

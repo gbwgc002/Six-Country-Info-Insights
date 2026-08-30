@@ -68,7 +68,25 @@ jobs:
           AI_INSIGHTS_UPSTREAM_CONCLUSION: >-
             ${{ github.event_name == 'workflow_run' &&
                 github.event.workflow_run.conclusion || '' }}
+          MONITOR_PLANNED_AT: >-
+            ${{ github.event_name == 'workflow_run' &&
+                github.event.workflow_run.updated_at || '' }}
+          REQUIRE_FEISHU_DELIVERY: >-
+            ${{ github.event_name == 'workflow_run' &&
+                github.event.workflow_run.event == 'schedule' }}
+          MONITOR_DESTINATION_TIER: production
+          MONITOR_RECEIPT_PATH: output/monitor/receipt.json
         run: python design_ai_weekly_push.py
+
+      - name: Upload sanitized monitor receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: push-monitor-receipt-${{ github.run_attempt }}
+          path: output/monitor/receipt.json
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 30
 
       - name: Save last successful design-feed state
         if: ${{ always() && hashFiles('.cache/ai-design-feed/last-success.json') != '' }}

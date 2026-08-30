@@ -33,8 +33,14 @@ from processors import (
     item_matches_country,
     process_items,
 )
-from publishers.feishu_publisher import FeishuPublisher
+from publishers.feishu_publisher import FeishuPublisher, FeishuSendError
 from publishers.country_report_archive import CountryReportArchiveManager
+from monitoring import (
+    new_run_receipt,
+    record_delivery,
+    require_all_required_primary,
+    write_receipt_atomic,
+)
 from reporting import (
     CATEGORY_BILINGUAL_NAMES,
     COUNTRY_REPORT_METADATA,
@@ -235,7 +241,25 @@ async def generate_and_publish(
     store_path: Path = DEFAULT_STORE_PATH,
     now: datetime | None = None,
 ) -> int:
+    target_keys = [f"country-weekly-{country}" for country in countries]
+    monitor_receipt = new_run_receipt("country-weekly", target_keys)
+    write_receipt_atomic(monitor_receipt)
+    delivery_required = os.environ.get("REQUIRE_FEISHU_DELIVERY", "").lower() in {
+        "1", "true", "yes", "on"
+    }
+
+    def block_targets(error_code: str, selected: list[str] | None = None) -> None:
+        for target_key in selected or target_keys:
+            record_delivery(
+                monitor_receipt,
+                target_key,
+                status="blocked",
+                error_code=error_code,
+            )
+        write_receipt_atomic(monitor_receipt)
+
     if not WEASYPRINT_AVAILABLE:
+        block_targets("generation_failed")
         raise RuntimeError("WeasyPrint is required for bilingual country PDFs")
 
     config_path = Path(__file__).parent / "config" / "sources.yaml"
@@ -265,6 +289,7 @@ async def generate_and_publish(
     )
     all_items = _deduplicate(cached_items + fresh_items)
     if not all_items:
+        block_targets("content_missing")
         raise RuntimeError("No source items were available for the weekly period")
     print(
         f"   Weekly shared pool contains {len(all_items)} items "
@@ -273,10 +298,12 @@ async def generate_and_publish(
 
     sa_path = _service_account_path()
     if not sa_path and not os.environ.get("GOOGLE_SA_JSON"):
+        block_targets("prerequisite_failed")
         raise RuntimeError("GOOGLE_SA_JSON is required for bilingual reports")
     summarizer = GeminiSummarizer(service_account_file=sa_path)
     publisher = FeishuPublisher()
     if not publisher.is_configured():
+        block_targets("credentials_missing")
         raise RuntimeError("Feishu credentials are required for country report delivery")
     archive = CountryReportArchiveManager(publisher)
 
@@ -286,6 +313,7 @@ async def generate_and_publish(
     renderer = EmailSender()
 
     for country in countries:
+        target_key = f"country-weekly-{country}"
         metadata = COUNTRY_REPORT_METADATA[country]
         categories = await _prepare_country_categories(
             all_items,
@@ -294,6 +322,7 @@ async def generate_and_publish(
             summarizer,
         )
         if not categories:
+            block_targets("content_missing", [target_key])
             raise RuntimeError(f"No qualified items remained for {country}")
 
         highlights = await summarizer.generate_country_highlights(
@@ -352,10 +381,12 @@ async def generate_and_publish(
             f"{period.filename_label}.pdf"
         )
         if not renderer.generate_pdf(html, str(pdf_path)):
+            block_targets("generation_failed", [target_key])
             raise RuntimeError(f"PDF generation failed for {country}")
 
         chat_id = _country_chat_id(country, allow_fallback=len(countries) == 1)
         if not chat_id:
+            block_targets("destination_missing", [target_key])
             raise RuntimeError(
                 f"Missing FEISHU_CHAT_ID_{country.upper()} for country delivery"
             )
@@ -366,18 +397,27 @@ async def generate_and_publish(
             country,
         )
         if not pdf_url:
+            block_targets("archive_failed", [target_key])
             raise RuntimeError(f"Feishu PDF upload failed for {country}")
-        await publisher.send_digest_card(
-            chat_id,
-            title,
-            highlights,
-            categories,
-            CATEGORY_BILINGUAL_NAMES,
-            pdf_url,
-            bilingual=True,
-        )
+        try:
+            send_receipt = await publisher.send_digest_card(
+                chat_id,
+                title,
+                highlights,
+                categories,
+                CATEGORY_BILINGUAL_NAMES,
+                pdf_url,
+                bilingual=True,
+            )
+        except FeishuSendError as exc:
+            record_delivery(monitor_receipt, target_key, exc.receipt)
+            write_receipt_atomic(monitor_receipt)
+            raise
+        record_delivery(monitor_receipt, target_key, send_receipt)
+        write_receipt_atomic(monitor_receipt)
         print(f"✅ Published bilingual {metadata['en']} report to its Feishu group")
 
+    require_all_required_primary(monitor_receipt, delivery_required)
     return 0
 
 

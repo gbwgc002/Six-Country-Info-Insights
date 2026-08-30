@@ -79,6 +79,9 @@ jobs:
 
           # Scheduled production runs must obtain a Feishu API acknowledgement.
           REQUIRE_FEISHU_DELIVERY: ${{ github.event_name == 'schedule' }}
+          MONITOR_DESTINATION_TIER: >-
+            ${{ github.event_name == 'schedule' && 'production' ||
+                (inputs.chat_id == '' && 'production' || 'custom') }}
           MONITOR_RECEIPT_PATH: output/monitor/receipt.json
 
         run: |
@@ -95,10 +98,11 @@ jobs:
           retention-days: 7
 
       - name: Upload sanitized monitor receipt
+        # Replaces the legacy seven-country-monitor-receipt artifact.
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: seven-country-monitor-receipt-${{ github.run_attempt }}
+          name: push-monitor-receipt-${{ github.run_attempt }}
           path: output/monitor/receipt.json
           if-no-files-found: error
           overwrite: true

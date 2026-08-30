@@ -19,6 +19,13 @@ from zoneinfo import ZoneInfo
 import aiohttp
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+from monitoring import (
+    new_run_receipt,
+    record_delivery,
+    require_all_required_primary,
+    write_receipt_atomic,
+)
+from publishers.feishu_publisher import FeishuSendError
 
 
 load_dotenv()
@@ -1101,28 +1108,13 @@ async def _find_ai_document(publisher, period: WeekPeriod) -> dict | None:
     return await publisher.find_document_by_title(period.ai_report_title)
 
 
-async def _send_card(publisher, chat_id: str, card: dict) -> None:
-    token = await publisher._get_tenant_access_token()
-    url = f"{publisher.BASE_URL}/im/v1/messages?receive_id_type=chat_id"
-    payload = {
-        "receive_id": chat_id,
-        "msg_type": "interactive",
-        "content": json.dumps(card, ensure_ascii=False),
-    }
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json; charset=utf-8",
-    }
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, json=payload, headers=headers) as response:
-            data = await response.json()
-    if response.status != 200 or data.get("code") != 0:
-        raise RuntimeError(
-            "Feishu combined-card send failed: "
-            f"HTTP {response.status}, code={data.get('code')}, "
-            f"msg={data.get('msg', '')}"
-        )
-    print("Feishu card sent")
+async def _send_card(publisher, chat_id: str, card: dict) -> dict:
+    """Use the shared sender so monitoring never exposes provider messages."""
+    return await publisher._send_message(
+        chat_id,
+        "interactive",
+        json.dumps(card, ensure_ascii=False),
+    )
 
 
 async def publish_combined(
@@ -1133,6 +1125,15 @@ async def publish_combined(
     upstream_conclusion: str = "",
     accepted_feed_date: date | None = None,
 ) -> int:
+    monitor_receipt = new_run_receipt(
+        "ux-combined-weekly",
+        ["ux-combined-weekly"],
+        planned_at=os.environ.get("MONITOR_PLANNED_AT"),
+    )
+    write_receipt_atomic(monitor_receipt)
+    delivery_required = os.environ.get("REQUIRE_FEISHU_DELIVERY", "").lower() in {
+        "1", "true", "yes", "on"
+    }
     period = get_previous_week()
     if dry_run:
         feed = await fetch_design_headlines()
@@ -1150,6 +1151,13 @@ async def publish_combined(
 
     if not re.fullmatch(r"oc_[A-Za-z0-9]+", alert_chat_id or ""):
         print("AI_DESIGN_ALERT_CHAT_ID is missing or invalid; alert cannot be sent.")
+        record_delivery(
+            monitor_receipt,
+            "ux-combined-weekly",
+            status="blocked",
+            error_code="destination_missing",
+        )
+        write_receipt_atomic(monitor_receipt)
         return 1
 
     from publishers.feishu_publisher import FeishuPublisher
@@ -1157,30 +1165,83 @@ async def publish_combined(
     publisher = FeishuPublisher()
     if not publisher.is_configured():
         print("Feishu credentials are missing.")
+        record_delivery(
+            monitor_receipt,
+            "ux-combined-weekly",
+            status="blocked",
+            error_code="credentials_missing",
+        )
+        write_receipt_atomic(monitor_receipt)
         return 1
 
-    async def alert(reason: str) -> int:
+    async def alert(
+        reason: str,
+        error_code: str = "prerequisite_failed",
+        *,
+        block_primary: bool = True,
+    ) -> int:
         print(f"Combined weekly push blocked: {reason}")
+        if block_primary:
+            record_delivery(
+                monitor_receipt,
+                "ux-combined-weekly",
+                status="blocked",
+                error_code=error_code,
+            )
+        elif error_code == "state_save_failed":
+            # Preserve the successful formal acknowledgement while exposing a
+            # safe post-delivery failure code to the monitoring feed.
+            record_delivery(
+                monitor_receipt,
+                "ux-combined-weekly",
+                error_code=error_code,
+            )
         try:
-            await _send_card(publisher, alert_chat_id, build_alert_card(reason))
-        except Exception as exc:  # alerting must never hide the root cause
-            print(f"Feishu alert send failed: {exc}")
+            alert_receipt = await _send_card(
+                publisher, alert_chat_id, build_alert_card(reason)
+            )
+            record_delivery(
+                monitor_receipt,
+                "ux-combined-alert",
+                alert_receipt,
+                required=False,
+            )
+        except FeishuSendError as exc:  # alerting must never hide the root cause
+            record_delivery(
+                monitor_receipt,
+                "ux-combined-alert",
+                exc.receipt,
+                required=False,
+            )
+            print("Feishu alert send failed without an API acknowledgement")
+        except Exception:  # keep the original formal-push failure authoritative
+            record_delivery(
+                monitor_receipt,
+                "ux-combined-alert",
+                status="unknown",
+                error_code="transport_error",
+                required=False,
+            )
+            print("Feishu alert outcome is unknown")
+        write_receipt_atomic(monitor_receipt)
         return 1
 
     if not re.fullmatch(r"oc_[A-Za-z0-9]+", chat_id or ""):
         return await alert(
-            "正式群配置缺失或格式无效：FEISHU_GROUP_SWYONGHUTIYANBU_ID"
+            "正式群配置缺失或格式无效：FEISHU_GROUP_SWYONGHUTIYANBU_ID",
+            "destination_missing",
         )
 
     if upstream_conclusion and upstream_conclusion != "success":
         return await alert(
-            f"上游AI洞察周报任务状态为 {upstream_conclusion}，组合周报未执行"
+            f"上游AI洞察周报任务状态为 {upstream_conclusion}，组合周报未执行",
+            "upstream_failed",
         )
 
     try:
         feed = await fetch_design_headlines()
     except Exception as exc:
-        return await alert(f"设计资讯JSON读取或解析失败：{exc}")
+        return await alert(f"设计资讯JSON读取或解析失败：{exc}", "feed_invalid")
 
     print(
         f"Fetched {len(feed.headlines)} design headlines; "
@@ -1197,7 +1258,7 @@ async def publish_combined(
         accepted_date=accepted_feed_date,
     )
     if problem:
-        return await alert(problem)
+        return await alert(problem, "feed_invalid")
 
     try:
         document = await _find_ai_document(publisher, period)
@@ -1231,15 +1292,41 @@ async def publish_combined(
             ai_categories,
             ai_report_url,
         )
-        await _send_card(publisher, chat_id, card)
+        send_receipt = await _send_card(publisher, chat_id, card)
+        record_delivery(
+            monitor_receipt, "ux-combined-weekly", send_receipt
+        )
+        write_receipt_atomic(monitor_receipt)
+    except FeishuSendError as exc:
+        record_delivery(
+            monitor_receipt, "ux-combined-weekly", exc.receipt
+        )
+        write_receipt_atomic(monitor_receipt)
+        return await alert(
+            "组合周报飞书推送未取得接口确认",
+            "provider_rejected",
+            block_primary=False,
+        )
     except Exception as exc:
-        return await alert(f"组合周报生成或飞书推送失败：{exc}")
+        # Provider responses can contain destination identifiers. Keep the
+        # public alert and logs generic; detailed diagnostics remain in the
+        # access-controlled Actions traceback.
+        print(
+            "Combined weekly preparation failed: "
+            f"{type(exc).__name__}"
+        )
+        return await alert("组合周报生成或权限准备失败", "generation_failed")
 
     try:
         save_feed_state(state_path, feed)
-    except OSError as exc:
-        return await alert(f"周报已推送，但去重状态保存失败：{exc}")
+    except OSError:
+        return await alert(
+            "周报已推送，但去重状态保存失败",
+            "state_save_failed",
+            block_primary=False,
+        )
     print(f"Saved successful design-feed state to {state_path}")
+    require_all_required_primary(monitor_receipt, delivery_required)
     return 0
 
 

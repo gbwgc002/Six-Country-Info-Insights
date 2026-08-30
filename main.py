@@ -45,9 +45,9 @@ from publishers.feishu_publisher import FeishuPublisher
 from publishers.feishu_publisher import FeishuSendError
 from reporting import build_source_appendix
 from monitoring import (
-    empty_feishu_receipt,
     new_run_receipt,
-    require_confirmed_delivery,
+    record_delivery,
+    require_all_required_primary,
     write_receipt_atomic,
 )
 
@@ -89,7 +89,9 @@ async def collect_all_sources(config: dict) -> list[NewsItem]:
 
 async def main_async():
     """Main entry point (Async)."""
-    monitor_receipt = new_run_receipt()
+    monitor_receipt = new_run_receipt(
+        "seven-country-daily", ["seven-country-daily"]
+    )
     write_receipt_atomic(monitor_receipt)
     delivery_required = os.environ.get("REQUIRE_FEISHU_DELIVERY", "").lower() in {
         "1", "true", "yes", "on"
@@ -282,12 +284,18 @@ async def main_async():
                                     doc_url,
                                 )
                             except FeishuSendError as exc:
-                                monitor_receipt["feishu_send"] = exc.receipt
-                                monitor_receipt["feishu_sends"].append(exc.receipt)
+                                record_delivery(
+                                    monitor_receipt,
+                                    "seven-country-daily",
+                                    exc.receipt,
+                                )
                                 write_receipt_atomic(monitor_receipt)
                                 raise
-                            monitor_receipt["feishu_send"] = send_receipt
-                            monitor_receipt["feishu_sends"].append(send_receipt)
+                            record_delivery(
+                                monitor_receipt,
+                                "seven-country-daily",
+                                send_receipt,
+                            )
                             write_receipt_atomic(monitor_receipt)
 
                         # Cleanup old documents (older than 180 days)
@@ -295,24 +303,49 @@ async def main_async():
                         await publisher.cleanup_old_documents()
                     else:
                         print("   ⚠️ Feishu bot enabled but no valid chat IDs found")
-                        monitor_receipt["feishu_send"] = empty_feishu_receipt("not_sent")
+                        record_delivery(
+                            monitor_receipt,
+                            "seven-country-daily",
+                            status="not_attempted",
+                            error_code="destination_missing",
+                        )
                         write_receipt_atomic(monitor_receipt)
                 else:
                     print("   ⚠️ Feishu bot enabled but FEISHU_BOT_CHAT_ID not set")
-                    monitor_receipt["feishu_send"] = empty_feishu_receipt("not_configured")
+                    record_delivery(
+                        monitor_receipt,
+                        "seven-country-daily",
+                        status="blocked",
+                        error_code="destination_missing",
+                    )
                     write_receipt_atomic(monitor_receipt)
             else:
-                monitor_receipt["feishu_send"] = empty_feishu_receipt("not_sent")
+                record_delivery(
+                    monitor_receipt,
+                    "seven-country-daily",
+                    status="not_attempted",
+                    error_code="delivery_not_attempted",
+                )
                 write_receipt_atomic(monitor_receipt)
         else:
             print("   ⚠️ Feishu publisher enabled but credentials not found (FEISHU_APP_ID/SECRET)")
-            monitor_receipt["feishu_send"] = empty_feishu_receipt("not_configured")
+            record_delivery(
+                monitor_receipt,
+                "seven-country-daily",
+                status="blocked",
+                error_code="credentials_missing",
+            )
             write_receipt_atomic(monitor_receipt)
     else:
-        monitor_receipt["feishu_send"] = empty_feishu_receipt("not_sent")
+        record_delivery(
+            monitor_receipt,
+            "seven-country-daily",
+            status="not_attempted",
+            error_code="delivery_not_attempted",
+        )
         write_receipt_atomic(monitor_receipt)
 
-    require_confirmed_delivery(monitor_receipt, delivery_required)
+    require_all_required_primary(monitor_receipt, delivery_required)
 
     print("\n✅ Daily insights digest completed!")
     return 0

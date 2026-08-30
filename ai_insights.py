@@ -32,8 +32,14 @@ from publishers.feishu_archive import (
     FeishuArchiveError,
     FeishuArchiveManager,
 )
-from publishers.feishu_publisher import FeishuPublisher
+from publishers.feishu_publisher import FeishuPublisher, FeishuSendError
 from email_sender import EmailSender, WEASYPRINT_AVAILABLE
+from monitoring import (
+    new_run_receipt,
+    record_delivery,
+    require_all_required_primary,
+    write_receipt_atomic,
+)
 
 DEFAULT_CONFIG = Path(__file__).parent / "config" / "ai_insights_sources.yaml"
 
@@ -387,6 +393,25 @@ async def collect_daily(config: dict, dry_run: bool = False) -> int:
 
 
 async def publish_weekly(config: dict, dry_run: bool = False) -> int:
+    monitor_receipt = new_run_receipt(
+        "ai-insights-weekly", ["ai-insights-weekly"]
+    )
+    write_receipt_atomic(monitor_receipt)
+    delivery_required = os.environ.get("REQUIRE_FEISHU_DELIVERY", "").lower() in {
+        "1", "true", "yes", "on"
+    }
+
+    def finish_without_send(status: str, error_code: str | None, result: int) -> int:
+        record_delivery(
+            monitor_receipt,
+            "ai-insights-weekly",
+            status=status,
+            error_code=error_code,
+        )
+        write_receipt_atomic(monitor_receipt)
+        require_all_required_primary(monitor_receipt, delivery_required)
+        return result
+
     settings = config.get("settings", {})
     timezone_name = settings.get("timezone", "Asia/Shanghai")
     now = datetime.now(tz=ZoneInfo(timezone_name))
@@ -402,22 +427,22 @@ async def publish_weekly(config: dict, dry_run: bool = False) -> int:
     archive = FeishuArchiveManager(publisher)
     if not publisher.is_configured():
         print("Feishu credentials are missing.")
-        return 1
+        return finish_without_send("blocked", "credentials_missing", 1)
     document = await _find_week_document(publisher, period, archive)
     if not document:
         print("No document exists for the previous natural week.")
-        return 0
+        return finish_without_send("blocked", "content_missing", 0)
 
     collected_text = await publisher.read_document_text(document["document_id"])
     if "AI洞察PDF：" in collected_text:
         print("This weekly PDF was already published; skipping duplicate push.")
-        return 0
+        return finish_without_send("already_delivered", None, 0)
     if "每日收集" not in collected_text:
         print("The weekly document contains no daily candidates.")
-        return 0
+        return finish_without_send("blocked", "content_missing", 0)
     if not _service_account_available():
         print("Gemini service account credentials are missing.")
-        return 1
+        return finish_without_send("blocked", "prerequisite_failed", 1)
 
     summarizer = create_summarizer()
     digest = await summarizer.generate_weekly_digest(
@@ -442,11 +467,11 @@ async def publish_weekly(config: dict, dry_run: bool = False) -> int:
     chat_ids = _chat_ids(config)
     if not chat_ids:
         print("FEISHU_BOT_CHAT_ID is missing.")
-        return 1
+        return finish_without_send("blocked", "destination_missing", 1)
 
     pdf_path = generate_ai_insights_pdf(digest, period)
     if not pdf_path:
-        return 1
+        return finish_without_send("blocked", "generation_failed", 1)
     try:
         pdf_url = await archive.upload_pdf(
             pdf_path,
@@ -466,7 +491,7 @@ async def publish_weekly(config: dict, dry_run: bool = False) -> int:
         )
     if not pdf_url:
         print("AI Insights PDF upload failed; no group message was sent.")
-        return 1
+        return finish_without_send("blocked", "archive_failed", 1)
 
     # Keep the weekly Feishu document as the collection/evidence store. Add
     # the editorial summary once, while the user-facing card opens the PDF.
@@ -477,12 +502,23 @@ async def publish_weekly(config: dict, dry_run: bool = False) -> int:
             index=0,
         )
     for chat_id in chat_ids:
-        await publisher.send_ai_insights_card(
-            chat_id=chat_id,
-            highlights=highlights,
-            categories=category_titles,
-            doc_url=pdf_url,
+        try:
+            send_receipt = await publisher.send_ai_insights_card(
+                chat_id=chat_id,
+                highlights=highlights,
+                categories=category_titles,
+                doc_url=pdf_url,
+            )
+        except FeishuSendError as exc:
+            record_delivery(
+                monitor_receipt, "ai-insights-weekly", exc.receipt
+            )
+            write_receipt_atomic(monitor_receipt)
+            raise
+        record_delivery(
+            monitor_receipt, "ai-insights-weekly", send_receipt
         )
+        write_receipt_atomic(monitor_receipt)
     pdf_marker = f"## PDF版本\n\nAI洞察PDF：[查看完整周报]({pdf_url})"
     await publisher.write_content(
         document["document_id"],
@@ -490,6 +526,7 @@ async def publish_weekly(config: dict, dry_run: bool = False) -> int:
         index=0,
     )
     print(f"Published weekly digest to {len(chat_ids)} Feishu group(s).")
+    require_all_required_primary(monitor_receipt, delivery_required)
     return 0
 
 
