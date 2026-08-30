@@ -214,38 +214,47 @@ class FeishuPublisher:
     async def create_document(self, title: str) -> str:
         """Create a new Docx and return its document_id."""
         token = await self._get_tenant_access_token()
-        headers = {"Authorization": f"Bearer {token}"}
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        }
 
-        # If folder_token is set, create in folder using Drive API
+        # The Docx API creates documents in both the app root and a specified
+        # folder.  The former Drive URL used here for folder creation does not
+        # exist and returns a plain-text 404 response.
+        url = f"{self.BASE_URL}/docx/v1/documents"
+        payload = {"title": title}
         if self.folder_token:
-            url = f"{self.BASE_URL}/drive/v1/files/create_docx"
-            payload = {
-                "folder_token": self.folder_token,
-                "title": title
-            }
-        else:
-            # Create in root using Docx API
-            url = f"{self.BASE_URL}/docx/v1/documents"
-            payload = {
-                "title": title
-            }
+            payload["folder_token"] = self.folder_token
 
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=payload, headers=headers) as response:
-                data = await response.json()
-                if data.get("code") != 0:
-                    raise Exception(f"Create Doc Error: {data.get('msg')}")
+                raw_body = await response.text()
+                try:
+                    data = json.loads(raw_body)
+                except json.JSONDecodeError as exc:
+                    raise RuntimeError(
+                        "Feishu document creation returned non-JSON data "
+                        f"(HTTP {response.status})."
+                    ) from exc
 
-                # Drive API returns 'file_token' inside 'file', Docx API returns 'document_id' inside 'document'
-                # Both are nested inside 'data'
-                res_data = data.get("data", {})
-                if "file" in res_data: # Drive API response
-                    # For Docx created via Drive API, file_token == document_id
-                    return res_data["file"]["token"]
-                elif "document" in res_data: # Docx API response
-                    return res_data["document"]["document_id"]
-                else:
-                    raise Exception(f"Unknown response format: {data}")
+                if response.status != 200 or data.get("code") != 0:
+                    raise RuntimeError(
+                        "Feishu document creation failed "
+                        f"(HTTP {response.status}, code={data.get('code')}, "
+                        f"msg={data.get('msg', '')})."
+                    )
+
+                document_id = (
+                    data.get("data", {})
+                    .get("document", {})
+                    .get("document_id")
+                )
+                if not document_id:
+                    raise RuntimeError(
+                        "Feishu document creation succeeded without a document_id."
+                    )
+                return document_id
 
     def _markdown_to_blocks(self, content: str) -> list[dict]:
         """Parse simple Markdown to Feishu Block structure."""
