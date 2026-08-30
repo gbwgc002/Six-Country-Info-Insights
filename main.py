@@ -42,7 +42,14 @@ from publishers.feishu_archive import (
     FeishuArchiveManager,
 )
 from publishers.feishu_publisher import FeishuPublisher
+from publishers.feishu_publisher import FeishuSendError
 from reporting import build_source_appendix
+from monitoring import (
+    empty_feishu_receipt,
+    new_run_receipt,
+    require_confirmed_delivery,
+    write_receipt_atomic,
+)
 
 
 REPORT_TIMEZONE = ZoneInfo("Asia/Shanghai")
@@ -82,6 +89,11 @@ async def collect_all_sources(config: dict) -> list[NewsItem]:
 
 async def main_async():
     """Main entry point (Async)."""
+    monitor_receipt = new_run_receipt()
+    write_receipt_atomic(monitor_receipt)
+    delivery_required = os.environ.get("REQUIRE_FEISHU_DELIVERY", "").lower() in {
+        "1", "true", "yes", "on"
+    }
     now = report_now()
     print(f"\n{'='*60}")
     print(f"🔍 七国用研洞察 - {now.strftime('%Y-%m-%d %H:%M')}")
@@ -260,17 +272,47 @@ async def main_async():
 
                         print(f"\n🤖 Pushing to {len(chat_ids)} Feishu Bot Group(s)...")
                         for cid in chat_ids:
-                            await publisher.send_digest_card(cid, title, highlights, categories, category_names, doc_url)
+                            try:
+                                send_receipt = await publisher.send_digest_card(
+                                    cid,
+                                    title,
+                                    highlights,
+                                    categories,
+                                    category_names,
+                                    doc_url,
+                                )
+                            except FeishuSendError as exc:
+                                monitor_receipt["feishu_send"] = exc.receipt
+                                monitor_receipt["feishu_sends"].append(exc.receipt)
+                                write_receipt_atomic(monitor_receipt)
+                                raise
+                            monitor_receipt["feishu_send"] = send_receipt
+                            monitor_receipt["feishu_sends"].append(send_receipt)
+                            write_receipt_atomic(monitor_receipt)
 
                         # Cleanup old documents (older than 180 days)
                         print("\n🧹 Checking for old documents to clean up...")
                         await publisher.cleanup_old_documents()
                     else:
                         print("   ⚠️ Feishu bot enabled but no valid chat IDs found")
+                        monitor_receipt["feishu_send"] = empty_feishu_receipt("not_sent")
+                        write_receipt_atomic(monitor_receipt)
                 else:
                     print("   ⚠️ Feishu bot enabled but FEISHU_BOT_CHAT_ID not set")
+                    monitor_receipt["feishu_send"] = empty_feishu_receipt("not_configured")
+                    write_receipt_atomic(monitor_receipt)
+            else:
+                monitor_receipt["feishu_send"] = empty_feishu_receipt("not_sent")
+                write_receipt_atomic(monitor_receipt)
         else:
             print("   ⚠️ Feishu publisher enabled but credentials not found (FEISHU_APP_ID/SECRET)")
+            monitor_receipt["feishu_send"] = empty_feishu_receipt("not_configured")
+            write_receipt_atomic(monitor_receipt)
+    else:
+        monitor_receipt["feishu_send"] = empty_feishu_receipt("not_sent")
+        write_receipt_atomic(monitor_receipt)
+
+    require_confirmed_delivery(monitor_receipt, delivery_required)
 
     print("\n✅ Daily insights digest completed!")
     return 0

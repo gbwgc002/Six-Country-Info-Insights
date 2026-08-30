@@ -19,6 +19,14 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: read
+
+concurrency:
+  # Keep production schedules serialized, while every manual test gets its own group.
+  group: seven-country-daily-digest-${{ github.event_name == 'schedule' && 'production' || github.run_id }}
+  cancel-in-progress: false
+
 jobs:
   send-digest:
     runs-on: ubuntu-latest
@@ -69,6 +77,10 @@ jobs:
           FEISHU_ADMIN_OPEN_ID: ${{ secrets.FEISHU_ADMIN_OPEN_ID }}  
           FEISHU_BOT_CHAT_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.chat_id || secrets.FEISHU_GROUP_RUANJIANYONGYAN_ID }}
 
+          # Scheduled production runs must obtain a Feishu API acknowledgement.
+          REQUIRE_FEISHU_DELIVERY: ${{ github.event_name == 'schedule' }}
+          MONITOR_RECEIPT_PATH: output/monitor/receipt.json
+
         run: |
           python main.py
 
@@ -81,3 +93,13 @@ jobs:
             *.log
             debug/
           retention-days: 7
+
+      - name: Upload sanitized monitor receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seven-country-monitor-receipt-${{ github.run_attempt }}
+          path: output/monitor/receipt.json
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 30

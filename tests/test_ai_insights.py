@@ -203,12 +203,15 @@ class FeishuSendFailureTests(unittest.IsolatedAsyncioTestCase):
             "publishers.feishu_publisher.aiohttp.ClientSession",
             return_value=FakeSession(),
         ):
-            with self.assertRaisesRegex(RuntimeError, "simulated failure"):
+            with self.assertRaisesRegex(RuntimeError, "rejected") as caught:
                 await publisher._send_message(
                     "oc_" + "testgroup123",
                     "interactive",
                     "{}",
                 )
+            self.assertEqual(caught.exception.receipt["status"], "failed")
+            self.assertEqual(caught.exception.receipt["provider_code"], 999)
+            self.assertNotIn("simulated failure", str(caught.exception))
 
 
 class WeeklyReportTests(unittest.TestCase):

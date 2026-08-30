@@ -3,11 +3,20 @@ import os
 import re
 import json
 import asyncio
+import hashlib
 import aiohttp
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from reporting import sanitize_public_text
+
+
+class FeishuSendError(RuntimeError):
+    """A send failure carrying only a sanitized monitoring receipt."""
+
+    def __init__(self, message: str, receipt: dict):
+        super().__init__(message)
+        self.receipt = receipt
 
 class FeishuPublisher:
     """Publish content to Feishu (Lark) Cloud Documents."""
@@ -707,29 +716,118 @@ class FeishuPublisher:
 
         return deleted_count
 
-    async def _send_message(self, receive_id: str, msg_type: str, content: str):
-        """Send a message via Feishu IM API."""
-        token = await self._get_tenant_access_token()
-        url = f"{self.BASE_URL}/im/v1/messages?receive_id_type=chat_id"
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json; charset=utf-8"
-        }
-        payload = {
-            "receive_id": receive_id,
-            "msg_type": msg_type,
-            "content": sanitize_public_text(content)
+    async def _send_message(self, receive_id: str, msg_type: str, content: str) -> dict:
+        """Send a message and return a strictly sanitized API receipt.
+
+        ``api_ack_at`` means that Feishu accepted the API request. It does not
+        prove that every group member received or read the message.
+        """
+        receipt = self._empty_send_receipt(None)
+        try:
+            token = await self._get_tenant_access_token()
+            url = f"{self.BASE_URL}/im/v1/messages?receive_id_type=chat_id"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json; charset=utf-8"
+            }
+            payload = {
+                "receive_id": receive_id,
+                "msg_type": msg_type,
+                "content": sanitize_public_text(content)
+            }
+            receipt["request_started_at"] = self._monitor_timestamp()
+
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=payload, headers=headers) as response:
+                    response_status = getattr(response, "status", None)
+                    receipt["http_status"] = (
+                        response_status if isinstance(response_status, int) else None
+                    )
+                    try:
+                        data = await response.json()
+                    except Exception:
+                        receipt["status"] = "unknown"
+                        receipt["error_code"] = "response_unreadable"
+                        raise FeishuSendError(
+                            "Feishu send outcome is unknown because the response was unreadable",
+                            receipt,
+                        ) from None
+
+                    receipt["provider_code"] = self._safe_provider_code(data.get("code"))
+                    http_failed = isinstance(response_status, int) and not (
+                        200 <= response_status < 300
+                    )
+                    if http_failed or data.get("code") != 0:
+                        receipt["status"] = "failed"
+                        receipt["error_code"] = "provider_rejected"
+                        raise FeishuSendError(
+                            "Feishu send was rejected by the provider",
+                            receipt,
+                        )
+
+                    result = data.get("data") if isinstance(data.get("data"), dict) else {}
+                    message = result.get("message") if isinstance(result.get("message"), dict) else {}
+                    message_id = result.get("message_id") or message.get("message_id")
+                    receipt.update(
+                        {
+                            "api_ack_at": self._monitor_timestamp(),
+                            "feishu_create_time": (
+                                result.get("create_time") or message.get("create_time")
+                            ),
+                            "message_ref": self._message_ref(message_id),
+                            "status": "acknowledged",
+                        }
+                    )
+                    print("✅ Feishu API acknowledged message")
+                    return receipt
+        except FeishuSendError:
+            raise
+        except Exception:
+            receipt["status"] = (
+                "unknown" if receipt["request_started_at"] else "not_sent"
+            )
+            receipt["error_code"] = (
+                "transport_error" if receipt["request_started_at"] else "auth_token_failed"
+            )
+            raise FeishuSendError(
+                "Feishu send did not obtain a provider acknowledgement",
+                receipt,
+            ) from None
+
+    @staticmethod
+    def _monitor_timestamp() -> str:
+        return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace(
+            "+00:00", "Z"
+        )
+
+    @staticmethod
+    def _empty_send_receipt(started_at: str | None) -> dict:
+        return {
+            "request_started_at": started_at,
+            "api_ack_at": None,
+            "feishu_create_time": None,
+            "http_status": None,
+            "provider_code": None,
+            "message_ref": None,
+            "attempt_count": 1,
+            "status": "sending",
+            "error_code": None,
         }
 
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, json=payload, headers=headers) as response:
-                data = await response.json()
-                if data.get("code") != 0:
-                    raise RuntimeError(
-                        "Feishu Send Message Error: "
-                        f"{data.get('msg')} (code {data.get('code')})"
-                    )
-                print("✅ Feishu message sent")
+    @staticmethod
+    def _message_ref(message_id) -> str | None:
+        if not message_id:
+            return None
+        digest = hashlib.sha256(str(message_id).encode("utf-8")).hexdigest()
+        return f"sha256:{digest[:16]}"
+
+    @staticmethod
+    def _safe_provider_code(value):
+        if isinstance(value, (int, float)):
+            return value
+        if isinstance(value, str) and len(value) <= 32:
+            return value
+        return None
 
     def _build_card_content(
         self,
@@ -862,7 +960,7 @@ class FeishuPublisher:
             doc_url,
             bilingual=bilingual,
         )
-        await self._send_message(chat_id, "interactive", card_content)
+        return await self._send_message(chat_id, "interactive", card_content)
 
     @staticmethod
     def _safe_lark_md_line(value: str, limit: int = 260) -> str:
