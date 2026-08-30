@@ -1,6 +1,12 @@
 name: AI Insights Daily Collection
 
 on:
+  # One-time production verification; removed after the run is queued.
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/ai-insights-daily.yml"
   # Every day at 07:30 UTC+8 (23:30 UTC on the previous date).
   schedule:
     - cron: "30 23 * * *"
