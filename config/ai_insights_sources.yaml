@@ -3,7 +3,7 @@
 
 settings:
   timezone: "Asia/Shanghai"
-  daily_lookback_hours: 48
+  daily_lookback_hours: 159
   max_raw_items: 80
   max_daily_items: 8
   max_weekly_items: 10
