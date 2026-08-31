@@ -1,0 +1,85 @@
+{
+  "acknowledgement_definition": "Feishu API accepted; not member read confirmation",
+  "generated_at": "2026-08-31T00:44:18.609Z",
+  "records": [
+    {
+      "delay_minutes": 139.03,
+      "delivery_status": "acknowledged",
+      "destination_tier": "production",
+      "errors": [],
+      "feishu_api_acked_at": "2026-08-31T00:44:01.577Z",
+      "feishu_created_at": "2026-08-31T00:44:01.360Z",
+      "feishu_send": {
+        "api_ack_at": "2026-08-31T00:44:01.577Z",
+        "attempt_count": 1,
+        "error_code": null,
+        "feishu_create_time": "2026-08-31T00:44:01.360Z",
+        "request_started_at": "2026-08-31T00:44:00.701Z",
+        "status": "acknowledged"
+      },
+      "id": "33345251993-1-seven-country-daily",
+      "pipeline": "seven-country-daily",
+      "planned_at": "2026-08-30T22:25:00.000Z",
+      "push_requested_at": "2026-08-31T00:44:00.701Z",
+      "report_date": "2026-08-31",
+      "run_attempt": 1,
+      "run_id": "33345251993",
+      "run_url": "https://github.com/gbwgc002/Six-Country-Info-Insights/actions/runs/33345251993",
+      "status": "delayed",
+      "target_key": "seven-country-daily",
+      "target_label": "软件用研 · 七国日报",
+      "trigger": "schedule",
+      "trigger_scope": "scheduled-production",
+      "workflow_completed_at": "2026-08-31T00:44:06.000Z",
+      "workflow_conclusion": "success",
+      "workflow_created_at": "2026-08-31T00:40:07.000Z",
+      "workflow_name": "Seven-Country Info Insights",
+      "workflow_started_at": "2026-08-31T00:40:07.000Z"
+    }
+  ],
+  "schedule": "06:25",
+  "schema_version": 2,
+  "targets": [
+    {
+      "pipeline": "seven-country-daily",
+      "target_key": "seven-country-daily",
+      "target_label": "软件用研 · 七国日报"
+    },
+    {
+      "pipeline": "ai-insights-weekly",
+      "target_key": "ai-insights-weekly",
+      "target_label": "软件用研 · AI洞察周报"
+    },
+    {
+      "pipeline": "ux-combined-weekly",
+      "target_key": "ux-combined-weekly",
+      "target_label": "SW用户体验部 · AI设计与洞察周报"
+    },
+    {
+      "pipeline": "country-weekly",
+      "target_key": "country-weekly-india",
+      "target_label": "印度站点 · 用研周报"
+    },
+    {
+      "pipeline": "country-weekly",
+      "target_key": "country-weekly-indonesia",
+      "target_label": "印尼站点 · 用研周报"
+    },
+    {
+      "pipeline": "country-weekly",
+      "target_key": "country-weekly-nigeria",
+      "target_label": "尼日利亚站点 · 用研周报"
+    },
+    {
+      "pipeline": "country-weekly",
+      "target_key": "country-weekly-pakistan",
+      "target_label": "巴基斯坦站点 · 用研周报"
+    },
+    {
+      "pipeline": "country-weekly",
+      "target_key": "country-weekly-bangladesh",
+      "target_label": "孟加拉站点 · 用研周报"
+    }
+  ],
+  "timezone": "Asia/Shanghai"
+}
