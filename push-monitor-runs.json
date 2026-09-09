@@ -1,7 +1,41 @@
 {
   "acknowledgement_definition": "Feishu API accepted; not member read confirmation",
-  "generated_at": "2026-09-08T00:35:20.886Z",
+  "generated_at": "2026-09-09T00:27:17.284Z",
   "records": [
+    {
+      "delay_minutes": 122.08,
+      "delivery_status": "acknowledged",
+      "destination_tier": "production",
+      "errors": [],
+      "feishu_api_acked_at": "2026-09-09T00:27:04.896Z",
+      "feishu_created_at": "2026-09-09T00:27:04.712Z",
+      "feishu_send": {
+        "api_ack_at": "2026-09-09T00:27:04.896Z",
+        "attempt_count": 1,
+        "error_code": null,
+        "feishu_create_time": "2026-09-09T00:27:04.712Z",
+        "request_started_at": "2026-09-09T00:27:04.115Z",
+        "status": "acknowledged"
+      },
+      "id": "34294651589-1-seven-country-daily",
+      "pipeline": "seven-country-daily",
+      "planned_at": "2026-09-08T22:25:00.000Z",
+      "push_requested_at": "2026-09-09T00:27:04.115Z",
+      "report_date": "2026-09-09",
+      "run_attempt": 1,
+      "run_id": "34294651589",
+      "run_url": "https://github.com/gbwgc002/Six-Country-Info-Insights/actions/runs/34294651589",
+      "status": "delayed",
+      "target_key": "seven-country-daily",
+      "target_label": "软件用研 · 七国日报",
+      "trigger": "schedule",
+      "trigger_scope": "scheduled-production",
+      "workflow_completed_at": "2026-09-09T00:27:08.000Z",
+      "workflow_conclusion": "success",
+      "workflow_created_at": "2026-09-09T00:21:20.000Z",
+      "workflow_name": "Seven-Country Info Insights",
+      "workflow_started_at": "2026-09-09T00:21:20.000Z"
+    },
     {
       "delay_minutes": 130.08,
       "delivery_status": "acknowledged",
