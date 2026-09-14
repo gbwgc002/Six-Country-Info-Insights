@@ -1,7 +1,41 @@
 {
   "acknowledgement_definition": "Feishu API accepted; not member read confirmation",
-  "generated_at": "2026-09-14T00:28:49.643Z",
+  "generated_at": "2026-09-14T15:17:44.966Z",
   "records": [
+    {
+      "delay_minutes": 390.44,
+      "delivery_status": "acknowledged",
+      "destination_tier": "production",
+      "errors": [],
+      "feishu_api_acked_at": "2026-09-14T15:17:26.111Z",
+      "feishu_created_at": "2026-09-14T15:17:25.867Z",
+      "feishu_send": {
+        "api_ack_at": "2026-09-14T15:17:26.111Z",
+        "attempt_count": 1,
+        "error_code": null,
+        "feishu_create_time": "2026-09-14T15:17:25.867Z",
+        "request_started_at": "2026-09-14T15:17:25.304Z",
+        "status": "acknowledged"
+      },
+      "id": "34861024040-1-ai-insights-weekly",
+      "pipeline": "ai-insights-weekly",
+      "planned_at": "2026-09-14T08:47:00.000Z",
+      "push_requested_at": "2026-09-14T15:17:25.304Z",
+      "report_date": "2026-09-14",
+      "run_attempt": 1,
+      "run_id": "34861024040",
+      "run_url": "https://github.com/gbwgc002/Six-Country-Info-Insights/actions/runs/34861024040",
+      "status": "delayed",
+      "target_key": "ai-insights-weekly",
+      "target_label": "软件用研 · AI洞察周报",
+      "trigger": "schedule",
+      "trigger_scope": "scheduled-production",
+      "workflow_completed_at": "2026-09-14T15:17:30.000Z",
+      "workflow_conclusion": "success",
+      "workflow_created_at": "2026-09-14T15:15:58.000Z",
+      "workflow_name": "AI Insights Weekly Publish",
+      "workflow_started_at": "2026-09-14T15:15:58.000Z"
+    },
     {
       "delay_minutes": 115.32,
       "delivery_status": "acknowledged",
